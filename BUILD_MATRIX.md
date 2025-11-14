@@ -1,0 +1,415 @@
+# PyTorch Build Matrix Documentation
+
+## Overview
+
+This document defines the complete build matrix for custom PyTorch builds, explaining all dimensions and their interactions.
+
+## Matrix Dimensions
+
+Our build matrix has **4 independent dimensions**:
+
+```
+Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
+```
+
+### 1. Python Version
+
+**Supported Versions:**
+- Python 3.13 (current)
+- Python 3.12 (planned)
+- Python 3.11 (planned)
+
+**Naming:** `py313`, `py312`, `py311`
+
+**Example:** `pytorch-py313-...`
+
+### 2. GPU Architecture (Compute Capability)
+
+**Supported GPU Architectures:**
+
+| SM Version | Architecture | GPUs | CUDA Requirement | Status |
+|------------|--------------|------|------------------|--------|
+| **SM120** | Blackwell | RTX 5090 | CUDA 12.9+ | Cutting edge |
+| **SM90** | Hopper | H100, H200, L40S | CUDA 12.0+ | Datacenter |
+| **SM89** | Ada Lovelace | RTX 4090, L4, L40 | CUDA 11.8+ | High-end gaming/workstation |
+| **SM86** | Ampere | RTX 3090, A5000, A40 | CUDA 11.1+ | Mainstream gaming/workstation |
+| **SM80** | Ampere | A100 | CUDA 11.0+ | Datacenter |
+| **SM75** | Turing | T4, RTX 20xx | CUDA 10.0+ | Legacy datacenter/gaming |
+| **CPU** | None | N/A | N/A | CPU-only builds |
+
+**Naming:** `sm120`, `sm90`, `sm89`, `sm86`, `sm80`, `sm75`, `cpu`
+
+**Example:** `pytorch-py313-sm120-...`
+
+**Important Notes:**
+- SM120 requires PyTorch 2.7+ (may need nightly builds)
+- Older architectures (SM35-SM70) are deprecated and not supported
+- GPU architecture determines MINIMUM CUDA toolkit version
+
+### 3. CPU Instruction Set Architecture (ISA)
+
+**x86-64 Optimizations:**
+
+| ISA | Compiler Flags | Hardware | Performance Gain | Compatibility |
+|-----|----------------|----------|------------------|---------------|
+| **AVX-512** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mfma` | Intel Skylake-X+, AMD Zen 4+ | ~2x over baseline | Limited |
+| **AVX2** | `-mavx2 -mfma -mf16c` | Intel Haswell+ (2013+), AMD Excavator+ | ~1.5x over baseline | Broad |
+
+**ARM Optimizations:**
+
+| ISA | Compiler Flags | Hardware | Status |
+|-----|----------------|----------|--------|
+| **ARMv9** | `-march=armv9-a` | Neoverse V1/V2, Cortex-X2+ | Future |
+| **ARMv8** | `-march=armv8-a` | Cortex-A53+, Apple Silicon | Future |
+
+**Naming:** `avx512`, `avx2`, `armv9`, `armv8`
+
+**Example:** `pytorch-py313-sm120-avx512-...`
+
+**Current Focus:** x86-64 builds only (AVX-512, AVX2)
+
+### 4. CUDA Toolkit Version
+
+**Why CUDA Toolkit Matters:**
+
+The CUDA toolkit version determines:
+1. Which GPU architectures can be compiled
+2. Which NVIDIA driver versions are compatible
+3. Which CUDA features are available
+
+**CUDA Toolkit Compatibility Table:**
+
+| CUDA Version | Min Driver (Linux) | Min Driver (Windows) | SM120 | SM90 | SM89 | SM86 | Notes |
+|--------------|-------------------|----------------------|-------|------|------|------|-------|
+| **13.0** | 580+ | TBD | ✅ | ✅ | ✅ | ✅ | Latest, cutting edge |
+| **12.9** | 575+ | TBD | ✅ | ✅ | ✅ | ✅ | Latest stable |
+| **12.8** | 570+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
+| **12.6** | 560+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
+| **12.5** | 555+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
+| **12.4** | 550+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
+| **12.2** | 535+ | TBD | ❌ | ✅ | ✅ | ✅ | Oldest supported |
+
+**Naming:** `cu130`, `cu129`, `cu128`, `cu126`, `cu125`, `cu124`, `cu122`
+
+**Example:** `pytorch-py313-sm120-avx512-cu129`
+
+**Default Strategy:** Use CUDA 12.9 for all builds unless users specifically need older versions.
+
+## CUDA Forward Compatibility
+
+### What is Forward Compatibility?
+
+Forward compatibility allows applications compiled with a **newer CUDA toolkit** to run on systems with an **older driver** by installing a compatibility package.
+
+### Forward Compatibility Matrix
+
+| Compat Package | Driver 535+ | Driver 550+ | Driver 570+ | Driver 575+ | Driver 580+ |
+|----------------|-------------|-------------|-------------|-------------|-------------|
+| cuda-compat-13-0 | ✅ | ✅ | ✅ | ✅ | N/A (native) |
+| cuda-compat-12-9 | ✅ | ✅ | ✅ | N/A (native) | ✅ |
+| cuda-compat-12-8 | ✅ | ✅ | N/A (native) | ✅ | ✅ |
+| cuda-compat-12-6 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| cuda-compat-12-5 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| cuda-compat-12-4 | ✅ | N/A (native) | ✅ | ✅ | ✅ |
+| cuda-compat-12-3 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| cuda-compat-12-2 | N/A (native) | ✅ | ✅ | ✅ | ✅ |
+
+### What Forward Compatibility Does NOT Do
+
+**❌ Forward compatibility DOES NOT:**
+- Add support for new GPU architectures (SM versions)
+- Enable PTX JIT compilation for newer architectures
+- Provide CUDA features not in the original driver
+
+**✅ Forward compatibility DOES:**
+- Allow newer CUDA runtime to work with older driver
+- Enable running apps compiled with newer toolkit
+- Provide backward compatibility for most operations
+
+### Example Usage
+
+**Scenario:** User has driver 535 (CUDA 12.2) but needs to run PyTorch compiled with CUDA 12.9
+
+**Solution:**
+```bash
+# Install forward compatibility package
+sudo apt-get install cuda-compat-12-9
+
+# Now can run CUDA 12.9 applications
+flox install yourorg/pytorch-py313-sm86-avx2-cu129
+```
+
+**Important:** This works for SM86 because SM86 was supported in the driver 535 era. It would NOT work for SM120 because SM120 requires driver 575+.
+
+## Build Matrix Strategies
+
+### Strategy 1: Minimal Matrix (Recommended)
+
+Build **one CUDA version** (latest stable) for each GPU architecture.
+
+**Total variants per Python version: 5**
+
+```
+pytorch-py313-sm120-avx512-cu129   # RTX 5090, driver 575+
+pytorch-py313-sm90-avx512-cu129    # H100/L40S, driver 575+ (or 535+ with cuda-compat)
+pytorch-py313-sm89-avx512-cu129    # RTX 4090, driver 575+ (or 535+ with cuda-compat)
+pytorch-py313-sm86-avx2-cu129      # RTX 3090, driver 575+ (or 535+ with cuda-compat)
+pytorch-py313-cpu-avx2             # CPU-only
+```
+
+**Pros:**
+- Simple to maintain
+- Users with older drivers install cuda-compat package
+- Covers all hardware with minimal builds
+
+**Cons:**
+- Users on older drivers need to install additional packages
+- May have issues with corporate/restricted environments
+
+### Strategy 2: Driver Compatibility Matrix
+
+Build **multiple CUDA versions** to avoid requiring forward compat packages.
+
+**Total variants per Python version: 12-15**
+
+```
+# SM120 builds (RTX 5090)
+pytorch-py313-sm120-avx512-cu129   # Driver 575+
+pytorch-py313-sm120-avx512-cu130   # Driver 580+
+
+# SM90 builds (H100, L40S)
+pytorch-py313-sm90-avx512-cu122    # Driver 535+
+pytorch-py313-sm90-avx512-cu124    # Driver 550+
+pytorch-py313-sm90-avx512-cu128    # Driver 570+
+pytorch-py313-sm90-avx512-cu129    # Driver 575+
+
+# SM89 builds (RTX 4090)
+pytorch-py313-sm89-avx512-cu122    # Driver 535+
+pytorch-py313-sm89-avx512-cu124    # Driver 550+
+pytorch-py313-sm89-avx512-cu128    # Driver 570+
+pytorch-py313-sm89-avx512-cu129    # Driver 575+
+
+# SM86 builds (RTX 3090)
+pytorch-py313-sm86-avx2-cu122      # Driver 535+
+pytorch-py313-sm86-avx2-cu124      # Driver 550+
+pytorch-py313-sm86-avx2-cu128      # Driver 570+
+pytorch-py313-sm86-avx2-cu129      # Driver 575+
+
+# CPU
+pytorch-py313-cpu-avx2             # No CUDA
+```
+
+**Pros:**
+- No forward compat packages needed
+- Works in restricted environments
+- Clear driver requirements
+
+**Cons:**
+- 3x more variants to build and maintain
+- More disk space for published packages
+- More complex for users to choose
+
+### Strategy 3: Hybrid Approach (Pragmatic)
+
+Build **latest CUDA** for all + **one legacy CUDA** for SM86/SM89.
+
+**Total variants per Python version: 7**
+
+```
+# Latest CUDA for all
+pytorch-py313-sm120-avx512-cu129   # RTX 5090
+pytorch-py313-sm90-avx512-cu129    # H100/L40S
+pytorch-py313-sm89-avx512-cu129    # RTX 4090
+pytorch-py313-sm86-avx2-cu129      # RTX 3090
+
+# Legacy CUDA for older drivers
+pytorch-py313-sm89-avx512-cu122    # RTX 4090, driver 535+
+pytorch-py313-sm86-avx2-cu122      # RTX 3090, driver 535+
+
+# CPU
+pytorch-py313-cpu-avx2             # CPU-only
+```
+
+**Rationale:**
+- RTX 5090 users have new drivers anyway (575+)
+- H100 users are in datacenters with new drivers (570+)
+- RTX 4090/3090 users may have older gaming drivers (535+)
+
+## Current Implementation Status
+
+### Implemented Variants (Proof-of-Concept)
+
+✅ `pytorch-py313-sm120-avx512` - RTX 5090 (no CUDA version suffix yet)
+✅ `pytorch-py313-sm90-avx512` - H100/L40S (no CUDA version suffix yet)
+✅ `pytorch-py313-sm86-avx2` - RTX 3090/A40 (no CUDA version suffix yet)
+✅ `pytorch-py313-cpu-avx2` - CPU-only
+
+**Current CUDA Version:** Uses whatever is in nixpkgs (likely 12.4-12.6)
+
+### Recommended Next Steps
+
+1. **Determine CUDA version in current nixpkgs:**
+   ```bash
+   nix eval nixpkgs#cudaPackages.cudatoolkit.version
+   ```
+
+2. **Update naming to include CUDA version:**
+   - Rename files to include `-cu{version}` suffix
+   - Update `pname` in each .nix file
+   - Document CUDA version in README
+
+3. **Choose build strategy:** Minimal (Strategy 1) or Hybrid (Strategy 3)
+
+4. **Add CUDA version detection to builds:**
+   - Print CUDA version during build
+   - Verify compatibility with target SM arch
+   - Warn if mismatch detected
+
+## Naming Convention
+
+### Full Package Name Format
+
+```
+pytorch-py{python_ver}-{gpu_arch}-{cpu_isa}-cu{cuda_ver}
+```
+
+### Examples
+
+```
+pytorch-py313-sm120-avx512-cu129   # Python 3.13, RTX 5090, AVX-512, CUDA 12.9
+pytorch-py312-sm90-avx512-cu128    # Python 3.12, H100, AVX-512, CUDA 12.8
+pytorch-py311-sm86-avx2-cu122      # Python 3.11, RTX 3090, AVX2, CUDA 12.2
+pytorch-py313-cpu-avx2             # Python 3.13, CPU-only, AVX2
+```
+
+### Special Cases
+
+**CPU-only builds:** No CUDA version suffix
+```
+pytorch-py313-cpu-avx2
+pytorch-py312-cpu-armv9
+```
+
+**ARM builds:** Use arm prefix for CPU ISA
+```
+pytorch-py313-sm90-armv9-cu129     # H100 + ARMv9 (future)
+pytorch-py313-cpu-armv8            # CPU-only ARMv8 (future)
+```
+
+## User Selection Guide
+
+### For Users: How to Choose Your Build
+
+1. **Check your GPU:**
+   ```bash
+   nvidia-smi --query-gpu=name,compute_cap --format=csv
+   ```
+
+2. **Check your driver:**
+   ```bash
+   nvidia-smi | grep "Driver Version"
+   ```
+
+3. **Match to build variant:**
+
+   | Your GPU | Your Driver | Install This |
+   |----------|-------------|--------------|
+   | RTX 5090 | 575+ | `pytorch-py313-sm120-avx512-cu129` |
+   | RTX 5090 | < 575 | Upgrade driver first! |
+   | H100/L40S | 575+ | `pytorch-py313-sm90-avx512-cu129` |
+   | H100/L40S | 535-574 | `pytorch-py313-sm90-avx512-cu129` + `cuda-compat-12-9` |
+   | RTX 4090 | 575+ | `pytorch-py313-sm89-avx512-cu129` |
+   | RTX 4090 | 535-574 | `pytorch-py313-sm89-avx512-cu122` (if available) |
+   | RTX 3090 | 575+ | `pytorch-py313-sm86-avx2-cu129` |
+   | RTX 3090 | 535-574 | `pytorch-py313-sm86-avx2-cu122` (if available) |
+   | No GPU | Any | `pytorch-py313-cpu-avx2` |
+
+4. **Check CPU capabilities (for AVX-512 builds):**
+   ```bash
+   lscpu | grep -E 'avx512|avx2'
+   ```
+
+   If no AVX-512: Use AVX2 variant instead.
+
+## Build Time Considerations
+
+### Build Duration by Variant Type
+
+| Variant Type | Estimated Time | Reason |
+|--------------|----------------|--------|
+| CPU-only | 1-2 hours | Fewer compilation targets |
+| GPU (single SM) | 2-3 hours | CUDA compilation overhead |
+| GPU (multi SM) | 4-6 hours | Multiple architecture targets |
+
+### Disk Space Requirements
+
+| Component | Size per Build |
+|-----------|----------------|
+| Source code | ~2 GB |
+| Build artifacts | ~15 GB |
+| Final package | ~1-2 GB |
+| **Total per variant** | ~18-20 GB |
+
+**Recommendation:** Build on CI/CD with at least 100GB free space to accommodate multiple variants.
+
+## CI/CD Considerations
+
+### Parallel Build Strategy
+
+Build variants in parallel by matrix dimension:
+
+```yaml
+matrix:
+  python: [py313, py312, py311]
+  gpu_arch: [sm120, sm90, sm89, sm86, cpu]
+  cpu_isa: [avx512, avx2]
+  cuda: [cu129]
+```
+
+**Estimated CI time:** 2-3 hours per variant × parallelism factor
+
+### Publishing Strategy
+
+After successful builds:
+```bash
+flox publish -o <your-org> pytorch-py313-sm120-avx512-cu129
+flox publish -o <your-org> pytorch-py313-sm90-avx512-cu129
+# ... etc
+```
+
+Users install with:
+```bash
+flox install <your-org>/pytorch-py313-sm120-avx512-cu129
+```
+
+## Future Expansions
+
+### Planned Additions
+
+1. **More Python versions:** 3.12, 3.11
+2. **More GPU architectures:** SM80 (A100), SM89 (RTX 4090)
+3. **ARM builds:** ARMv8, ARMv9 for Graviton/Neoverse
+4. **More CUDA versions:** 12.8, 13.0 as they stabilize
+5. **MKL variants:** CPU builds with Intel MKL instead of OpenBLAS
+
+### Not Planned
+
+- SM versions < SM75 (deprecated by NVIDIA)
+- CUDA versions < 12.0 (legacy)
+- ROCm/AMD GPU support (different build system)
+
+## Summary
+
+**4D Build Matrix:**
+1. Python Version (3.11, 3.12, 3.13)
+2. GPU Architecture (SM120, SM90, SM89, SM86, SM80, SM75, CPU)
+3. CPU ISA (AVX-512, AVX2, ARMv9, ARMv8)
+4. CUDA Toolkit (13.0, 12.9, 12.8, 12.6, 12.4, 12.2)
+
+**Current Implementation:** Minimal matrix with 4 variants (Python 3.13 only)
+
+**Recommended Strategy:** Hybrid approach (7 variants per Python version)
+
+**Total Potential Matrix:** 3 × 8 × 4 × 6 = **576 possible combinations**
+
+**Practical Matrix:** 7 variants × 3 Python versions = **21 total builds**
