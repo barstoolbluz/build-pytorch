@@ -53,21 +53,28 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 
 | ISA | Compiler Flags | Hardware | Performance Gain | Compatibility |
 |-----|----------------|----------|------------------|---------------|
-| **AVX-512** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mfma` | Intel Skylake-X+, AMD Zen 4+ | ~2x over baseline | Limited |
-| **AVX2** | `-mavx2 -mfma -mf16c` | Intel Haswell+ (2013+), AMD Excavator+ | ~1.5x over baseline | Broad |
+| **AVX-512 BF16** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mavx512bf16 -mfma` | Intel Cooper Lake+ (2020), AMD Zen 4+ (2022) | ~2.5x over baseline (BF16) | Limited |
+| **AVX-512 VNNI** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mavx512vnni -mfma` | Intel Skylake-SP+ (2017), AMD Zen 4+ (2022) | ~2.2x over baseline (INT8) | Limited |
+| **AVX-512** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mfma` | Intel Skylake-X+ (2017), AMD Zen 4+ (2022) | ~2x over baseline | Limited |
+| **AVX2** | `-mavx2 -mfma -mf16c` | Intel Haswell+ (2013+), AMD Zen 1+ (2017) | ~1.5x over baseline | Broad |
+
+**AMD Zen ISA Support:**
+- Zen 1-3 (EPYC Naples/Rome/Milan): **AVX2** only
+- Zen 4 (EPYC Genoa, 2022): **AVX2** + **AVX-512** + **VNNI** + **BF16**
+- Zen 5 (EPYC Turin, 2024): Same as Zen 4, but native 512-bit datapath (vs 2×256 in Zen 4)
 
 **ARM Optimizations:**
 
 | ISA | Compiler Flags | Hardware | Status |
 |-----|----------------|----------|--------|
-| **ARMv9** | `-march=armv9-a` | Neoverse V1/V2, Cortex-X2+ | Future |
-| **ARMv8** | `-march=armv8-a` | Cortex-A53+, Apple Silicon | Future |
+| **ARMv9** | `-march=armv9-a+sve+sve2` | Neoverse V1/V2, Cortex-X2+, Graviton3+ | Supported |
+| **ARMv8.2** | `-march=armv8.2-a+fp16+dotprod` | Neoverse N1, Cortex-A75+, Graviton2 | Supported |
 
-**Naming:** `avx512`, `avx2`, `armv9`, `armv8`
+**Naming:** `avx512bf16`, `avx512vnni`, `avx512`, `avx2`, `armv9`, `armv8.2`
 
-**Example:** `pytorch-python313-cuda12_8-sm120-avx512-...`
+**Example:** `pytorch-python313-cuda12_8-sm120-avx512-cu128`
 
-**Current Focus:** x86-64 builds only (AVX-512, AVX2)
+**Note:** ISA-based naming is vendor-agnostic. An `avx512` build works on both Intel Skylake-X and AMD Zen 4.
 
 ### 4. CUDA Toolkit Version
 
@@ -398,21 +405,154 @@ Users install with:
 flox install <your-org>/pytorch-python313-cuda12_8-sm120-avx512-cu129
 ```
 
+## Python 3.13 SM120 Build Matrix (Current Focus)
+
+This section documents the complete build matrix for **RTX 5090 (SM120)** with **Python 3.13** and **CUDA 12.8**.
+
+### Complete SM120 Matrix
+
+**GPU Architecture:** SM120 (NVIDIA Blackwell - RTX 5090)
+**CUDA Toolkit:** 12.8 (PyTorch 2.7 default)
+**Python Version:** 3.13
+**Driver Requirement:** 570+
+
+#### x86-64 Variants (4 total)
+
+| Package Name | CPU ISA | Hardware Support | Compiler Flags | Status |
+|-------------|---------|------------------|----------------|---------|
+| `pytorch-python313-cuda12_8-sm120-avx512` | AVX-512 (x86-64-v4) | Intel Skylake-X+ (2017), AMD Zen 4+ (2022) | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mfma` | ✅ Exists |
+| `pytorch-python313-cuda12_8-sm120-avx2` | AVX2 (x86-64-v3) | Intel Haswell+ (2013), AMD Zen 1+ (2017) | `-mavx2 -mfma -mf16c` | ⏳ To create |
+| `pytorch-python313-cuda12_8-sm120-avx512vnni` | AVX-512 + VNNI | Intel Skylake-SP+ (2017), AMD Zen 4+ (2022) | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mavx512vnni -mfma` | ⏳ To create |
+| `pytorch-python313-cuda12_8-sm120-avx512bf16` | AVX-512 + BF16 | Intel Cooper Lake+ (2020), AMD Zen 4+ (2022) | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mavx512bf16 -mfma` | ⏳ To create |
+
+**Use cases:**
+- **avx512**: General datacenter use (most common)
+- **avx2**: Broad compatibility for older CPUs
+- **avx512vnni**: Optimized INT8 inference (quantized models)
+- **avx512bf16**: Optimized BF16 training (modern mixed-precision)
+
+#### ARM Variants (2 total)
+
+| Package Name | CPU ISA | Hardware Support | Compiler Flags | Status |
+|-------------|---------|------------------|----------------|---------|
+| `pytorch-python313-cuda12_8-sm120-armv9` | ARMv9-A | AWS Graviton3+, Neoverse V1/V2, Grace Hopper | `-march=armv9-a+sve+sve2` | ⏳ To create |
+| `pytorch-python313-cuda12_8-sm120-armv8.2` | ARMv8.2-A | AWS Graviton2, ARM servers | `-march=armv8.2-a+fp16+dotprod` | ⏳ To create |
+
+**Use cases:**
+- **armv9**: Modern ARM datacenter (Grace Hopper superchips, Graviton3)
+- **armv8.2**: General ARM server deployments
+
+**Total SM120 variants: 6** (4 x86-64 + 2 ARM)
+
+### BLAS Backend Strategy
+
+#### GPU Builds (All SM120 variants)
+
+**BLAS Configuration:**
+```nix
+buildInputs = oldAttrs.buildInputs ++ [
+  cudaPackages.libcublas      # Primary: GPU operations
+  cudaPackages.libcufft
+  cudaPackages.libcurand
+  cudaPackages.libcusolver
+  cudaPackages.libcusparse
+  cudaPackages.cudnn
+  # Explicitly add dynamic OpenBLAS for host-side operations
+  (openblas.override {
+    blas64 = false;
+    singleThreaded = false;
+  })
+];
+
+# Note: We rely on nixpkgs default OpenBLAS which uses DYNAMIC_ARCH=1
+# This provides runtime CPU detection for optimal host-side performance
+```
+
+**Rationale:**
+1. **Primary BLAS:** cuBLAS handles 90%+ of operations on GPU
+2. **Host-side BLAS:** nixpkgs OpenBLAS (default uses DYNAMIC_ARCH=1) for CPU preprocessing/fallback
+3. **Runtime dispatch:** Single OpenBLAS binary works on both Intel and AMD CPUs
+4. **Minimal overhead:** Dynamic dispatch adds ~5% overhead but provides maximum compatibility
+5. **Vendor-agnostic:** Users care about ISA (AVX2 vs AVX-512), not vendor (Intel vs AMD)
+6. **Explicit control:** We add OpenBLAS to buildInputs to ensure it's included (not just inherited)
+
+**Performance breakdown:**
+- GPU operations (cuBLAS): 100% optimized ✅
+- Host-side operations (dynamic OpenBLAS): 95% optimized ⚠️ (5% dispatch overhead)
+- Overall performance: ~99% optimal (GPU workloads are 90%+ cuBLAS)
+
+#### Alternative: Static OpenBLAS (Not Recommended)
+
+Could use vendor-specific targets:
+```nix
+# Intel-specific
+openblas.override {
+  DYNAMIC_ARCH = 0;
+  TARGET = "SKYLAKEX";  # AVX-512 Intel
+}
+
+# AMD-specific
+openblas.override {
+  DYNAMIC_ARCH = 0;
+  TARGET = "ZEN4";  # AVX-512 AMD
+}
+```
+
+**Why not:**
+- Requires separate builds for Intel vs AMD
+- Doubles the build matrix (6 variants → 12)
+- Minimal performance gain (~5%) for GPU workloads
+- Users would need to know CPU vendor
+
+#### CPU-Only Builds Strategy
+
+For CPU-only builds (no GPU), BLAS performance matters more:
+
+```nix
+# CPU builds should use dynamic OpenBLAS or MKL
+blasBackend = openblas.override {
+  DYNAMIC_ARCH = 1;  # OR use mkl for Intel CPUs
+};
+```
+
+**Future consideration:** Offer both OpenBLAS and MKL variants for CPU-only builds.
+
+### Build Command Examples
+
+```bash
+# Build all SM120 variants
+flox build pytorch-python313-cuda12_8-sm120-avx512       # Already exists
+flox build pytorch-python313-cuda12_8-sm120-avx2         # To create
+flox build pytorch-python313-cuda12_8-sm120-avx512vnni   # To create
+flox build pytorch-python313-cuda12_8-sm120-avx512bf16   # To create
+flox build pytorch-python313-cuda12_8-sm120-armv9        # To create
+flox build pytorch-python313-cuda12_8-sm120-armv8.2      # To create
+```
+
+### Requirements
+
+All SM120 variants require:
+- NVIDIA driver 570+ (for CUDA 12.8 + SM120 support)
+- PyTorch 2.7+ (SM120 support added in stable release, April 2025)
+- Linux only (aarch64-linux or x86_64-linux)
+- RTX 5090 or other Blackwell GPU
+
 ## Future Expansions
 
 ### Planned Additions
 
-1. **More Python versions:** 3.12, 3.11
-2. **More GPU architectures:** SM80 (A100), SM89 (RTX 4090)
-3. **ARM builds:** ARMv8, ARMv9 for Graviton/Neoverse
-4. **More CUDA versions:** 12.8, 13.0 as they stabilize
-5. **MKL variants:** CPU builds with Intel MKL instead of OpenBLAS
+1. **More GPU architectures:** SM90 (H100), SM89 (RTX 4090), SM86 (RTX 3090), SM80 (A100)
+2. **More Python versions:** 3.12, 3.11
+3. **More CUDA versions:** 12.9, 13.0 for cutting-edge
+4. **CPU builds with MKL:** Intel-optimized CPU-only variants
 
 ### Not Planned
 
 - SM versions < SM75 (deprecated by NVIDIA)
 - CUDA versions < 12.0 (legacy)
 - ROCm/AMD GPU support (different build system)
+- Apple Silicon GPU builds (no NVIDIA driver support)
+- Vendor-specific GPU builds (ISA-based naming is vendor-agnostic)
 
 ## Summary
 
