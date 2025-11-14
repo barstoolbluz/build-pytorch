@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Hopper (SM90: H100, L40S) + AVX-512
-# Package name: python313Packages.pytorch-sm90-avx512
+# PyTorch optimized for NVIDIA Ampere (SM86: RTX 3090, A40) + AVX2
+# Package name: pytorch-py313-sm86-avx2
 
 { python3Packages
 , lib
@@ -9,20 +9,18 @@
 }:
 
 let
-  # GPU target: SM90 (Hopper architecture - H100, L40S)
-  gpuArch = "sm_90";
+  # GPU target: SM86 (Ampere architecture - RTX 3090, A5000, A40)
+  gpuArch = "sm_86";
 
-  # CPU optimization: AVX-512
+  # CPU optimization: AVX2 (broader compatibility)
   cpuFlags = [
-    "-mavx512f"    # AVX-512 Foundation
-    "-mavx512dq"   # Doubleword and Quadword instructions
-    "-mavx512vl"   # Vector Length extensions
-    "-mavx512bw"   # Byte and Word instructions
+    "-mavx2"       # AVX2 instructions
     "-mfma"        # Fused multiply-add
+    "-mf16c"       # Half-precision conversions
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "python313Packages.pytorch-sm90-avx512";
+  pname = "pytorch-py313-sm86-avx2";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {
@@ -63,8 +61,8 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
     echo "PyTorch Build Configuration"
     echo "========================================="
-    echo "GPU Target: ${gpuArch} (Hopper: H100, L40S)"
-    echo "CPU Features: AVX-512"
+    echo "GPU Target: ${gpuArch} (Ampere: RTX 3090, A5000, A40)"
+    echo "CPU Features: AVX2"
     echo "CUDA: Enabled with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
@@ -72,15 +70,15 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch optimized for NVIDIA H100/L40S (SM90) with AVX-512 CPU instructions";
+    description = "PyTorch optimized for NVIDIA RTX 3090/A40 (SM86) with AVX2 CPU instructions";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
-      - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S
-      - CPU: x86-64 with AVX-512 instruction set
+      - GPU: NVIDIA Ampere architecture (SM86) - RTX 3090, A5000, A40
+      - CPU: x86-64 with AVX2 instruction set (broad compatibility)
       - BLAS: NVIDIA cuBLAS for GPU operations
 
-      This build is optimized for high-performance computing workloads
-      on modern datacenter hardware.
+      This build balances performance with broader CPU compatibility,
+      making it suitable for a wide range of workstations and servers.
     '';
     platforms = [ "x86_64-linux" ];
   };

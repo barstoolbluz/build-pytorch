@@ -17,9 +17,9 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 | Package Name | GPU Target | CPU Target | Use Case |
 |-------------|------------|------------|----------|
-| `python313Packages.pytorch-sm90-avx512` | NVIDIA H100, L40S (SM90) | x86-64 AVX-512 | Modern datacenter (Hopper GPUs) |
-| `python313Packages.pytorch-sm86-avx2` | NVIDIA RTX 3090, A40 (SM86) | x86-64 AVX2 | Workstations & servers (Ampere GPUs) |
-| `python313Packages.pytorch-cpu-avx2` | None (CPU-only) | x86-64 AVX2 | Development, inference, CPU workloads |
+| `pytorch-py313-sm90-avx512` | NVIDIA H100, L40S (SM90) | x86-64 AVX-512 | Modern datacenter (Hopper GPUs) |
+| `pytorch-py313-sm86-avx2` | NVIDIA RTX 3090, A40 (SM86) | x86-64 AVX2 | Workstations & servers (Ampere GPUs) |
+| `pytorch-py313-cpu-avx2` | None (CPU-only) | x86-64 AVX2 | Development, inference, CPU workloads |
 
 ### Supported GPU Architectures
 
@@ -44,10 +44,10 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 flox activate
 
 # Build a specific variant
-flox build python313Packages.pytorch-sm90-avx512
+flox build pytorch-py313-sm90-avx512
 
-# The result will be in ./result-python313Packages.pytorch-sm90-avx512/
-ls -lh result-python313Packages.pytorch-sm90-avx512/lib/python3.13/site-packages/torch/
+# The result will be in ./result-pytorch-py313-sm90-avx512/
+ls -lh result-pytorch-py313-sm90-avx512/lib/python3.13/site-packages/torch/
 ```
 
 ## Build Configuration Details
@@ -85,9 +85,9 @@ build-pytorch/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
 │   └── pkgs/                      # Nix expression builds
-│       ├── python313Packages.pytorch-sm90-avx512.nix
-│       ├── python313Packages.pytorch-sm86-avx2.nix
-│       └── python313Packages.pytorch-cpu-avx2.nix
+│       ├── pytorch-py313-sm90-avx512.nix
+│       ├── pytorch-py313-sm86-avx2.nix
+│       └── pytorch-py313-cpu-avx2.nix
 └── README.md
 ```
 
@@ -126,12 +126,12 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to your Flox organization
-flox publish -o <your-org> python313Packages.pytorch-sm90-avx512
-flox publish -o <your-org> python313Packages.pytorch-sm86-avx2
-flox publish -o <your-org> python313Packages.pytorch-cpu-avx2
+flox publish -o <your-org> pytorch-py313-sm90-avx512
+flox publish -o <your-org> pytorch-py313-sm86-avx2
+flox publish -o <your-org> pytorch-py313-cpu-avx2
 
 # Users install with:
-flox install <your-org>/python313Packages.pytorch-sm90-avx512
+flox install <your-org>/pytorch-py313-sm90-avx512
 ```
 
 ## Build Times & Requirements
@@ -158,14 +158,14 @@ To add more variants:
 ### Example: Adding SM89 (RTX 4090) with AVX-512
 
 ```nix
-# .flox/pkgs/python313Packages.pytorch-sm89-avx512.nix
+# .flox/pkgs/pytorch-py313-sm89-avx512.nix
 { python3Packages, lib, cudaPackages, addDriverRunpath }:
 
 let
   gpuArch = "sm_89";
   cpuFlags = [ "-mavx512f" "-mavx512dq" "-mfma" ];
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "python313Packages.pytorch-sm89-avx512";
+  pname = "pytorch-py313-sm89-avx512";
   # ... (rest of configuration)
 })
 ```
