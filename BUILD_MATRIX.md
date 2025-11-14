@@ -29,7 +29,7 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 
 | SM Version | Architecture | GPUs | CUDA Requirement | Status |
 |------------|--------------|------|------------------|--------|
-| **SM120** | Blackwell | RTX 5090 | CUDA 12.9+ | Cutting edge |
+| **SM120** | Blackwell | RTX 5090 | CUDA 12.8+ | Cutting edge |
 | **SM90** | Hopper | H100, H200, L40S | CUDA 12.0+ | Datacenter |
 | **SM89** | Ada Lovelace | RTX 4090, L4, L40 | CUDA 11.8+ | High-end gaming/workstation |
 | **SM86** | Ampere | RTX 3090, A5000, A40 | CUDA 11.1+ | Mainstream gaming/workstation |
@@ -42,9 +42,10 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 **Example:** `pytorch-py313-sm120-...`
 
 **Important Notes:**
-- SM120 requires PyTorch 2.7+ (may need nightly builds)
-- Older architectures (SM35-SM70) are deprecated and not supported
+- SM120 requires PyTorch 2.7+ with CUDA 12.8+ (stable release available as of April 2025)
+- Older architectures (SM35-SM70) are deprecated in CUDA 13.0+
 - GPU architecture determines MINIMUM CUDA toolkit version
+- PyTorch 2.7 ships with pre-built wheels for CUDA 12.8
 
 ### 3. CPU Instruction Set Architecture (ISA)
 
@@ -81,19 +82,23 @@ The CUDA toolkit version determines:
 
 | CUDA Version | Min Driver (Linux) | Min Driver (Windows) | SM120 | SM90 | SM89 | SM86 | Notes |
 |--------------|-------------------|----------------------|-------|------|------|------|-------|
-| **13.0** | 580+ | TBD | ✅ | ✅ | ✅ | ✅ | Latest, cutting edge |
-| **12.9** | 575+ | TBD | ✅ | ✅ | ✅ | ✅ | Latest stable |
-| **12.8** | 570+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
-| **12.6** | 560+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
-| **12.5** | 555+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
-| **12.4** | 550+ | TBD | ❌ | ✅ | ✅ | ✅ | Stable |
-| **12.2** | 535+ | TBD | ❌ | ✅ | ✅ | ✅ | Oldest supported |
+| **13.0** | 580+ | Not bundled* | ✅ | ✅ | ✅ | ✅ | Latest, removes SM 5.x-7.0 |
+| **12.9** | 575+ | 576+ | ✅ | ✅ | ✅ | ✅ | Latest 12.x |
+| **12.8** | 570+ | 571+ | ✅ | ✅ | ✅ | ✅ | PyTorch 2.7 default |
+| **12.6** | 560+ | 561+ | ✅** | ✅ | ✅ | ✅ | Stable |
+| **12.5** | 555+ | 556+ | ✅** | ✅ | ✅ | ✅ | Stable |
+| **12.4** | 550+ | 551+ | ❌ | ✅ | ✅ | ✅ | Stable |
+| **12.2** | 535+ | 536+ | ❌ | ✅ | ✅ | ✅ | Baseline 12.x |
+| **12.0** | 525+ | 526+ | ❌ | ✅ | ✅ | ✅ | First 12.x release |
 
-**Naming:** `cu130`, `cu129`, `cu128`, `cu126`, `cu125`, `cu124`, `cu122`
+*Starting CUDA 13.0, Windows driver must be installed separately
+**SM120 may work but not officially tested/documented
+
+**Naming:** `cuda130`, `cuda129`, `cuda128`, `cuda126`, `cuda125`, `cuda124`, `cuda122`
 
 **Example:** `pytorch-py313-sm120-avx512-cu129`
 
-**Default Strategy:** Use CUDA 12.9 for all builds unless users specifically need older versions.
+**Default Strategy:** Use CUDA 12.8 for all builds (matches PyTorch 2.7 default). Consider CUDA 12.9 or 13.0 for future releases.
 
 ## CUDA Forward Compatibility
 
@@ -118,13 +123,24 @@ Forward compatibility allows applications compiled with a **newer CUDA toolkit**
 
 **❌ Forward compatibility DOES NOT:**
 - Add support for new GPU architectures (SM versions)
-- Enable PTX JIT compilation for newer architectures
 - Provide CUDA features not in the original driver
+- Support OpenGL/Vulkan interoperability
+- Work on all consumer GPUs (see limitations below)
 
 **✅ Forward compatibility DOES:**
 - Allow newer CUDA runtime to work with older driver
 - Enable running apps compiled with newer toolkit
+- Support PTX JIT compilation with compatibility packages
 - Provide backward compatibility for most operations
+
+**⚠️ Hardware Limitations:**
+Forward compatibility officially supports:
+- NVIDIA Data Center GPUs (Tesla, A100, H100, etc.)
+- Select NGC-Ready RTX cards
+- Jetson boards
+
+**Not officially supported:**
+- Consumer GeForce GTX/RTX cards (may work but not guaranteed)
 
 ### Example Usage
 
@@ -150,10 +166,10 @@ Build **one CUDA version** (latest stable) for each GPU architecture.
 **Total variants per Python version: 5**
 
 ```
-pytorch-py313-sm120-avx512-cu129   # RTX 5090, driver 575+
-pytorch-py313-sm90-avx512-cu129    # H100/L40S, driver 575+ (or 535+ with cuda-compat)
-pytorch-py313-sm89-avx512-cu129    # RTX 4090, driver 575+ (or 535+ with cuda-compat)
-pytorch-py313-sm86-avx2-cu129      # RTX 3090, driver 575+ (or 535+ with cuda-compat)
+pytorch-py313-sm120-avx512-cu128   # RTX 5090, driver 570+
+pytorch-py313-sm90-avx512-cu128    # H100/L40S, driver 570+ (or 535+ with cuda-compat)
+pytorch-py313-sm89-avx512-cu128    # RTX 4090, driver 570+ (or 535+ with cuda-compat)
+pytorch-py313-sm86-avx2-cu128      # RTX 3090, driver 570+ (or 535+ with cuda-compat)
 pytorch-py313-cpu-avx2             # CPU-only
 ```
 
