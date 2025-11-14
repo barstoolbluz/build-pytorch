@@ -99,7 +99,7 @@
 nvidia-smi
 
 # If driver >= 570, build with CUDA 12.8
-flox build pytorch-py313-sm120-avx512-cu128
+flox build pytorch-python313-cuda12_8-sm120-avx512-cu128
 
 # If driver < 570, upgrade driver first:
 # Ubuntu/Debian:
@@ -124,11 +124,11 @@ If you're stuck on driver 535-569:
 **Strategy:** CUDA 12.8 for all builds
 
 ```
-pytorch-py313-sm120-avx512-cu128   # RTX 5090, driver 570+
-pytorch-py313-sm90-avx512-cu128    # H100/L40S
-pytorch-py313-sm89-avx512-cu128    # RTX 4090
-pytorch-py313-sm86-avx2-cu128      # RTX 3090
-pytorch-py313-cpu-avx2             # CPU-only
+pytorch-python313-cuda12_8-sm120-avx512-cu128   # RTX 5090, driver 570+
+pytorch-python313-cuda12_8-sm90-avx512-cu128    # H100/L40S
+pytorch-python313-cuda12_8-sm89-avx512-cu128    # RTX 4090
+pytorch-python313-cuda12_8-sm86-avx2-cu128      # RTX 3090
+pytorch-python313-cuda12_8-cpu-avx2             # CPU-only
 ```
 
 **Why CUDA 12.8:**
@@ -142,9 +142,9 @@ pytorch-py313-cpu-avx2             # CPU-only
 **Strategy:** CUDA 12.9 or 13.0
 
 ```
-pytorch-py313-sm120-avx512-cu129   # RTX 5090, driver 575+
+pytorch-python313-cuda12_8-sm120-avx512-cu129   # RTX 5090, driver 575+
 # or
-pytorch-py313-sm120-avx512-cu130   # RTX 5090, driver 580+
+pytorch-python313-cuda12_8-sm120-avx512-cu130   # RTX 5090, driver 580+
 ```
 
 **Why newer CUDA:**
@@ -162,19 +162,19 @@ pytorch-py313-sm120-avx512-cu130   # RTX 5090, driver 580+
 ### Current Files (Missing CUDA Version)
 
 ```
-.flox/pkgs/pytorch-py313-sm120-avx512.nix     # Which CUDA?
-.flox/pkgs/pytorch-py313-sm90-avx512.nix      # Which CUDA?
-.flox/pkgs/pytorch-py313-sm86-avx2.nix        # Which CUDA?
-.flox/pkgs/pytorch-py313-cpu-avx2.nix         # No CUDA (OK)
+.flox/pkgs/pytorch-python313-cuda12_8-sm120-avx512.nix     # Which CUDA?
+.flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512.nix      # Which CUDA?
+.flox/pkgs/pytorch-python313-cuda12_8-sm86-avx2.nix        # Which CUDA?
+.flox/pkgs/pytorch-python313-cuda12_8-cpu-avx2.nix         # No CUDA (OK)
 ```
 
 ### Recommended Renames
 
 ```
-.flox/pkgs/pytorch-py313-sm120-avx512-cu128.nix
-.flox/pkgs/pytorch-py313-sm90-avx512-cu128.nix
-.flox/pkgs/pytorch-py313-sm86-avx2-cu128.nix
-.flox/pkgs/pytorch-py313-cpu-avx2.nix
+.flox/pkgs/pytorch-python313-cuda12_8-sm120-avx512-cu128.nix
+.flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512-cu128.nix
+.flox/pkgs/pytorch-python313-cuda12_8-sm86-avx2-cu128.nix
+.flox/pkgs/pytorch-python313-cuda12_8-cpu-avx2.nix
 ```
 
 **Action Required:**

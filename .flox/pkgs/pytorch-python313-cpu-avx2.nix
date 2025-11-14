@@ -1,5 +1,5 @@
 # PyTorch CPU-only optimized for AVX2
-# Package name: pytorch-py313-cpu-avx2
+# Package name: pytorch-python313-cpu-avx2
 
 { python3Packages
 , lib
@@ -20,7 +20,7 @@ let
   blasBackend = openblas;
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-py313-cpu-avx2";
+  pname = "pytorch-python313-cpu-avx2";
 
   # Disable CUDA support for CPU-only build
   passthru = oldAttrs.passthru // {

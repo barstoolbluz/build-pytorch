@@ -14,9 +14,9 @@ Created 3 PyTorch variants demonstrating the approach:
 
 | Variant | GPU Target | CPU Target | File |
 |---------|------------|------------|------|
-| `pytorch-py313-sm90-avx512` | NVIDIA H100, L40S (SM90) | x86-64 AVX-512 | `.flox/pkgs/pytorch-py313-sm90-avx512.nix` |
-| `pytorch-py313-sm86-avx2` | NVIDIA RTX 3090, A40 (SM86) | x86-64 AVX2 | `.flox/pkgs/pytorch-py313-sm86-avx2.nix` |
-| `pytorch-py313-cpu-avx2` | None (CPU-only) | x86-64 AVX2 | `.flox/pkgs/pytorch-py313-cpu-avx2.nix` |
+| `pytorch-python313-cuda12_8-sm90-avx512` | NVIDIA H100, L40S (SM90) | x86-64 AVX-512 | `.flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512.nix` |
+| `pytorch-python313-cuda12_8-sm86-avx2` | NVIDIA RTX 3090, A40 (SM86) | x86-64 AVX2 | `.flox/pkgs/pytorch-python313-cuda12_8-sm86-avx2.nix` |
+| `pytorch-python313-cuda12_8-cpu-avx2` | None (CPU-only) | x86-64 AVX2 | `.flox/pkgs/pytorch-python313-cuda12_8-cpu-avx2.nix` |
 
 ### 3. Build Configuration Strategy
 
@@ -66,9 +66,9 @@ build-pytorch/
 │   ├── env/
 │   │   └── manifest.toml              # Build environment definition
 │   └── pkgs/                          # Nix expression builds
-│       ├── pytorch-py313-sm90-avx512.nix
-│       ├── pytorch-py313-sm86-avx2.nix
-│       └── pytorch-py313-cpu-avx2.nix
+│       ├── pytorch-python313-cuda12_8-sm90-avx512.nix
+│       ├── pytorch-python313-cuda12_8-sm86-avx2.nix
+│       └── pytorch-python313-cuda12_8-cpu-avx2.nix
 ├── BLAS_DEPENDENCIES.md               # BLAS technical docs
 ├── FLOX.md                            # Flox reference guide
 ├── README.md                          # Main user documentation
@@ -82,7 +82,7 @@ build-pytorch/
 3. **Target GPU**: Set `TORCH_CUDA_ARCH_LIST` to specific SM architecture
 4. **Optimize CPU**: Add compiler flags for AVX2/AVX-512
 5. **BLAS Backend**: Inject cuBLAS (GPU) or OpenBLAS (CPU)
-6. **Build**: `flox build pytorch-py313-sm90-avx512`
+6. **Build**: `flox build pytorch-python313-cuda12_8-sm90-avx512`
 7. **Publish**: `flox publish -o <org> <variant>`
 
 ## Naming Convention
@@ -90,7 +90,7 @@ build-pytorch/
 Format: `python{version}Packages.pytorch-{gpu-arch}-{cpu-opt}`
 
 Examples:
-- `pytorch-py313-sm120-avx512` - Blackwell GPU + AVX-512
+- `pytorch-python313-cuda12_8-sm120-avx512` - Blackwell GPU + AVX-512
 - `python312Packages.pytorch-sm89-avx2` - Ada Lovelace + AVX2
 - `python311Packages.pytorch-cpu-armv9` - ARM CPU-only
 
@@ -125,13 +125,13 @@ Examples:
 flox activate
 
 # Build a variant (WARNING: takes 1-3 hours!)
-flox build pytorch-py313-sm90-avx512
+flox build pytorch-python313-cuda12_8-sm90-avx512
 
 # Result appears in:
-./result-pytorch-py313-sm90-avx512/
+./result-pytorch-python313-cuda12_8-sm90-avx512/
 
 # Test it:
-./result-pytorch-py313-sm90-avx512/bin/python -c "import torch; print(torch.__version__)"
+./result-pytorch-python313-cuda12_8-sm90-avx512/bin/python -c "import torch; print(torch.__version__)"
 ```
 
 ### To publish:
@@ -142,9 +142,9 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to Flox catalog
-flox publish -o <your-org> pytorch-py313-sm90-avx512
-flox publish -o <your-org> pytorch-py313-sm86-avx2
-flox publish -o <your-org> pytorch-py313-cpu-avx2
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm86-avx2
+flox publish -o <your-org> pytorch-python313-cuda12_8-cpu-avx2
 ```
 
 ## Key Insights
@@ -217,7 +217,7 @@ flox publish -o <your-org> pytorch-py313-cpu-avx2
 > 4. Naming convention?
 
 ✅ Using: `python{ver}Packages.pytorch-{gpu}-{cpu}`
-Example: `pytorch-py313-sm90-avx512`
+Example: `pytorch-python313-cuda12_8-sm90-avx512`
 
 ## Repository Status
 

@@ -7,9 +7,9 @@ The package names have been updated to work with Flox's Nix expression build sys
 **Naming format:** `pytorch-py{python-ver}-{gpu|cpu}-{isa}`
 
 Examples:
-- `pytorch-py313-sm90-avx512`
-- `pytorch-py313-sm86-avx2`
-- `pytorch-py313-cpu-avx2`
+- `pytorch-python313-cuda12_8-sm90-avx512`
+- `pytorch-python313-cuda12_8-sm86-avx2`
+- `pytorch-python313-cuda12_8-cpu-avx2`
 
 ## Building PyTorch Variants
 
@@ -24,24 +24,24 @@ flox activate
 
 ```bash
 # Build CPU-only variant (faster, recommended for testing)
-flox build pytorch-py313-cpu-avx2
+flox build pytorch-python313-cuda12_8-cpu-avx2
 
 # Build GPU variants (will take 1-3 hours each)
-flox build pytorch-py313-sm90-avx512  # H100/L40S
-flox build pytorch-py313-sm86-avx2    # RTX 3090/A40
+flox build pytorch-python313-cuda12_8-sm90-avx512  # H100/L40S
+flox build pytorch-python313-cuda12_8-sm86-avx2    # RTX 3090/A40
 ```
 
 ### 3. Use the Built Package
 
 ```bash
 # Result appears as a symlink
-ls -lh result-pytorch-py313-cpu-avx2
+ls -lh result-pytorch-python313-cuda12_8-cpu-avx2
 
 # Test it
-./result-pytorch-py313-cpu-avx2/bin/python -c "import torch; print(torch.__version__)"
+./result-pytorch-python313-cuda12_8-cpu-avx2/bin/python -c "import torch; print(torch.__version__)"
 
 # Activate the environment
-source result-pytorch-py313-cpu-avx2/bin/activate
+source result-pytorch-python313-cuda12_8-cpu-avx2/bin/activate
 python -c "import torch; print(torch.__version__)"
 ```
 
@@ -49,24 +49,24 @@ python -c "import torch; print(torch.__version__)"
 
 The build command:
 ```bash
-flox build pytorch-py313-cpu-avx2
+flox build pytorch-python313-cuda12_8-cpu-avx2
 ```
 
 Is doing:
-1. Reading `.flox/pkgs/pytorch-py313-cpu-avx2.nix`
+1. Reading `.flox/pkgs/pytorch-python313-cuda12_8-cpu-avx2.nix`
 2. Calling `python3Packages.pytorch.overrideAttrs` with custom flags
 3. Setting `CXXFLAGS="-mavx2 -mfma"` for CPU optimization
 4. Compiling PyTorch from source (~1-3 hours)
-5. Creating a result symlink: `./result-pytorch-py313-cpu-avx2`
+5. Creating a result symlink: `./result-pytorch-python313-cuda12_8-cpu-avx2`
 
 ## Successful Output
 
 You saw this output which confirms everything is working:
 
 ```
-Building python3.13-pytorch-py313-cpu-avx2-2.8.0 in Nix expression mode
+Building python3.13-pytorch-python313-cuda12_8-cpu-avx2-2.8.0 in Nix expression mode
 this derivation will be built:
-  /nix/store/...-python3.13-pytorch-py313-cpu-avx2-2.8.0.drv
+  /nix/store/...-python3.13-pytorch-python313-cuda12_8-cpu-avx2-2.8.0.drv
 these 104 paths will be fetched (346.24 MiB download, 1977.98 MiB unpacked):
 ```
 
@@ -93,12 +93,12 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to Flox catalog (requires flox auth login)
-flox publish -o <your-org> pytorch-py313-cpu-avx2
-flox publish -o <your-org> pytorch-py313-sm90-avx512
-flox publish -o <your-org> pytorch-py313-sm86-avx2
+flox publish -o <your-org> pytorch-python313-cuda12_8-cpu-avx2
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm86-avx2
 
 # Users can then install with:
-flox install <your-org>/pytorch-py313-sm90-avx512
+flox install <your-org>/pytorch-python313-cuda12_8-sm90-avx512
 ```
 
 ## Adding More Variants
@@ -106,8 +106,8 @@ flox install <your-org>/pytorch-py313-sm90-avx512
 Copy an existing `.nix` file:
 
 ```bash
-cp .flox/pkgs/pytorch-py313-sm90-avx512.nix \
-   .flox/pkgs/pytorch-py313-sm89-avx512.nix
+cp .flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512.nix \
+   .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
 ```
 
 Edit the new file:
@@ -116,16 +116,16 @@ let
   gpuArch = "sm_89";  # Change GPU arch
   cpuFlags = [ "-mavx512f" "-mavx512dq" "-mfma" ];  # Adjust CPU flags
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-py313-sm89-avx512";  # Update package name
+  pname = "pytorch-python313-cuda12_8-sm89-avx512";  # Update package name
   # ... rest stays the same
 })
 ```
 
 Commit and build:
 ```bash
-git add .flox/pkgs/pytorch-py313-sm89-avx512.nix
+git add .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
 git commit -m "Add RTX 4090 variant with AVX-512"
-flox build pytorch-py313-sm89-avx512
+flox build pytorch-python313-cuda12_8-sm89-avx512
 ```
 
 ## Next Steps

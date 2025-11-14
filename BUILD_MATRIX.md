@@ -65,7 +65,7 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 
 **Naming:** `avx512`, `avx2`, `armv9`, `armv8`
 
-**Example:** `pytorch-py313-sm120-avx512-...`
+**Example:** `pytorch-python313-cuda12_8-sm120-avx512-...`
 
 **Current Focus:** x86-64 builds only (AVX-512, AVX2)
 
@@ -96,7 +96,7 @@ The CUDA toolkit version determines:
 
 **Naming:** `cuda130`, `cuda129`, `cuda128`, `cuda126`, `cuda125`, `cuda124`, `cuda122`
 
-**Example:** `pytorch-py313-sm120-avx512-cu129`
+**Example:** `pytorch-python313-cuda12_8-sm120-avx512-cu129`
 
 **Default Strategy:** Use CUDA 12.8 for all builds (matches PyTorch 2.7 default). Consider CUDA 12.9 or 13.0 for future releases.
 
@@ -152,7 +152,7 @@ Forward compatibility officially supports:
 sudo apt-get install cuda-compat-12-9
 
 # Now can run CUDA 12.9 applications
-flox install yourorg/pytorch-py313-sm86-avx2-cu129
+flox install yourorg/pytorch-python313-cuda12_8-sm86-avx2-cu129
 ```
 
 **Important:** This works for SM86 because SM86 was supported in the driver 535 era. It would NOT work for SM120 because SM120 requires driver 575+.
@@ -166,11 +166,11 @@ Build **one CUDA version** (latest stable) for each GPU architecture.
 **Total variants per Python version: 5**
 
 ```
-pytorch-py313-sm120-avx512-cu128   # RTX 5090, driver 570+
-pytorch-py313-sm90-avx512-cu128    # H100/L40S, driver 570+ (or 535+ with cuda-compat)
-pytorch-py313-sm89-avx512-cu128    # RTX 4090, driver 570+ (or 535+ with cuda-compat)
-pytorch-py313-sm86-avx2-cu128      # RTX 3090, driver 570+ (or 535+ with cuda-compat)
-pytorch-py313-cpu-avx2             # CPU-only
+pytorch-python313-cuda12_8-sm120-avx512-cu128   # RTX 5090, driver 570+
+pytorch-python313-cuda12_8-sm90-avx512-cu128    # H100/L40S, driver 570+ (or 535+ with cuda-compat)
+pytorch-python313-cuda12_8-sm89-avx512-cu128    # RTX 4090, driver 570+ (or 535+ with cuda-compat)
+pytorch-python313-cuda12_8-sm86-avx2-cu128      # RTX 3090, driver 570+ (or 535+ with cuda-compat)
+pytorch-python313-cuda12_8-cpu-avx2             # CPU-only
 ```
 
 **Pros:**
@@ -190,29 +190,29 @@ Build **multiple CUDA versions** to avoid requiring forward compat packages.
 
 ```
 # SM120 builds (RTX 5090)
-pytorch-py313-sm120-avx512-cu129   # Driver 575+
-pytorch-py313-sm120-avx512-cu130   # Driver 580+
+pytorch-python313-cuda12_8-sm120-avx512-cu129   # Driver 575+
+pytorch-python313-cuda12_8-sm120-avx512-cu130   # Driver 580+
 
 # SM90 builds (H100, L40S)
-pytorch-py313-sm90-avx512-cu122    # Driver 535+
-pytorch-py313-sm90-avx512-cu124    # Driver 550+
-pytorch-py313-sm90-avx512-cu128    # Driver 570+
-pytorch-py313-sm90-avx512-cu129    # Driver 575+
+pytorch-python313-cuda12_8-sm90-avx512-cu122    # Driver 535+
+pytorch-python313-cuda12_8-sm90-avx512-cu124    # Driver 550+
+pytorch-python313-cuda12_8-sm90-avx512-cu128    # Driver 570+
+pytorch-python313-cuda12_8-sm90-avx512-cu129    # Driver 575+
 
 # SM89 builds (RTX 4090)
-pytorch-py313-sm89-avx512-cu122    # Driver 535+
-pytorch-py313-sm89-avx512-cu124    # Driver 550+
-pytorch-py313-sm89-avx512-cu128    # Driver 570+
-pytorch-py313-sm89-avx512-cu129    # Driver 575+
+pytorch-python313-cuda12_8-sm89-avx512-cu122    # Driver 535+
+pytorch-python313-cuda12_8-sm89-avx512-cu124    # Driver 550+
+pytorch-python313-cuda12_8-sm89-avx512-cu128    # Driver 570+
+pytorch-python313-cuda12_8-sm89-avx512-cu129    # Driver 575+
 
 # SM86 builds (RTX 3090)
-pytorch-py313-sm86-avx2-cu122      # Driver 535+
-pytorch-py313-sm86-avx2-cu124      # Driver 550+
-pytorch-py313-sm86-avx2-cu128      # Driver 570+
-pytorch-py313-sm86-avx2-cu129      # Driver 575+
+pytorch-python313-cuda12_8-sm86-avx2-cu122      # Driver 535+
+pytorch-python313-cuda12_8-sm86-avx2-cu124      # Driver 550+
+pytorch-python313-cuda12_8-sm86-avx2-cu128      # Driver 570+
+pytorch-python313-cuda12_8-sm86-avx2-cu129      # Driver 575+
 
 # CPU
-pytorch-py313-cpu-avx2             # No CUDA
+pytorch-python313-cuda12_8-cpu-avx2             # No CUDA
 ```
 
 **Pros:**
@@ -233,17 +233,17 @@ Build **latest CUDA** for all + **one legacy CUDA** for SM86/SM89.
 
 ```
 # Latest CUDA for all
-pytorch-py313-sm120-avx512-cu129   # RTX 5090
-pytorch-py313-sm90-avx512-cu129    # H100/L40S
-pytorch-py313-sm89-avx512-cu129    # RTX 4090
-pytorch-py313-sm86-avx2-cu129      # RTX 3090
+pytorch-python313-cuda12_8-sm120-avx512-cu129   # RTX 5090
+pytorch-python313-cuda12_8-sm90-avx512-cu129    # H100/L40S
+pytorch-python313-cuda12_8-sm89-avx512-cu129    # RTX 4090
+pytorch-python313-cuda12_8-sm86-avx2-cu129      # RTX 3090
 
 # Legacy CUDA for older drivers
-pytorch-py313-sm89-avx512-cu122    # RTX 4090, driver 535+
-pytorch-py313-sm86-avx2-cu122      # RTX 3090, driver 535+
+pytorch-python313-cuda12_8-sm89-avx512-cu122    # RTX 4090, driver 535+
+pytorch-python313-cuda12_8-sm86-avx2-cu122      # RTX 3090, driver 535+
 
 # CPU
-pytorch-py313-cpu-avx2             # CPU-only
+pytorch-python313-cuda12_8-cpu-avx2             # CPU-only
 ```
 
 **Rationale:**
@@ -255,10 +255,10 @@ pytorch-py313-cpu-avx2             # CPU-only
 
 ### Implemented Variants (Proof-of-Concept)
 
-✅ `pytorch-py313-sm120-avx512` - RTX 5090 (no CUDA version suffix yet)
-✅ `pytorch-py313-sm90-avx512` - H100/L40S (no CUDA version suffix yet)
-✅ `pytorch-py313-sm86-avx2` - RTX 3090/A40 (no CUDA version suffix yet)
-✅ `pytorch-py313-cpu-avx2` - CPU-only
+✅ `pytorch-python313-cuda12_8-sm120-avx512` - RTX 5090 (no CUDA version suffix yet)
+✅ `pytorch-python313-cuda12_8-sm90-avx512` - H100/L40S (no CUDA version suffix yet)
+✅ `pytorch-python313-cuda12_8-sm86-avx2` - RTX 3090/A40 (no CUDA version suffix yet)
+✅ `pytorch-python313-cuda12_8-cpu-avx2` - CPU-only
 
 **Current CUDA Version:** Uses whatever is in nixpkgs (likely 12.4-12.6)
 
@@ -292,24 +292,24 @@ pytorch-py{python_ver}-{gpu_arch}-{cpu_isa}-cu{cuda_ver}
 ### Examples
 
 ```
-pytorch-py313-sm120-avx512-cu129   # Python 3.13, RTX 5090, AVX-512, CUDA 12.9
-pytorch-py312-sm90-avx512-cu128    # Python 3.12, H100, AVX-512, CUDA 12.8
-pytorch-py311-sm86-avx2-cu122      # Python 3.11, RTX 3090, AVX2, CUDA 12.2
-pytorch-py313-cpu-avx2             # Python 3.13, CPU-only, AVX2
+pytorch-python313-cuda12_8-sm120-avx512-cu129   # Python 3.13, RTX 5090, AVX-512, CUDA 12.9
+pytorch-python312-cuda12_8-sm90-avx512-cu128    # Python 3.12, H100, AVX-512, CUDA 12.8
+pytorch-python311-cuda12_8-sm86-avx2-cu122      # Python 3.11, RTX 3090, AVX2, CUDA 12.2
+pytorch-python313-cuda12_8-cpu-avx2             # Python 3.13, CPU-only, AVX2
 ```
 
 ### Special Cases
 
 **CPU-only builds:** No CUDA version suffix
 ```
-pytorch-py313-cpu-avx2
-pytorch-py312-cpu-armv9
+pytorch-python313-cuda12_8-cpu-avx2
+pytorch-python312-cuda12_8-cpu-armv9
 ```
 
 **ARM builds:** Use arm prefix for CPU ISA
 ```
-pytorch-py313-sm90-armv9-cu129     # H100 + ARMv9 (future)
-pytorch-py313-cpu-armv8            # CPU-only ARMv8 (future)
+pytorch-python313-cuda12_8-sm90-armv9-cu129     # H100 + ARMv9 (future)
+pytorch-python313-cuda12_8-cpu-armv8            # CPU-only ARMv8 (future)
 ```
 
 ## User Selection Guide
@@ -330,15 +330,15 @@ pytorch-py313-cpu-armv8            # CPU-only ARMv8 (future)
 
    | Your GPU | Your Driver | Install This |
    |----------|-------------|--------------|
-   | RTX 5090 | 575+ | `pytorch-py313-sm120-avx512-cu129` |
+   | RTX 5090 | 575+ | `pytorch-python313-cuda12_8-sm120-avx512-cu129` |
    | RTX 5090 | < 575 | Upgrade driver first! |
-   | H100/L40S | 575+ | `pytorch-py313-sm90-avx512-cu129` |
-   | H100/L40S | 535-574 | `pytorch-py313-sm90-avx512-cu129` + `cuda-compat-12-9` |
-   | RTX 4090 | 575+ | `pytorch-py313-sm89-avx512-cu129` |
-   | RTX 4090 | 535-574 | `pytorch-py313-sm89-avx512-cu122` (if available) |
-   | RTX 3090 | 575+ | `pytorch-py313-sm86-avx2-cu129` |
-   | RTX 3090 | 535-574 | `pytorch-py313-sm86-avx2-cu122` (if available) |
-   | No GPU | Any | `pytorch-py313-cpu-avx2` |
+   | H100/L40S | 575+ | `pytorch-python313-cuda12_8-sm90-avx512-cu129` |
+   | H100/L40S | 535-574 | `pytorch-python313-cuda12_8-sm90-avx512-cu129` + `cuda-compat-12-9` |
+   | RTX 4090 | 575+ | `pytorch-python313-cuda12_8-sm89-avx512-cu129` |
+   | RTX 4090 | 535-574 | `pytorch-python313-cuda12_8-sm89-avx512-cu122` (if available) |
+   | RTX 3090 | 575+ | `pytorch-python313-cuda12_8-sm86-avx2-cu129` |
+   | RTX 3090 | 535-574 | `pytorch-python313-cuda12_8-sm86-avx2-cu122` (if available) |
+   | No GPU | Any | `pytorch-python313-cuda12_8-cpu-avx2` |
 
 4. **Check CPU capabilities (for AVX-512 builds):**
    ```bash
@@ -388,14 +388,14 @@ matrix:
 
 After successful builds:
 ```bash
-flox publish -o <your-org> pytorch-py313-sm120-avx512-cu129
-flox publish -o <your-org> pytorch-py313-sm90-avx512-cu129
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm120-avx512-cu129
+flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512-cu129
 # ... etc
 ```
 
 Users install with:
 ```bash
-flox install <your-org>/pytorch-py313-sm120-avx512-cu129
+flox install <your-org>/pytorch-python313-cuda12_8-sm120-avx512-cu129
 ```
 
 ## Future Expansions

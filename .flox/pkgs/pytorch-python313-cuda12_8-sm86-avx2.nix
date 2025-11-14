@@ -1,5 +1,5 @@
 # PyTorch optimized for NVIDIA Ampere (SM86: RTX 3090, A40) + AVX2
-# Package name: pytorch-py313-sm86-avx2
+# Package name: pytorch-python313-cuda12_8-sm86-avx2
 
 { python3Packages
 , lib
@@ -20,7 +20,7 @@ let
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-py313-sm86-avx2";
+  pname = "pytorch-python313-cuda12_8-sm86-avx2";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {
