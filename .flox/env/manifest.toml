@@ -1,0 +1,119 @@
+## Flox Environment Manifest -----------------------------------------
+##
+##   _Everything_ you need to know about the _manifest_ is here:
+##
+##   https://flox.dev/docs/reference/command-reference/manifest.toml/
+##
+## -------------------------------------------------------------------
+# Flox manifest version managed by Flox CLI
+version = 1
+
+
+## Install Packages --------------------------------------------------
+##  $ flox install gum  <- puts a package in [install] section below
+##  $ flox search gum   <- search for a package
+##  $ flox show gum     <- show all versions of a package
+## -------------------------------------------------------------------
+[install]
+# Build tools for PyTorch
+git.pkg-path = "git"
+python313Full.pkg-path = "python313Full"
+gcc.pkg-path = "gcc"
+gcc-unwrapped.pkg-path = "gcc-unwrapped"
+gcc-unwrapped.priority = 6
+
+# CUDA packages for GPU builds (Linux only)
+# These will be used when building GPU-targeted variants
+
+
+## Environment Variables ---------------------------------------------
+##  ... available for use in the activated environment
+##      as well as [hook], [profile] scripts and [services] below.
+## -------------------------------------------------------------------
+[vars]
+# INTRO_MESSAGE = "It's gettin' Flox in here"
+
+
+## Activation Hook ---------------------------------------------------
+##  ... run by _bash_ shell when you run 'flox activate'.
+## -------------------------------------------------------------------
+[hook]
+on-activate = '''
+
+echo ""
+echo "🔥 PyTorch Build Environment"
+echo ""
+echo "This environment builds custom PyTorch variants with targeted optimizations:"
+echo ""
+echo "  GPU Architectures: sm_120, sm_90, sm_89, sm_86, sm_80, sm_75"
+echo "  CPU Features: AVX-512, AVX2, ARMv8, ARMv9"
+echo "  Python Versions: 3.11, 3.12, 3.13"
+echo ""
+echo "Available builds (proof-of-concept):"
+echo "  flox build python313Packages.pytorch-sm90-avx512"
+echo "  flox build python313Packages.pytorch-sm86-avx2"
+echo "  flox build python313Packages.pytorch-cpu-avx2"
+echo ""
+echo "📖 See README.md for detailed build instructions"
+echo ""
+'''
+
+
+## Profile script ----------------------------------------------------
+## ... sourced by _your shell_ when you run 'flox activate'.
+## -------------------------------------------------------------------
+[profile]
+# common = '''
+#   gum style \
+#   --foreground 212 --border-foreground 212 --border double \
+#   --align center --width 50 --margin "1 2" --padding "2 4" \
+#     $INTRO_MESSAGE
+# '''
+## Shell-specific customizations such as setting aliases go here:
+# bash = ...
+# zsh  = ...
+# fish = ...
+
+
+## Services ---------------------------------------------------------
+##  $ flox services start             <- Starts all services
+##  $ flox services status            <- Status of running services
+##  $ flox activate --start-services  <- Activates & starts all
+## ------------------------------------------------------------------
+[services]
+# myservice.command = "python3 -m http.server"
+
+
+## Include ----------------------------------------------------------
+## ... environments to create a composed environment
+## ------------------------------------------------------------------
+[include]
+# environments = [
+#     { dir = "../common" }
+# ]
+
+
+## Build and publish your own packages ------------------------------
+##  $ flox build
+##  $ flox publish
+## ------------------------------------------------------------------
+[build]
+# [build.myproject]
+# description = "The coolest project ever"
+# version = "0.0.1"
+# command = """
+#   mkdir -p $out/bin
+#   cargo build --release
+#   cp target/release/myproject $out/bin/myproject
+# """
+
+
+## Other Environment Options -----------------------------------------
+[options]
+# Systems that environment is compatible with
+systems = [
+  "aarch64-linux",
+  "x86_64-linux",
+]
+# PyTorch GPU builds are Linux-only
+# CPU-only builds could support Darwin, but keeping it simple for now
