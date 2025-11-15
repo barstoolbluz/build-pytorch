@@ -4,6 +4,12 @@
 
 This document defines the complete build matrix for custom PyTorch builds, explaining all dimensions and their interactions.
 
+**📖 Related Documentation:**
+- **[RECIPE_TEMPLATE.md](./RECIPE_TEMPLATE.md)** - Copy-paste templates for generating any variant
+- **[VERIFICATION_NOTES.md](./VERIFICATION_NOTES.md)** - Technical verification and sources
+- **[BLAS_DEPENDENCIES.md](./BLAS_DEPENDENCIES.md)** - BLAS backend details
+- **[README.md](./README.md)** - User guide and quick start
+
 ## Matrix Dimensions
 
 Our build matrix has **4 independent dimensions**:
