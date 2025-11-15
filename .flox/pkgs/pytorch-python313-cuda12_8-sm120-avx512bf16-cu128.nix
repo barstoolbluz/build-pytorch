@@ -1,8 +1,8 @@
-# PyTorch optimized for NVIDIA Blackwell (RTX 5090) + ARMv8.2
-# Package name: pytorch-python313-cuda12_8-sm120-armv8.2
+# PyTorch optimized for NVIDIA Blackwell (RTX 5090) + AVX-512 BF16
+# Package name: pytorch-python313-cuda12_8-sm120-avx512bf16
 #
-# ARM server build for AWS Graviton2, general ARM servers
-# Hardware: ARM Neoverse N1, Cortex-A75+, Graviton2
+# Optimized for BF16 training workloads (modern mixed-precision)
+# Hardware: Intel Cooper Lake+ (2020), AMD Zen 4+ (2022)
 
 { python3Packages
 , lib
@@ -16,13 +16,18 @@ let
   # GPU target: SM120 (Blackwell architecture - RTX 5090)
   gpuArch = "sm_120";
 
-  # CPU optimization: ARMv8.2-A with FP16 and dot product
+  # CPU optimization: AVX-512 + BF16 (Brain Float 16)
   cpuFlags = [
-    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with half-precision and dot product
+    "-mavx512f"    # AVX-512 Foundation
+    "-mavx512dq"   # Doubleword and Quadword instructions
+    "-mavx512vl"   # Vector Length extensions
+    "-mavx512bw"   # Byte and Word instructions
+    "-mavx512bf16" # Brain Float 16 instructions (ML training acceleration)
+    "-mfma"        # Fused multiply-add
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm120-armv8.2";
+  pname = "pytorch-python313-cuda12_8-sm120-avx512bf16-cu128";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {
@@ -69,7 +74,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "PyTorch Build Configuration"
     echo "========================================="
     echo "GPU Target: ${gpuArch} (Blackwell: RTX 5090)"
-    echo "CPU Architecture: ARMv8.2-A with FP16 and dot product"
+    echo "CPU Features: AVX-512 + BF16 (mixed-precision training optimized)"
     echo "CUDA: Enabled with cuBLAS (12.8)"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
@@ -80,22 +85,23 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with ARMv8.2-A (Graviton2, ARM servers)";
+    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 BF16 (mixed-precision training)";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
-      - CPU: ARMv8.2-A with FP16 and dot product instructions
+      - CPU: x86-64 with AVX-512 + BF16 (Brain Float 16 instructions)
       - CUDA: 12.8 (PyTorch 2.7 default)
       - BLAS: cuBLAS for GPU operations, dynamic OpenBLAS for host-side
       - Python: 3.13
+      - Optimization: BF16 mixed-precision training acceleration
 
       Hardware support:
       - GPU: RTX 5090, Blackwell architecture GPUs
-      - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
+      - CPU: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
       - Driver: NVIDIA 570+ required
 
-      Use case: General ARM server deployments with GPU acceleration
+      Use case: Optimized for modern mixed-precision training (BF16 operations)
     '';
-    platforms = [ "aarch64-linux" ];
+    platforms = [ "x86_64-linux" ];
   };
 })

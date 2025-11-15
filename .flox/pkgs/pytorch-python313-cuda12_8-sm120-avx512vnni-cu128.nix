@@ -27,7 +27,7 @@ let
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm120-avx512vnni";
+  pname = "pytorch-python313-cuda12_8-sm120-avx512vnni-cu128";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {

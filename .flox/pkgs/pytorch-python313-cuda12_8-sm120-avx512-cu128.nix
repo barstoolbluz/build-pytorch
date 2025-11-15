@@ -1,8 +1,9 @@
-# PyTorch optimized for NVIDIA Blackwell (RTX 5090) + AVX-512 BF16
-# Package name: pytorch-python313-cuda12_8-sm120-avx512bf16
+# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
+# Package name: pytorch-python313-cuda12_8-sm120-avx512
 #
-# Optimized for BF16 training workloads (modern mixed-precision)
-# Hardware: Intel Cooper Lake+ (2020), AMD Zen 4+ (2022)
+# NOTE: SM120 support requires PyTorch 2.7+ or nightly builds
+# The stable PyTorch in nixpkgs may not support SM120 yet.
+# You may need to override the PyTorch version or use a nightly build.
 
 { python3Packages
 , lib
@@ -16,18 +17,17 @@ let
   # GPU target: SM120 (Blackwell architecture - RTX 5090)
   gpuArch = "sm_120";
 
-  # CPU optimization: AVX-512 + BF16 (Brain Float 16)
+  # CPU optimization: AVX-512
   cpuFlags = [
     "-mavx512f"    # AVX-512 Foundation
     "-mavx512dq"   # Doubleword and Quadword instructions
     "-mavx512vl"   # Vector Length extensions
     "-mavx512bw"   # Byte and Word instructions
-    "-mavx512bf16" # Brain Float 16 instructions (ML training acceleration)
     "-mfma"        # Fused multiply-add
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm120-avx512bf16";
+  pname = "pytorch-python313-cuda12_8-sm120-avx512-cu128";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {
@@ -74,33 +74,35 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "PyTorch Build Configuration"
     echo "========================================="
     echo "GPU Target: ${gpuArch} (Blackwell: RTX 5090)"
-    echo "CPU Features: AVX-512 + BF16 (mixed-precision training optimized)"
-    echo "CUDA: Enabled with cuBLAS (12.8)"
+    echo "CPU Features: AVX-512"
+    echo "CUDA: Enabled with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
     echo ""
     echo "⚠️  WARNING: SM120 support requires PyTorch 2.7+"
     echo "    Current PyTorch version: ${oldAttrs.version or "unknown"}"
+    echo "    If build fails, you may need PyTorch nightly"
     echo "========================================="
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 BF16 (mixed-precision training)";
+    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 CPU instructions";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
-      - CPU: x86-64 with AVX-512 + BF16 (Brain Float 16 instructions)
-      - CUDA: 12.8 (PyTorch 2.7 default)
-      - BLAS: cuBLAS for GPU operations, dynamic OpenBLAS for host-side
-      - Python: 3.13
-      - Optimization: BF16 mixed-precision training acceleration
+      - CPU: x86-64 with AVX-512 instruction set
+      - BLAS: NVIDIA cuBLAS for GPU operations
 
-      Hardware support:
-      - GPU: RTX 5090, Blackwell architecture GPUs
-      - CPU: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
-      - Driver: NVIDIA 570+ required
+      ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
+      The stable PyTorch version in nixpkgs may not support SM120 yet.
+      If compilation fails with "unknown compute capability" errors,
+      you'll need to use PyTorch nightly builds or wait for PyTorch 2.7+
+      to land in nixpkgs.
 
-      Use case: Optimized for modern mixed-precision training (BF16 operations)
+      See: https://github.com/pytorch/pytorch/issues/159207
+
+      This build is optimized for cutting-edge gaming and workstation
+      hardware with NVIDIA's latest Blackwell architecture.
     '';
     platforms = [ "x86_64-linux" ];
   };

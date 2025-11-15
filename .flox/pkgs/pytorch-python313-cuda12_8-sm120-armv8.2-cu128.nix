@@ -1,8 +1,8 @@
-# PyTorch optimized for NVIDIA Blackwell (RTX 5090) + ARMv9
-# Package name: pytorch-python313-cuda12_8-sm120-armv9
+# PyTorch optimized for NVIDIA Blackwell (RTX 5090) + ARMv8.2
+# Package name: pytorch-python313-cuda12_8-sm120-armv8.2
 #
-# ARM datacenter build for Grace Hopper superchips, AWS Graviton3+
-# Hardware: ARM Neoverse V1/V2, Cortex-X2+, Graviton3+
+# ARM server build for AWS Graviton2, general ARM servers
+# Hardware: ARM Neoverse N1, Cortex-A75+, Graviton2
 
 { python3Packages
 , lib
@@ -16,13 +16,13 @@ let
   # GPU target: SM120 (Blackwell architecture - RTX 5090)
   gpuArch = "sm_120";
 
-  # CPU optimization: ARMv9-A with SVE/SVE2
+  # CPU optimization: ARMv8.2-A with FP16 and dot product
   cpuFlags = [
-    "-march=armv9-a+sve+sve2"  # ARMv9 with Scalable Vector Extensions
+    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with half-precision and dot product
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm120-armv9";
+  pname = "pytorch-python313-cuda12_8-sm120-armv8.2-cu128";
 
   # Enable CUDA support with specific GPU target
   passthru = oldAttrs.passthru // {
@@ -69,31 +69,32 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "PyTorch Build Configuration"
     echo "========================================="
     echo "GPU Target: ${gpuArch} (Blackwell: RTX 5090)"
-    echo "CPU Architecture: ARMv9-A with SVE2"
+    echo "CPU Architecture: ARMv8.2-A with FP16 and dot product"
     echo "CUDA: Enabled with cuBLAS (12.8)"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
     echo ""
     echo "⚠️  WARNING: SM120 support requires PyTorch 2.7+"
     echo "    Current PyTorch version: ${oldAttrs.version or "unknown"}"
-    echo "========================================='';
+    echo "========================================="
+  '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with ARMv9-A (Grace Hopper, Graviton3+)";
+    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with ARMv8.2-A (Graviton2, ARM servers)";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
-      - CPU: ARMv9-A with SVE/SVE2 (Scalable Vector Extensions)
+      - CPU: ARMv8.2-A with FP16 and dot product instructions
       - CUDA: 12.8 (PyTorch 2.7 default)
       - BLAS: cuBLAS for GPU operations, dynamic OpenBLAS for host-side
       - Python: 3.13
 
       Hardware support:
       - GPU: RTX 5090, Blackwell architecture GPUs
-      - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
+      - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
       - Driver: NVIDIA 570+ required
 
-      Use case: ARM datacenter deployments (Grace Hopper superchips, Graviton3)
+      Use case: General ARM server deployments with GPU acceleration
     '';
     platforms = [ "aarch64-linux" ];
   };
