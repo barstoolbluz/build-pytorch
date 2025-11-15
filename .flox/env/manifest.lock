@@ -18,7 +18,7 @@
       }
     },
     "hook": {
-      "on-activate": "\necho \"\"\necho \"🔥 PyTorch Build Environment\"\necho \"\"\necho \"This environment builds custom PyTorch variants with targeted optimizations:\"\necho \"\"\necho \"  GPU Architectures: sm_120, sm_90, sm_89, sm_86, sm_80, sm_75\"\necho \"  CPU Features: AVX-512, AVX2, ARMv8, ARMv9\"\necho \"  Python Versions: 3.11, 3.12, 3.13\"\necho \"\"\necho \"Available builds (proof-of-concept):\"\necho \"  flox build pytorch-py313-sm90-avx512\"\necho \"  flox build pytorch-py313-sm86-avx2\"\necho \"  flox build pytorch-py313-cpu-avx2\"\necho \"\"\necho \"📖 See README.md for detailed build instructions\"\necho \"\"\n"
+      "on-activate": "\necho \"\"\necho \"🔥 PyTorch Build Environment\"\necho \"\"\necho \"This environment builds custom PyTorch variants with targeted optimizations:\"\necho \"\"\necho \"  GPU Architectures: sm_120, sm_90, sm_89, sm_86, sm_80, sm_75\"\necho \"  CPU Features: AVX-512, AVX2, ARMv8, ARMv9\"\necho \"  Python Versions: 3.11, 3.12, 3.13\"\necho \"\"\necho \"Available builds (proof-of-concept):\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-avx512\"\necho \"  flox build pytorch-python313-cuda12_8-sm90-avx512\"\necho \"  flox build pytorch-python313-cuda12_8-sm86-avx2\"\necho \"  flox build pytorch-python313-cpu-avx2\"\necho \"\"\necho \"📖 See README.md for detailed build instructions\"\necho \"\"\n"
     },
     "profile": {},
     "options": {
