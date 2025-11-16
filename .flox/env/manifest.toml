@@ -21,6 +21,9 @@ python313Full.pkg-path = "python313Full"
 gcc.pkg-path = "gcc"
 gcc-unwrapped.pkg-path = "gcc-unwrapped"
 gcc-unwrapped.priority = 6
+"flox/pytorch-python313-cuda12_8-sm120-avx512-cu128".pkg-path = "flox/pytorch-python313-cuda12_8-sm120-avx512-cu128"
+"flox/pytorch-python313-cuda12_8-sm120-avx512-cu128".systems = ["x86_64-linux"]
+"flox/pytorch-python313-cuda12_8-sm120-avx512-cu128".pkg-group = "flox/pytorch-python313-cuda12_8-sm120-avx512-cu128"
 
 # CUDA packages for GPU builds (Linux only)
 # These will be used when building GPU-targeted variants

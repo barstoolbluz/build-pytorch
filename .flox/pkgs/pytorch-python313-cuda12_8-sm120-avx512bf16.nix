@@ -1,5 +1,5 @@
 # PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512 + BF16
-# Package name: pytorch-python313-cuda12_8-sm120-avx512bf16-cu128
+# Package name: pytorch-python313-cuda12_8-sm120-avx512bf16
 
 { python3Packages
 , lib
@@ -31,7 +31,7 @@ in
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm120-avx512bf16-cu128";
+    pname = "pytorch-python313-cuda12_8-sm120-avx512bf16";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter

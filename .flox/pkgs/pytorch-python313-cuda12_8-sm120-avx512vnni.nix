@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + ARMv8.2
-# Package name: pytorch-python313-cuda12_8-sm120-armv8.2-cu128
+# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512 + VNNI
+# Package name: pytorch-python313-cuda12_8-sm120-avx512vnni
 
 { python3Packages
 , lib
@@ -13,9 +13,14 @@ let
   # PyTorch's CMake accepts numeric format (12.0) not sm_120
   gpuArchNum = "12.0";
 
-  # CPU optimization: ARMv8.2-A with FP16 and dot product
+  # CPU optimization: AVX-512 + VNNI (Vector Neural Network Instructions)
   cpuFlags = [
-    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with half-precision and dot product
+    "-mavx512f"    # AVX-512 Foundation
+    "-mavx512dq"   # Doubleword and Quadword instructions
+    "-mavx512vl"   # Vector Length extensions
+    "-mavx512bw"   # Byte and Word instructions
+    "-mavx512vnni" # Vector Neural Network Instructions (INT8 acceleration)
+    "-mfma"        # Fused multiply-add
   ];
 
 in
@@ -26,7 +31,7 @@ in
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm120-armv8.2-cu128";
+    pname = "pytorch-python313-cuda12_8-sm120-avx512vnni";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -39,14 +44,14 @@ in
       echo "PyTorch Build Configuration"
       echo "========================================="
       echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
-      echo "CPU Features: ARMv8.2 + FP16 + DotProd"
+      echo "CPU Features: AVX-512 + VNNI"
       echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with ARMv8.2 CPU";
-      platforms = [ "aarch64-linux" ];
+      description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 VNNI CPU instructions";
+      platforms = [ "x86_64-linux" ];
     };
   })
