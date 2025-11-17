@@ -244,11 +244,15 @@ in {PYTHON_PACKAGES}.pytorch.overrideAttrs (oldAttrs: {
 
 | Variable | {GPU_ARCH} | {GPU_ARCH_UNDERSCORE} | {GPU_ARCH_UPPER} | {GPU_DESC} | {PLATFORM} |
 |----------|------------|----------------------|------------------|------------|------------|
+| SM121 | `sm121` | `sm_121` | `SM121` | `NVIDIA DGX Spark (Specialized Datacenter)` | `x86_64-linux` |
 | SM120 | `sm120` | `sm_120` | `SM120` | `NVIDIA Blackwell (RTX 5090)` | `x86_64-linux` |
+| SM110 | `sm110` | `sm_110` | `SM110` | `NVIDIA DRIVE Thor, Orin+ (Automotive)` | `x86_64-linux` |
+| SM103 | `sm103` | `sm_103` | `SM103` | `NVIDIA Blackwell B300 (Datacenter)` | `x86_64-linux` |
+| SM100 | `sm100` | `sm_100` | `SM100` | `NVIDIA Blackwell B100/B200 (Datacenter)` | `x86_64-linux` |
 | SM90 | `sm90` | `sm_90` | `SM90` | `NVIDIA Hopper (H100, L40S)` | `x86_64-linux` |
-| SM89 | `sm89` | `sm_89` | `SM89` | `NVIDIA Ada Lovelace (RTX 4090)` | `x86_64-linux` |
-| SM86 | `sm86` | `sm_86` | `SM86` | `NVIDIA Ampere (RTX 3090, A40)` | `x86_64-linux` |
-| SM80 | `sm80` | `sm_80` | `SM80` | `NVIDIA Ampere (A100)` | `x86_64-linux` |
+| SM89 | `sm89` | `sm_89` | `SM89` | `NVIDIA Ada Lovelace (RTX 4090, L40)` | `x86_64-linux` |
+| SM86 | `sm86` | `sm_86` | `SM86` | `NVIDIA Ampere (RTX 3090, A40, A5000)` | `x86_64-linux` |
+| SM80 | `sm80` | `sm_80` | `SM80` | `NVIDIA Ampere Datacenter (A100, A30)` | `x86_64-linux` |
 | SM75 | `sm75` | `sm_75` | `SM75` | `NVIDIA Turing (T4, RTX 20xx)` | `x86_64-linux` |
 
 ### CPU ISA (x86-64)
