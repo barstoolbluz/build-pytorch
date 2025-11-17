@@ -2,7 +2,7 @@
 
 ## Choosing Your Variant
 
-**24 production-ready variants** are available. Choose based on your hardware:
+**60 production-ready variants** are available. Choose based on your hardware:
 
 ### Quick Selection
 
@@ -14,9 +14,15 @@ nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader
 
 | Your GPU | Compute Cap | Architecture | Example Package |
 |----------|-------------|--------------|-----------------|
+| DGX Spark | 12.1 | SM121 | `pytorch-python313-cuda12_8-sm121-avx512` |
 | RTX 5090 | 12.0 | SM120 | `pytorch-python313-cuda12_8-sm120-avx512` |
+| NVIDIA DRIVE Thor, Orin+ | 11.0 | SM110 | `pytorch-python313-cuda12_8-sm110-avx512` |
+| B300 | 10.3 | SM103 | `pytorch-python313-cuda12_8-sm103-avx512` |
+| B100, B200 | 10.0 | SM100 | `pytorch-python313-cuda12_8-sm100-avx512` |
 | H100, L40S | 9.0 | SM90 | `pytorch-python313-cuda12_8-sm90-avx512` |
+| RTX 4090, L40 | 8.9 | SM89 | `pytorch-python313-cuda12_8-sm89-avx512` |
 | RTX 3090, A40 | 8.6 | SM86 | `pytorch-python313-cuda12_8-sm86-avx512` |
+| A100, A30 | 8.0 | SM80 | `pytorch-python313-cuda12_8-sm80-avx512` |
 
 **CPU-only (no GPU)?**
 ```bash
@@ -51,9 +57,15 @@ flox build pytorch-python313-cpu-avx512            # General FP32
 flox build pytorch-python313-cpu-avx512vnni        # INT8 inference
 
 # GPU variants (longer builds, ~2-3 hours each)
+flox build pytorch-python313-cuda12_8-sm80-avx512  # A100/A30
 flox build pytorch-python313-cuda12_8-sm86-avx512  # RTX 3090/A40
+flox build pytorch-python313-cuda12_8-sm89-avx512  # RTX 4090/L40
 flox build pytorch-python313-cuda12_8-sm90-avx512  # H100/L40S
+flox build pytorch-python313-cuda12_8-sm100-avx512 # B100/B200
+flox build pytorch-python313-cuda12_8-sm103-avx512 # B300
+flox build pytorch-python313-cuda12_8-sm110-avx512 # NVIDIA DRIVE Thor/Orin+
 flox build pytorch-python313-cuda12_8-sm120-avx2   # RTX 5090
+flox build pytorch-python313-cuda12_8-sm121-avx512 # DGX Spark
 
 # ARM variants (if on ARM server)
 flox build pytorch-python313-cpu-armv9             # Grace, Graviton3+

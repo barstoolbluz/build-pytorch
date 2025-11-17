@@ -13,7 +13,7 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 ## Build Matrix
 
-**30 production-ready variants** covering GPU architectures (SM86/SM89/SM90/SM120) × CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus CPU-only builds.
+**60 production-ready variants** covering GPU architectures (SM80/SM86/SM89/SM90/SM100/SM103/SM110/SM120/SM121) × CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus CPU-only builds.
 
 ### Complete Variant Matrix
 
@@ -25,6 +25,12 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 | | AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` | INT8 quantized inference |
 | | ARMv8.2 | `pytorch-python313-cpu-armv8.2` | ARM Graviton2, older ARM servers |
 | | ARMv9 | `pytorch-python313-cpu-armv9` | ARM Grace, Graviton3+, modern ARM |
+| **SM80 (Ampere DC)** | AVX2 | `pytorch-python313-cuda12_8-sm80-avx2` | A100/A30 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm80-avx512` | A100/A30 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm80-avx512bf16` | A100/A30 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm80-avx512vnni` | A100/A30 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm80-armv8.2` | A100/A30 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm80-armv9` | A100/A30 + ARM Grace |
 | **SM86 (Ampere)** | AVX2 | `pytorch-python313-cuda12_8-sm86-avx2` | RTX 3090/A40 + broad CPU compatibility |
 | | AVX-512 | `pytorch-python313-cuda12_8-sm86-avx512` | RTX 3090/A40 + general workloads |
 | | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm86-avx512bf16` | RTX 3090/A40 + BF16 training |
@@ -43,20 +49,63 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 | | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm90-avx512vnni` | H100/L40S + INT8 inference |
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm90-armv8.2` | H100/L40S + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm90-armv9` | H100/L40S + ARM Grace |
+| **SM100 (Blackwell DC)** | AVX2 | `pytorch-python313-cuda12_8-sm100-avx2` | B100/B200 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm100-avx512` | B100/B200 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm100-avx512bf16` | B100/B200 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm100-avx512vnni` | B100/B200 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm100-armv8.2` | B100/B200 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm100-armv9` | B100/B200 + ARM Grace |
+| **SM103 (Blackwell B300)** | AVX2 | `pytorch-python313-cuda12_8-sm103-avx2` | B300 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm103-avx512` | B300 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm103-avx512bf16` | B300 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm103-avx512vnni` | B300 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm103-armv8.2` | B300 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm103-armv9` | B300 + ARM Grace |
+| **SM110 (Blackwell Thor/DRIVE)** | AVX2 | `pytorch-python313-cuda12_8-sm110-avx2` | NVIDIA DRIVE + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm110-avx512` | NVIDIA DRIVE + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm110-avx512bf16` | NVIDIA DRIVE + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm110-avx512vnni` | NVIDIA DRIVE + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm110-armv8.2` | NVIDIA DRIVE + ARM automotive |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm110-armv9` | NVIDIA DRIVE + ARM Grace |
 | **SM120 (Blackwell)** | AVX2 | `pytorch-python313-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
 | | AVX-512 | `pytorch-python313-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
 | | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
 | | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm120-armv8.2` | RTX 5090 + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
+| **SM121 (DGX Spark)** | AVX2 | `pytorch-python313-cuda12_8-sm121-avx2` | DGX Spark + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm121-avx512` | DGX Spark + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm121-avx512bf16` | DGX Spark + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm121-avx512vnni` | DGX Spark + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm121-armv8.2` | DGX Spark + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm121-armv9` | DGX Spark + ARM Grace |
 
 ### GPU Architecture Reference
 
+**SM121 (DGX Spark) - Compute Capability 12.1**
+- Specialized Datacenter: DGX Spark
+- Driver: NVIDIA 570+
+- Features: Specialized datacenter workloads, high-performance computing
+
 **SM120 (Blackwell) - Compute Capability 12.0**
 - Consumer: RTX 5090
-- Datacenter: Future B100/B200 series
 - Driver: NVIDIA 570+
 - Note: Requires PyTorch 2.7+ or nightly builds
+
+**SM110 (Blackwell Thor/NVIDIA DRIVE) - Compute Capability 11.0**
+- Automotive/Edge: NVIDIA DRIVE platforms (Thor, Orin+)
+- Driver: NVIDIA 550+
+- Features: Automotive AI, autonomous driving, edge computing
+
+**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3**
+- Datacenter: B300
+- Driver: NVIDIA 550+
+- Features: Advanced Blackwell datacenter capabilities
+
+**SM100 (Blackwell Datacenter) - Compute Capability 10.0**
+- Datacenter: B100, B200
+- Driver: NVIDIA 550+
+- Features: FP4 GEMV kernels, blockscaled datatypes, mixed input GEMM
 
 **SM90 (Hopper) - Compute Capability 9.0**
 - Datacenter: H100, H200, L40S
@@ -75,8 +124,12 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 - Driver: NVIDIA 470+
 - Features: RT cores, Tensor cores (2nd gen)
 
+**SM80 (Ampere Datacenter) - Compute Capability 8.0**
+- Datacenter: A100 (40GB/80GB), A30
+- Driver: NVIDIA 450+
+- Features: Multi-Instance GPU (MIG), Tensor cores (3rd gen), FP64 Tensor cores
+
 **Other Supported Architectures** (no variants yet, add as needed):
-- SM80 (Ampere): A100, A30
 - SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
 
 ### CPU Variant Guide
@@ -138,11 +191,15 @@ nvidia-smi --query-gpu=compute_cap --format=csv,noheader
 
 | Your GPU | Compute Cap | Use Architecture |
 |----------|-------------|------------------|
+| DGX Spark | 12.1 | **SM121** |
 | RTX 5090 | 12.0 | **SM120** |
+| NVIDIA DRIVE Thor, Orin+ | 11.0 | **SM110** |
+| B300 | 10.3 | **SM103** |
+| B100, B200 | 10.0 | **SM100** |
 | H100, H200, L40S | 9.0 | **SM90** |
 | RTX 4090, RTX 4080, RTX 4070 series, L4, L40 | 8.9 | **SM89** |
 | RTX 3090, RTX 3090 Ti, RTX 3080 Ti, A5000, A40 | 8.6 | **SM86** |
-| A100, A30 | 8.0 | SM80 (no variants yet) |
+| A100, A30 | 8.0 | **SM80** |
 
 **3. Which CPU ISA should you use?**
 ```bash
@@ -254,12 +311,17 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (30 variants)
+│   └── pkgs/                      # Nix expression builds (60 variants)
 │       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants
+│       ├── pytorch-python313-cuda12_8-sm80-*.nix  # 6 SM80 variants
 │       ├── pytorch-python313-cuda12_8-sm86-*.nix  # 6 SM86 variants
 │       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 6 SM89 variants
 │       ├── pytorch-python313-cuda12_8-sm90-*.nix  # 6 SM90 variants
-│       └── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
+│       ├── pytorch-python313-cuda12_8-sm100-*.nix # 6 SM100 variants
+│       ├── pytorch-python313-cuda12_8-sm103-*.nix # 6 SM103 variants
+│       ├── pytorch-python313-cuda12_8-sm110-*.nix # 6 SM110 variants
+│       ├── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
+│       └── pytorch-python313-cuda12_8-sm121-*.nix # 6 SM121 variants
 ├── README.md
 ├── QUICKSTART.md
 ├── BLAS_DEPENDENCIES.md
