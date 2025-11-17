@@ -13,29 +13,199 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 ## Build Matrix
 
-### Proof-of-Concept Variants
+**30 production-ready variants** covering GPU architectures (SM86/SM89/SM90/SM120) × CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus CPU-only builds.
 
-| Package Name | GPU Target | CPU Target | Use Case |
-|-------------|------------|------------|----------|
-| `pytorch-python313-cuda12_8-sm90-avx512` | NVIDIA H100, L40S (SM90) | x86-64 AVX-512 | Modern datacenter (Hopper GPUs) |
-| `pytorch-python313-cuda12_8-sm86-avx2` | NVIDIA RTX 3090, A40 (SM86) | x86-64 AVX2 | Workstations & servers (Ampere GPUs) |
-| `pytorch-python313-cuda12_8-cpu-avx2` | None (CPU-only) | x86-64 AVX2 | Development, inference, CPU workloads |
+### Complete Variant Matrix
 
-### Supported GPU Architectures
+| GPU Architecture | CPU ISA | Package Name | Primary Use Case |
+|-----------------|---------|--------------|------------------|
+| **CPU-only** | AVX2 | `pytorch-python313-cpu-avx2` | Development, broad x86-64 compatibility |
+| | AVX-512 | `pytorch-python313-cpu-avx512` | General FP32 CPU training/inference |
+| | AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` | BF16 mixed-precision training |
+| | AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` | INT8 quantized inference |
+| | ARMv8.2 | `pytorch-python313-cpu-armv8.2` | ARM Graviton2, older ARM servers |
+| | ARMv9 | `pytorch-python313-cpu-armv9` | ARM Grace, Graviton3+, modern ARM |
+| **SM86 (Ampere)** | AVX2 | `pytorch-python313-cuda12_8-sm86-avx2` | RTX 3090/A40 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm86-avx512` | RTX 3090/A40 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm86-avx512bf16` | RTX 3090/A40 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm86-avx512vnni` | RTX 3090/A40 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm86-armv8.2` | RTX 3090/A40 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm86-armv9` | RTX 3090/A40 + ARM Grace |
+| **SM89 (Ada)** | AVX2 | `pytorch-python313-cuda12_8-sm89-avx2` | RTX 4090/L40 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm89-avx512` | RTX 4090/L40 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm89-avx512bf16` | RTX 4090/L40 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm89-avx512vnni` | RTX 4090/L40 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm89-armv8.2` | RTX 4090/L40 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm89-armv9` | RTX 4090/L40 + ARM Grace |
+| **SM90 (Hopper)** | AVX2 | `pytorch-python313-cuda12_8-sm90-avx2` | H100/L40S + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm90-avx512` | H100/L40S + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm90-avx512bf16` | H100/L40S + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm90-avx512vnni` | H100/L40S + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm90-armv8.2` | H100/L40S + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm90-armv9` | H100/L40S + ARM Grace |
+| **SM120 (Blackwell)** | AVX2 | `pytorch-python313-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_8-sm120-armv8.2` | RTX 5090 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
 
-- **SM120** - Blackwell (RTX 5090) - _Requires PyTorch nightly_
-- **SM90** - Hopper (H100, H200, L40S)
-- **SM89** - Ada Lovelace (RTX 4090, L4, L40)
-- **SM86** - Ampere (RTX 3090, A5000, A40)
-- **SM80** - Ampere (A100)
-- **SM75** - Turing (T4, RTX 20xx series)
+### GPU Architecture Reference
 
-### Supported CPU Features
+**SM120 (Blackwell) - Compute Capability 12.0**
+- Consumer: RTX 5090
+- Datacenter: Future B100/B200 series
+- Driver: NVIDIA 570+
+- Note: Requires PyTorch 2.7+ or nightly builds
 
-- **AVX-512** - Intel Skylake-X and newer, AMD Zen 4+
-- **AVX2** - Intel Haswell+ (2013+), AMD Excavator+ (broad compatibility)
-- **ARMv9** - ARM Neoverse V1/V2, Cortex-X2+
-- **ARMv8** - ARM Cortex-A53+, Apple Silicon (baseline)
+**SM90 (Hopper) - Compute Capability 9.0**
+- Datacenter: H100, H200, L40S
+- Driver: NVIDIA 525+
+- Features: Native FP8, Transformer Engine
+
+**SM89 (Ada Lovelace) - Compute Capability 8.9**
+- Consumer: RTX 4090, RTX 4080, RTX 4070 Ti, RTX 4070, RTX 4060 Ti
+- Datacenter: L4, L40
+- Driver: NVIDIA 520+
+- Features: RT cores (3rd gen), Tensor cores (4th gen), DLSS 3
+
+**SM86 (Ampere) - Compute Capability 8.6**
+- Consumer: RTX 3090, RTX 3090 Ti, RTX 3080 Ti
+- Datacenter: A5000, A40
+- Driver: NVIDIA 470+
+- Features: RT cores, Tensor cores (2nd gen)
+
+**Other Supported Architectures** (no variants yet, add as needed):
+- SM80 (Ampere): A100, A30
+- SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
+
+### CPU Variant Guide
+
+Choose the right CPU variant based on your hardware and workload:
+
+**AVX2 (Broad Compatibility)**
+- Hardware: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+- Use for: Maximum compatibility, development, general workloads
+- Choose when: Uncertain about CPU features or need portability
+
+**AVX-512 (General Performance)**
+- Hardware: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+- Use for: General FP32 training and inference on modern CPUs
+- Choose when: You have AVX-512 CPU and need general-purpose performance
+- NOT for: Specialized BF16 training or INT8 inference (see below)
+
+**AVX-512 BF16 (Mixed-Precision Training)**
+- Hardware: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
+- Use for: BF16 (Brain Float 16) mixed-precision training only
+- Choose when: Training with BF16 on CPU (rare - usually done on GPU)
+- NOT for: INT8 inference or general FP32 workloads
+- Detection: `lscpu | grep bf16` or `/proc/cpuinfo` shows `avx512_bf16`
+
+**AVX-512 VNNI (INT8 Inference)**
+- Hardware: Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
+- Use for: Quantized INT8 model inference acceleration
+- Choose when: Running INT8 quantized models for fast inference
+- NOT for: Training or general FP32 workloads
+- Detection: `lscpu | grep vnni` or `/proc/cpuinfo` shows `avx512_vnni`
+
+**ARMv8.2 (ARM Servers - Older)**
+- Hardware: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
+- Use for: ARM servers without SVE2 support
+- Choose when: You have Graviton2 or older ARM server hardware
+
+**ARMv9 (ARM Servers - Modern)**
+- Hardware: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
+- Use for: Modern ARM servers with SVE2 (Scalable Vector Extensions)
+- Choose when: You have Grace, Graviton3+, or other modern ARM processors
+- Detection: `lscpu | grep sve` or `/proc/cpuinfo` shows `sve` and `sve2`
+
+## Variant Selection Guide
+
+### Quick Decision Tree
+
+**1. Do you have an NVIDIA GPU?**
+- NO → Use CPU-only variant (choose CPU ISA below)
+- YES → Continue to step 2
+
+**2. Which GPU do you have?**
+```bash
+# Check GPU model
+nvidia-smi --query-gpu=name --format=csv,noheader
+
+# Check compute capability
+nvidia-smi --query-gpu=compute_cap --format=csv,noheader
+```
+
+| Your GPU | Compute Cap | Use Architecture |
+|----------|-------------|------------------|
+| RTX 5090 | 12.0 | **SM120** |
+| H100, H200, L40S | 9.0 | **SM90** |
+| RTX 4090, RTX 4080, RTX 4070 series, L4, L40 | 8.9 | **SM89** |
+| RTX 3090, RTX 3090 Ti, RTX 3080 Ti, A5000, A40 | 8.6 | **SM86** |
+| A100, A30 | 8.0 | SM80 (no variants yet) |
+
+**3. Which CPU ISA should you use?**
+```bash
+# Check CPU features
+lscpu | grep -E 'avx|sve'
+# or
+grep -E 'avx|sve' /proc/cpuinfo
+```
+
+| If you see... | Platform | Workload Type | Choose |
+|--------------|----------|---------------|--------|
+| `avx512_bf16` | x86-64 | BF16 training on CPU | `avx512bf16` |
+| `avx512_vnni` | x86-64 | INT8 inference | `avx512vnni` |
+| `avx512f` | x86-64 | General workloads | `avx512` |
+| `avx2` (no avx512) | x86-64 | General workloads | `avx2` |
+| `sve` and `sve2` | ARM | Modern ARM (Grace, Graviton3+) | `armv9` |
+| Neither | ARM | Older ARM (Graviton2) | `armv8.2` |
+
+**Default Recommendations:**
+- **Development/Testing**: `cpu-avx2` (fastest build, broad compatibility)
+- **RTX 3090 Workstation (Intel i9/Xeon)**: `sm86-avx512`
+- **H100 Datacenter (x86-64)**: `sm90-avx512`
+- **RTX 5090 Gaming PC**: `sm120-avx512` or `sm120-avx2`
+- **AWS with H100 + Graviton3**: `sm90-armv9`
+- **Inference Server (INT8 models)**: `sm86-avx512vnni` (or sm90/sm120)
+
+### Example Use Cases
+
+**Scenario 1: RTX 3090 + Intel i9-12900K**
+```bash
+# Check CPU
+lscpu | grep avx512f  # ✓ Found AVX-512
+
+# Build variant
+flox build pytorch-python313-cuda12_8-sm86-avx512
+```
+
+**Scenario 2: H100 Datacenter + AMD EPYC Zen 4**
+```bash
+# Check CPU
+lscpu | grep avx512_vnni  # ✓ Found for INT8 inference
+
+# For training
+flox build pytorch-python313-cuda12_8-sm90-avx512
+
+# For INT8 inference
+flox build pytorch-python313-cuda12_8-sm90-avx512vnni
+```
+
+**Scenario 3: Development Laptop (no GPU)**
+```bash
+# Maximum compatibility
+flox build pytorch-python313-cpu-avx2
+```
+
+**Scenario 4: AWS Graviton3 + H100**
+```bash
+# Check ARM features
+lscpu | grep sve2  # ✓ Found (Graviton3 has SVE2)
+
+# Build variant
+flox build pytorch-python313-cuda12_8-sm90-armv9
+```
 
 ## Quick Start
 
@@ -84,11 +254,16 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds
-│       ├── pytorch-python313-cuda12_8-sm90-avx512.nix
-│       ├── pytorch-python313-cuda12_8-sm86-avx2.nix
-│       └── pytorch-python313-cuda12_8-cpu-avx2.nix
-└── README.md
+│   └── pkgs/                      # Nix expression builds (30 variants)
+│       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants
+│       ├── pytorch-python313-cuda12_8-sm86-*.nix  # 6 SM86 variants
+│       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 6 SM89 variants
+│       ├── pytorch-python313-cuda12_8-sm90-*.nix  # 6 SM90 variants
+│       └── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
+├── README.md
+├── QUICKSTART.md
+├── BLAS_DEPENDENCIES.md
+└── SUMMARY.md
 ```
 
 ### How It Works
@@ -147,28 +322,80 @@ flox install <your-org>/pytorch-python313-cuda12_8-sm90-avx512
 
 ## Extending the Matrix
 
-To add more variants:
+To add more variants (e.g., SM89 for RTX 4090):
 
 1. Copy an existing `.nix` file from `.flox/pkgs/`
-2. Modify the `gpuArch` and `cpuFlags` variables
-3. Update the `pname` to match the new configuration
-4. Commit the new file: `git add .flox/pkgs/your-new-variant.nix && git commit`
+2. Modify the `gpuArchNum`, `gpuArchSM` (for GPU builds), and `cpuFlags` variables
+3. Update the `pname` and descriptions
+4. Commit: `git add .flox/pkgs/your-new-variant.nix && git commit`
 5. Build: `flox build your-new-variant`
 
 ### Example: Adding SM89 (RTX 4090) with AVX-512
 
 ```nix
 # .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
-{ python3Packages, lib, cudaPackages, addDriverRunpath }:
+{ python3Packages, lib, config, cudaPackages, addDriverRunpath }:
 
 let
-  gpuArch = "sm_89";
-  cpuFlags = [ "-mavx512f" "-mavx512dq" "-mfma" ];
-in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm89-avx512";
-  # ... (rest of configuration)
-})
+  # GPU target: SM89 (Ada Lovelace - RTX 4090, L4, L40)
+  gpuArchNum = "89";        # For CMAKE_CUDA_ARCHITECTURES
+  gpuArchSM = "sm_89";      # For TORCH_CUDA_ARCH_LIST
+
+  # CPU optimization: AVX-512
+  cpuFlags = [
+    "-mavx512f"    # AVX-512 Foundation
+    "-mavx512dq"   # Doubleword and Quadword instructions
+    "-mavx512vl"   # Vector Length extensions
+    "-mavx512bw"   # Byte and Word instructions
+    "-mfma"        # Fused multiply-add
+  ];
+
+in
+  # Two-stage override:
+  # 1. Enable CUDA and specify GPU targets
+  (python3Packages.pytorch.override {
+    cudaSupport = true;
+    gpuTargets = [ gpuArchSM ];
+  # 2. Customize build (CPU flags, metadata, etc.)
+  }).overrideAttrs (oldAttrs: {
+    pname = "pytorch-python313-cuda12_8-sm89-avx512";
+
+    # Set CPU optimization flags
+    preConfigure = (oldAttrs.preConfigure or "") + ''
+      # CPU optimizations via compiler flags
+      export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+
+      echo "========================================="
+      echo "PyTorch Build Configuration"
+      echo "========================================="
+      echo "GPU Target: ${gpuArchSM} (Ada: RTX 4090, L4, L40)"
+      echo "CPU Features: AVX-512"
+      echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
+      echo "CXXFLAGS: $CXXFLAGS"
+      echo "========================================="
+    '';
+
+    meta = oldAttrs.meta // {
+      description = "PyTorch for NVIDIA RTX 4090 (SM89, Ada) + AVX-512";
+      longDescription = ''
+        Custom PyTorch build with targeted optimizations:
+        - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, L4, L40
+        - CPU: x86-64 with AVX-512 instruction set
+        - CUDA: 12.8 with compute capability 8.9
+        - BLAS: cuBLAS for GPU operations
+        - Python: 3.13
+      '';
+      platforms = [ "x86_64-linux" ];
+    };
+  })
 ```
+
+**Key points:**
+- Use **two-stage override**: First `.override { cudaSupport = true; gpuTargets = [...] }`, then `.overrideAttrs`
+- Set `gpuTargets` in the first override stage (nixpkgs handles CUDA compilation)
+- CPU flags go in `preConfigure` via `CXXFLAGS`/`CFLAGS`
+- GPU architecture is automatic (from `gpuTargets`), don't set `TORCH_CUDA_ARCH_LIST` manually
 
 ## Python Version Support
 

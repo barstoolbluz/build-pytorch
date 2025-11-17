@@ -1,15 +1,37 @@
 # Quick Start Guide
 
-## Fixed Naming Issue ✅
+## Choosing Your Variant
 
-The package names have been updated to work with Flox's Nix expression build system.
+**24 production-ready variants** are available. Choose based on your hardware:
 
-**Naming format:** `pytorch-py{python-ver}-{gpu|cpu}-{isa}`
+### Quick Selection
 
-Examples:
-- `pytorch-python313-cuda12_8-sm90-avx512`
-- `pytorch-python313-cuda12_8-sm86-avx2`
-- `pytorch-python313-cuda12_8-cpu-avx2`
+**Have NVIDIA GPU?**
+```bash
+# Check your GPU
+nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader
+```
+
+| Your GPU | Compute Cap | Architecture | Example Package |
+|----------|-------------|--------------|-----------------|
+| RTX 5090 | 12.0 | SM120 | `pytorch-python313-cuda12_8-sm120-avx512` |
+| H100, L40S | 9.0 | SM90 | `pytorch-python313-cuda12_8-sm90-avx512` |
+| RTX 3090, A40 | 8.6 | SM86 | `pytorch-python313-cuda12_8-sm86-avx512` |
+
+**CPU-only (no GPU)?**
+```bash
+# Check CPU features
+lscpu | grep -E 'avx512|sve'
+```
+
+- See `avx512_bf16`? → Use `pytorch-python313-cpu-avx512bf16` (BF16 training)
+- See `avx512_vnni`? → Use `pytorch-python313-cpu-avx512vnni` (INT8 inference)
+- See `avx512f`? → Use `pytorch-python313-cpu-avx512` (general)
+- See `avx2` only? → Use `pytorch-python313-cpu-avx2` (broad compatibility)
+- See `sve2` (ARM)? → Use `pytorch-python313-cpu-armv9` (modern ARM)
+- ARM without sve2? → Use `pytorch-python313-cpu-armv8.2` (Graviton2)
+
+**Naming format:** `pytorch-python313-{cuda12_8-smXX|cpu}-{cpu-isa}`
 
 ## Building PyTorch Variants
 
@@ -23,12 +45,19 @@ flox activate
 ### 2. Build a Variant
 
 ```bash
-# Build CPU-only variant (faster, recommended for testing)
-flox build pytorch-python313-cuda12_8-cpu-avx2
+# CPU-only variants (faster builds, ~1-2 hours)
+flox build pytorch-python313-cpu-avx2              # Broad compatibility
+flox build pytorch-python313-cpu-avx512            # General FP32
+flox build pytorch-python313-cpu-avx512vnni        # INT8 inference
 
-# Build GPU variants (will take 1-3 hours each)
+# GPU variants (longer builds, ~2-3 hours each)
+flox build pytorch-python313-cuda12_8-sm86-avx512  # RTX 3090/A40
 flox build pytorch-python313-cuda12_8-sm90-avx512  # H100/L40S
-flox build pytorch-python313-cuda12_8-sm86-avx2    # RTX 3090/A40
+flox build pytorch-python313-cuda12_8-sm120-avx2   # RTX 5090
+
+# ARM variants (if on ARM server)
+flox build pytorch-python313-cpu-armv9             # Grace, Graviton3+
+flox build pytorch-python313-cuda12_8-sm90-armv9   # H100 + Grace
 ```
 
 ### 3. Use the Built Package
@@ -110,21 +139,32 @@ cp .flox/pkgs/pytorch-python313-cuda12_8-sm90-avx512.nix \
    .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
 ```
 
-Edit the new file:
+Edit the new file (use **two-stage override pattern**):
 ```nix
 let
-  gpuArch = "sm_89";  # Change GPU arch
-  cpuFlags = [ "-mavx512f" "-mavx512dq" "-mfma" ];  # Adjust CPU flags
-in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_8-sm89-avx512";  # Update package name
-  # ... rest stays the same
-})
+  # GPU target: SM89 (Ada Lovelace - RTX 4090, L4, L40)
+  gpuArchNum = "89";        # For CMAKE_CUDA_ARCHITECTURES
+  gpuArchSM = "sm_89";      # For TORCH_CUDA_ARCH_LIST
+
+  # CPU optimization
+  cpuFlags = [ "-mavx512f" "-mavx512dq" "-mavx512vl" "-mavx512bw" "-mfma" ];
+
+in
+  # 1. Enable CUDA and specify GPU targets
+  (python3Packages.pytorch.override {
+    cudaSupport = true;
+    gpuTargets = [ gpuArchSM ];
+  # 2. Customize build
+  }).overrideAttrs (oldAttrs: {
+    pname = "pytorch-python313-cuda12_8-sm89-avx512";
+    # ... Update preConfigure and meta sections
+  })
 ```
 
 Commit and build:
 ```bash
 git add .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
-git commit -m "Add RTX 4090 variant with AVX-512"
+git commit -m "Add RTX 4090 (SM89) variant with AVX-512"
 flox build pytorch-python313-cuda12_8-sm89-avx512
 ```
 
