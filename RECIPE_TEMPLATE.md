@@ -253,7 +253,6 @@ in {PYTHON_PACKAGES}.pytorch.overrideAttrs (oldAttrs: {
 | SM89 | `sm89` | `sm_89` | `SM89` | `NVIDIA Ada Lovelace (RTX 4090, L40)` | `x86_64-linux` |
 | SM86 | `sm86` | `sm_86` | `SM86` | `NVIDIA Ampere (RTX 3090, A40, A5000)` | `x86_64-linux` |
 | SM80 | `sm80` | `sm_80` | `SM80` | `NVIDIA Ampere Datacenter (A100, A30)` | `x86_64-linux` |
-| SM75 | `sm75` | `sm_75` | `SM75` | `NVIDIA Turing (T4, RTX 20xx)` | `x86_64-linux` |
 
 ### CPU ISA (x86-64)
 
