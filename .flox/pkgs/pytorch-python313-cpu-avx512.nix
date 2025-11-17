@@ -71,20 +71,24 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only build optimized for AVX-512 with OpenBLAS";
+    description = "PyTorch CPU-only optimized for AVX-512 (general FP32 workloads)";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)
       - CPU: x86-64 with AVX-512 instruction set
       - BLAS: OpenBLAS for CPU linear algebra operations
       - Python: 3.13
+      - Workload: General FP32 training and inference
 
       Hardware support:
-      - Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+      - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
 
-      This build provides ~2x performance improvement over AVX2
-      for CPU-bound operations. Ideal for inference and development
-      on modern server hardware without GPU.
+      Performance: ~2x improvement over AVX2 for FP32 operations.
+
+      Choose this if: You have modern server CPU with AVX-512 and need
+      general-purpose CPU-only PyTorch for FP32 training and inference.
+      For specialized workloads, consider avx512bf16 (BF16 training)
+      or avx512vnni (INT8 inference) variants instead.
     '';
     platforms = [ "x86_64-linux" ];
   };

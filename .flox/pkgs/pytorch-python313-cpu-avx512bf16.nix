@@ -75,20 +75,22 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only build optimized for AVX-512 BF16 (mixed-precision training) with OpenBLAS";
+    description = "PyTorch CPU-only optimized for AVX-512 BF16 (mixed-precision training)";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)
       - CPU: x86-64 with AVX-512 + BF16 instruction set
       - BLAS: OpenBLAS for CPU linear algebra operations
       - Python: 3.13
-      - Optimization: BF16 mixed-precision training acceleration
+      - Workload: BF16 mixed-precision training acceleration
 
       Hardware support:
-      - Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
+      - CPU: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
 
-      Use case: Optimized for modern mixed-precision training (BF16 operations)
-      on CPU. Provides acceleration for BF16 workloads on supported hardware.
+      Choose this if: You need CPU-only mixed-precision training with BF16
+      on modern CPUs supporting AVX-512 BF16 instructions. Provides hardware
+      acceleration for BF16 operations compared to standard AVX-512 build.
+      NOT for INT8 inference (use avx512vnni) or general FP32 (use avx512).
     '';
     platforms = [ "x86_64-linux" ];
   };

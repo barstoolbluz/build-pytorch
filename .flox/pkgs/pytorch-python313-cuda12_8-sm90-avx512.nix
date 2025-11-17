@@ -50,21 +50,23 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch optimized for NVIDIA H100/L40S (SM90) with AVX-512 CPU instructions and CUDA support";
+      description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: Enabled with compute capability 9.0
-        - BLAS: NVIDIA cuBLAS for GPU operations
-
-        This build is optimized for high-performance computing workloads
-        on modern datacenter hardware with Hopper GPUs.
+        - CUDA: 12.8 with compute capability 9.0
+        - BLAS: cuBLAS for GPU operations
+        - Python: 3.13
 
         Hardware requirements:
         - GPU: H100, H200, L40S, or other SM90 GPUs
-        - CPU: Intel Skylake-X+ (2017) or AMD Zen 4+ (2022) with AVX-512
-        - Driver: NVIDIA 525+ (for CUDA 12.0+)
+        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+) with AVX-512
+        - Driver: NVIDIA 525+ required
+
+        Choose this if: You have H100/L40S datacenter GPUs with AVX-512 CPUs
+        and need optimized kernels for Hopper architecture. For RTX 5090, use
+        sm120 builds instead.
       '';
       platforms = [ "x86_64-linux" ];
     };

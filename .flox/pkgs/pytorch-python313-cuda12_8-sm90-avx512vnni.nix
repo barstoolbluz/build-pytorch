@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512 + VNNI
-# Package name: pytorch-python313-cuda12_8-sm120-avx512vnni
+# PyTorch optimized for NVIDIA Hopper (SM90: H100, L40S) + AVX-512 + VNNI
+# Package name: pytorch-python313-cuda12_8-sm90-avx512vnni
 
 { python3Packages
 , lib
@@ -9,9 +9,9 @@
 }:
 
 let
-  # GPU target: SM120 (Blackwell architecture - RTX 5090)
-  # PyTorch's CMake accepts numeric format (12.0) not sm_120
-  gpuArchNum = "12.0";
+  # GPU target: SM90 (Hopper architecture - H100, L40S)
+  gpuArchNum = "90";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "sm_90";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX-512 + VNNI (Vector Neural Network Instructions)
   cpuFlags = [
@@ -28,10 +28,10 @@ in
   # 1. Enable CUDA and specify GPU targets
   (python3Packages.pytorch.override {
     cudaSupport = true;
-    gpuTargets = [ gpuArchNum ];
+    gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm120-avx512vnni";
+    pname = "pytorch-python313-cuda12_8-sm90-avx512vnni";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -43,32 +43,30 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
+      echo "GPU Target: ${gpuArchSM} (Hopper: H100, L40S)"
       echo "CPU Features: AVX-512 + VNNI"
-      echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
+      echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA RTX 5090 (SM120) + AVX-512 VNNI";
+      description = "PyTorch for NVIDIA H100/L40S (SM90) + AVX-512 VNNI";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
+        - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S
         - CPU: x86-64 with AVX-512 + VNNI instruction set
-        - CUDA: 12.8 with compute capability 12.0
+        - CUDA: 12.8 with compute capability 9.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
         - Workload: INT8 quantized model inference acceleration
 
         Hardware requirements:
-        - GPU: RTX 5090, Blackwell architecture GPUs
+        - GPU: H100, H200, L40S, or other SM90 GPUs
         - CPU: Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
-        - Driver: NVIDIA 570+ required
+        - Driver: NVIDIA 525+ required
 
-        ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
-
-        Choose this if: You have RTX 5090 GPU + CPU with AVX-512 VNNI support,
+        Choose this if: You have H100/L40S GPU + CPU with AVX-512 VNNI support,
         and need accelerated INT8 quantized inference. NOT for training
         (use avx512bf16) or general FP32 (use avx512).
       '';

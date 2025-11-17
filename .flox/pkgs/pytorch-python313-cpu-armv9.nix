@@ -64,10 +64,11 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo ""
     echo "Hardware support: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+"
     echo "Use case: Modern ARM datacenter deployments (CPU-only)"
-    echo "========================================='';
+    echo "========================================="
+  '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only build optimized for ARMv9-A (Grace, Graviton3+) with OpenBLAS";
+    description = "PyTorch CPU-only optimized for ARMv9 (Grace, Graviton3+, SVE2)";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)
@@ -76,10 +77,12 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
       - Python: 3.13
 
       Hardware support:
-      - NVIDIA Grace CPUs, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
+      - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
 
-      Use case: Modern ARM datacenter deployments without GPU acceleration.
-      Optimized for latest ARM server hardware with SVE2 support.
+      Choose this if: You need CPU-only PyTorch on modern ARM servers with
+      ARMv9/SVE2 support (Grace, Graviton3+). Provides better performance than
+      armv8.2 variant on supported hardware. For older ARM servers (Graviton2),
+      use armv8.2 variant instead.
     '';
     platforms = [ "aarch64-linux" ];
   };

@@ -75,21 +75,22 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only build optimized for AVX-512 VNNI (INT8 inference) with OpenBLAS";
+    description = "PyTorch CPU-only optimized for AVX-512 VNNI (INT8 quantized inference)";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)
       - CPU: x86-64 with AVX-512 + VNNI instruction set
       - BLAS: OpenBLAS for CPU linear algebra operations
       - Python: 3.13
-      - Optimization: INT8 inference acceleration
+      - Workload: INT8 quantized model inference acceleration
 
       Hardware support:
-      - Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
+      - CPU: Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
 
-      Use case: Optimized for quantized model inference (INT8 operations)
-      on CPU. Provides significant speedup for INT8 workloads compared
-      to standard AVX-512 builds.
+      Choose this if: You need CPU-only inference with quantized (INT8) models
+      on CPUs supporting AVX-512 VNNI instructions. Provides significant speedup
+      for INT8 inference compared to standard AVX-512 build.
+      NOT for training (use avx512bf16) or general FP32 (use avx512).
     '';
     platforms = [ "x86_64-linux" ];
   };

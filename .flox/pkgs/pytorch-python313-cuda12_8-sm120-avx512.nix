@@ -50,23 +50,25 @@ in
     '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch optimized for NVIDIA RTX 5090 (SM120) with AVX-512 CPU instructions";
+    description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
       - CPU: x86-64 with AVX-512 instruction set
-      - BLAS: NVIDIA cuBLAS for GPU operations
+      - CUDA: 12.8 with compute capability 12.0
+      - BLAS: cuBLAS for GPU operations
+      - Python: 3.13
+
+      Hardware requirements:
+      - GPU: RTX 5090, Blackwell architecture GPUs
+      - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+      - Driver: NVIDIA 570+ required
 
       ⚠️  IMPORTANT: SM120 (Blackwell) support was added in PyTorch 2.7
-      The stable PyTorch version in nixpkgs may not support SM120 yet.
-      If compilation fails with "unknown compute capability" errors,
-      you'll need to use PyTorch nightly builds or wait for PyTorch 2.7+
-      to land in nixpkgs.
 
-      See: https://github.com/pytorch/pytorch/issues/159207
-
-      This build is optimized for cutting-edge gaming and workstation
-      hardware with NVIDIA's latest Blackwell architecture.
+      Choose this if: You have RTX 5090 GPU + AVX-512 CPU for general
+      workloads. For specialized CPU workloads, consider avx512bf16
+      (BF16 training) or avx512vnni (INT8 inference) variants instead.
     '';
     platforms = [ "x86_64-linux" ];
   };

@@ -66,15 +66,20 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only build optimized for AVX2 with OpenBLAS";
+    description = "PyTorch CPU-only optimized for AVX2";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)
       - CPU: x86-64 with AVX2 instruction set
       - BLAS: OpenBLAS for CPU linear algebra operations
+      - Python: 3.13
 
-      This build is suitable for inference, development, and workloads
-      that don't require GPU acceleration. Smaller size, faster builds.
+      Hardware support:
+      - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+
+      Choose this if: You need CPU-only PyTorch on older hardware without
+      AVX-512 support, or want maximum compatibility across x86-64 systems.
+      Good for development, testing, and inference on commodity hardware.
     '';
     platforms = [ "x86_64-linux" "aarch64-linux" ];
   };
