@@ -183,6 +183,10 @@ Test Summary
 
 **Key Point**: PyTorch CUDA builds are architecture-specific. An SM86 build will only work on SM86 GPUs.
 
+> **📚 Complete Architecture List:** This table shows representative examples. For the complete build matrix covering all 9 GPU architectures (SM80, SM86, SM89, SM90, SM100, SM103, SM110, SM120, SM121), see:
+> - **[QUICKSTART.md - GPU Selection Guide](./QUICKSTART.md#choosing-your-variant)** - Quick reference table
+> - **[README.md - GPU Architecture Reference](./README.md#gpu-architecture-reference)** - Detailed specifications
+
 ## Comparison with Old Test Scripts
 
 ### Old Scripts (test.sh, test-cuda.sh, test-detailed.sh)
@@ -267,6 +271,7 @@ flox install <org>/pytorch-python313-cuda12_8-sm120-avx512
 - RTX 5090 → use SM120 builds
 - RTX 3090/A40 → use SM86 builds
 - H100/L40S → use SM90 builds
+- *Other GPUs* → See [QUICKSTART.md GPU Selection Table](./QUICKSTART.md#choosing-your-variant) for complete hardware mapping
 
 ## Exit Codes
 
