@@ -13,7 +13,7 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 ## Build Matrix
 
-**60 production-ready variants** covering GPU architectures (SM80/SM86/SM89/SM90/SM100/SM103/SM110/SM120/SM121) × CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus CPU-only builds.
+**51 production-ready variants** covering GPU architectures (SM80/SM86/SM89/SM90/SM100/SM103/SM110/SM120) × CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus SM121 (ARMv9-only), plus 6 CPU-only builds.
 
 ### Complete Variant Matrix
 
@@ -73,12 +73,7 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 | | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm120-armv8.2` | RTX 5090 + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
-| **SM121 (DGX Spark)** | AVX2 | `pytorch-python313-cuda12_8-sm121-avx2` | DGX Spark + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm121-avx512` | DGX Spark + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm121-avx512bf16` | DGX Spark + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm121-avx512vnni` | DGX Spark + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm121-armv8.2` | DGX Spark + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm121-armv9` | DGX Spark + ARM Grace |
+| **SM121 (DGX Spark)** | ARMv9 | `pytorch-python313-cuda12_8-sm121-armv9` | DGX Spark (ARMv9-only SoC) |
 
 ### GPU Architecture Reference
 
