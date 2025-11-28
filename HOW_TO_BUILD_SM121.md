@@ -27,32 +27,43 @@ You have **2 options** - pick the one that works best for you:
 
 ---
 
-## Option A: Use the Wrapper (Imports from build-cudatoolkit repo) - RECOMMENDED
+## Option A: Use the Wrapper (Auto-fetches CUDA packages) - RECOMMENDED
 
-**Best if:** Your repos are in the same parent directory (standard setup)
+**Best if:** You want a simple, automatic build
 
-This is the proper Nix pattern - it imports the source .nix expressions and builds them as dependencies.
+This is the proper Nix pattern - it fetches the CUDA packages from GitHub and builds everything.
 
+### A1: Default Mode (Auto-fetch from GitHub)
 ```bash
 cd ~/dev/builds/build-pytorch
 flox activate
 
-# Build using the wrapper that auto-imports from sibling repo
+# Just build - wrapper fetches CUDA packages automatically
 flox build pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
-
-# Or directly with nix-build:
-nix-build .flox/pkgs/pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper.nix
 ```
 
-**Adjust the path if needed:**
-Edit `.flox/pkgs/pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper.nix` line 8:
-```nix
-cudaToolkitRepo = ../../build-cudatoolkit;  # Adjust if repos aren't siblings
+**First build steps:**
+1. Build will fail with hash mismatch - this is expected!
+2. Copy the correct hash from the error message
+3. Update line 34 in the wrapper .nix file with the hash
+4. Rebuild
+
+### A2: Override Mode (Use local build-cudatoolkit for development)
+```bash
+cd ~/dev/builds/build-pytorch
+flox activate
+
+# Point to your local build-cudatoolkit directory
+export CUDA_TOOLKIT_REPO=$(pwd)/../build-cudatoolkit
+
+# Build using local CUDA packages (skips GitHub fetch)
+flox build pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
 ```
 
 **Why this is recommended:**
 - Proper Nix pattern - reproducible builds
-- Automatically rebuilds CUDA packages if needed
+- Auto-fetches from GitHub (no local repo needed)
+- Can override with local repo for development
 - Suitable for publishing/sharing
 - Single command builds everything
 
