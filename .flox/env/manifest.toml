@@ -98,10 +98,9 @@ echo ""
 ## ... environments to create a composed environment
 ## ------------------------------------------------------------------
 [include]
-# Include build-cudatoolkit environment to access CUDA 13.0 packages
-environments = [
-    { dir = "../build-cudatoolkit" }
-]
+# environments = [
+#     { dir = "../common" }
+# ]
 
 
 ## Build and publish your own packages ------------------------------

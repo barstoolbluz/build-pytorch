@@ -7,23 +7,14 @@
 # - Triton compilation errors possible
 # - FP8 kernels may fall back to slower legacy versions
 #
-# REQUIRES: CUDA 13.0 packages from https://github.com/barstoolbluz/build-cudatoolkit/
-#   - cudatoolkit-13_0
-#   - cudnn-13_0
-#   - nccl-13_0
-#   - libcusparse_lt-13_0
+# REQUIRES: nixpkgs with cudaPackages_13 (use --stability=unstable)
 
 { python3Packages
 , lib
 , fetchFromGitHub
 , config
-, cudaPackages ? null  # Will be overridden with CUDA 13.0
+, cudaPackages  # CUDA 13.0 packages passed from wrapper
 , addDriverRunpath
-# CUDA 13.0 packages - import these from build-cudatoolkit repo
-, cudatoolkit-13_0
-, cudnn-13_0
-, nccl-13_0
-, libcusparse_lt-13_0
 }:
 
 let
@@ -41,6 +32,7 @@ in
   # 1. Enable CUDA and specify GPU targets
   (python3Packages.torch.override {
     cudaSupport = true;
+    cudaPackages = cudaPackages;  # Use CUDA 13.0 passed from wrapper
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (source, CPU flags, metadata, patches)
   }).overrideAttrs (oldAttrs: let
@@ -97,51 +89,21 @@ in
       echo "========================================="
     '';
 
-    # Set CPU optimization flags and configure CUDA 13.0 paths
+    # Set CPU optimization flags
+    # GPU architecture and CUDA paths are handled by nixpkgs via cudaPackages parameter
     preConfigure = (oldAttrs.preConfigure or "") + ''
       # CPU optimizations via compiler flags
       export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
       export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
 
-      # Point PyTorch build to CUDA 13.0 libraries
-      export CUDA_HOME="${cudatoolkit-13_0}"
-      export CUDNN_LIBRARY="${cudnn-13_0}/lib"
-      export CUDNN_INCLUDE_DIR="${cudnn-13_0}/include"
-      export NCCL_ROOT="${nccl-13_0}"
-
-      # Ensure CUDA 13.0 nvcc is used
-      export PATH="${cudatoolkit-13_0}/bin:$PATH"
-      export CUDA_TOOLKIT_ROOT_DIR="${cudatoolkit-13_0}"
-
-      # CUDA library paths
-      export CUDA_CUDART_LIBRARY="${cudatoolkit-13_0}/lib/libcudart.so"
-      export CUDA_CUBLAS_LIBRARY="${cudatoolkit-13_0}/lib/libcublas.so"
-      export CUDA_CUFFT_LIBRARY="${cudatoolkit-13_0}/lib/libcufft.so"
-      export CUDA_CURAND_LIBRARY="${cudatoolkit-13_0}/lib/libcurand.so"
-      export CUDA_CUSPARSE_LIBRARY="${cudatoolkit-13_0}/lib/libcusparse.so"
-      export CUDA_NVRTC_LIBRARY="${cudatoolkit-13_0}/lib/libnvrtc.so"
-
-      # Verify CUDA version
       echo "========================================="
       echo "PyTorch NIGHTLY Build Configuration"
       echo "========================================="
       echo "Version: 2.9.0-nightly"
       echo "GPU Target: ${gpuArchSM} (DGX Spark - Compute Capability 12.1)"
       echo "CPU Features: ARMv9 + SVE/SVE2"
+      echo "CUDA: 13.0 (via cudaPackages, managed by nixpkgs)"
       echo "CXXFLAGS: $CXXFLAGS"
-      echo ""
-      echo "CUDA 13.0 Configuration:"
-      echo "  CUDA_HOME: $CUDA_HOME"
-      if [ -x "${cudatoolkit-13_0}/bin/nvcc" ]; then
-        echo "  NVCC: $(${cudatoolkit-13_0}/bin/nvcc --version | grep "release" || echo "version check failed")"
-      fi
-      echo "  cuDNN: ${cudnn-13_0}"
-      echo "  NCCL: ${nccl-13_0}"
-      echo "  cuSPARSELt: ${libcusparse_lt-13_0}"
-      echo ""
-      echo "GPU Targets:"
-      echo "  TORCH_CUDA_ARCH_LIST will be set by nixpkgs to: ${gpuArchSM}"
-      echo "  CMAKE_CUDA_ARCHITECTURES will be set by nixpkgs to: ${gpuArchNum}"
       echo "========================================="
       echo "⚠ WARNING: This is an experimental nightly build"
       echo "Known issues with SM121/CUDA 13.0:"

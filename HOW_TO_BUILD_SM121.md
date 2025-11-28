@@ -4,20 +4,20 @@
 
 ### Step 1: Build PyTorch with CUDA 13.0
 
-The wrapper automatically uses CUDA 13.0 packages from flox's `flox-cuda` catalog:
+Use the `--stability=unstable` flag to get nixpkgs with CUDA 13.0 support:
 
 ```bash
 cd ~/dev/builds/build-pytorch
 flox activate
 
-# Build PyTorch with CUDA 13.0 (uses flox-cuda catalog)
-flox build pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
+# Build PyTorch with CUDA 13.0 (requires unstable nixpkgs)
+flox build --stability=unstable pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
 ```
 
 **What happens:**
-- Flox provides `cudaPackages_13` from its `flox-cuda` catalog
-- The wrapper extracts cudatoolkit, cuDNN, NCCL, cuSPARSELt from cudaPackages_13
-- PyTorch builds with these CUDA 13.0 packages
+- `--stability=unstable` uses newer nixpkgs with `cudaPackages_13`
+- The wrapper passes `cudaPackages_13` to torch.override
+- PyTorch's nixpkgs infrastructure automatically handles all CUDA wiring
 
 ---
 
@@ -92,9 +92,13 @@ Compute capability: 12.1
 - If not, the patch didn't apply correctly
 
 ### "cudaPackages_13 not found"
-- Make sure you're running `flox build` (not plain `nix-build`)
-- Flox provides cudaPackages_13 from its flox-cuda catalog
-- Plain nix-build won't work because nixpkgs doesn't have cudaPackages_13
+- Make sure you're using `--stability=unstable` flag
+- Older/stable nixpkgs only has up to cudaPackages_12
+- Only unstable nixpkgs has cudaPackages_13
+
+### Build uses CUDA 12.8 instead of 13.0
+- Verify you're using `--stability=unstable`
+- Check build logs - should see "cuda13.0" in package names, not "cuda12.8"
 
 ## After Successful Build
 

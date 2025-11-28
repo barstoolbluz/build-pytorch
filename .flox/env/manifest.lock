@@ -13,9 +13,6 @@
       "git": {
         "pkg-path": "git"
       },
-      "hello": {
-        "pkg-path": "hello"
-      },
       "python313Full": {
         "pkg-path": "python313Full"
       }
@@ -229,64 +226,6 @@
       "priority": 5
     },
     {
-      "attr_path": "hello",
-      "broken": false,
-      "derivation": "/nix/store/4f1b8w7kdiqvzar0nn6jmrn5fmgha68p-hello-2.12.2.drv",
-      "description": "Program that produces a familiar, friendly greeting",
-      "install_id": "hello",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
-      "name": "hello-2.12.2",
-      "pname": "hello",
-      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
-      "rev_count": 858212,
-      "rev_date": "2025-09-08T16:06:28Z",
-      "scrape_date": "2025-09-10T02:33:31.309886Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "2.12.2",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/mjq5ync1p3w2d0axrx03vfh1j59nsp3r-hello-2.12.2"
-      },
-      "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "hello",
-      "broken": false,
-      "derivation": "/nix/store/p8lj5jz9wf7rcwafl77izls0rxdq33g6-hello-2.12.2.drv",
-      "description": "Program that produces a familiar, friendly greeting",
-      "install_id": "hello",
-      "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
-      "name": "hello-2.12.2",
-      "pname": "hello",
-      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
-      "rev_count": 858212,
-      "rev_date": "2025-09-08T16:06:28Z",
-      "scrape_date": "2025-09-10T03:34:00.708947Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "2.12.2",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/s9p0adfpzarzfa5kcnqhwargfwiq8qmj-hello-2.12.2"
-      },
-      "system": "x86_64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
       "attr_path": "python313Full",
       "broken": false,
       "derivation": "/nix/store/z3w5j4q3wypmpy1iz672941yy8b68afm-python3-3.13.6.drv",
@@ -346,77 +285,5 @@
       "group": "toplevel",
       "priority": 5
     }
-  ],
-  "compose": {
-    "composer": {
-      "version": 1,
-      "install": {
-        "gcc": {
-          "pkg-path": "gcc"
-        },
-        "gcc-unwrapped": {
-          "pkg-path": "gcc-unwrapped",
-          "priority": 6
-        },
-        "git": {
-          "pkg-path": "git"
-        },
-        "python313Full": {
-          "pkg-path": "python313Full"
-        }
-      },
-      "hook": {
-        "on-activate": "\necho \"\"\necho \"🔥 PyTorch Build Environment\"\necho \"\"\necho \"This environment builds custom PyTorch variants with targeted optimizations:\"\necho \"\"\necho \"  GPU Architectures: sm_120, sm_90, sm_89, sm_86, sm_80, sm_75\"\necho \"  CPU Features: AVX-512, AVX2, ARMv8, ARMv9\"\necho \"  Python Versions: 3.11, 3.12, 3.13\"\necho \"\"\necho \"Available SM120 (RTX 5090) builds:\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-avx512       # General datacenter (Intel/AMD)\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-avx2         # Broad x86 compatibility\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-avx512vnni   # INT8 inference optimized\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-avx512bf16   # BF16 training optimized\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-armv9        # ARM Graviton3+, Grace Hopper\"\necho \"  flox build pytorch-python313-cuda12_8-sm120-armv8.2      # ARM Graviton2\"\necho \"\"\necho \"Other GPU variants:\"\necho \"  flox build pytorch-python313-cuda12_8-sm90-avx512        # H100/L40S\"\necho \"  flox build pytorch-python313-cuda12_8-sm86-avx2          # RTX 3090/A40\"\necho \"\"\necho \"CPU-only variant:\"\necho \"  flox build pytorch-python313-cpu-avx2\"\necho \"\"\necho \"📖 Docs: README.md | BUILD_MATRIX.md | RECIPE_TEMPLATE.md\"\necho \"\"\n"
-      },
-      "profile": {},
-      "options": {
-        "systems": [
-          "aarch64-linux",
-          "x86_64-linux"
-        ]
-      },
-      "include": {
-        "environments": [
-          {
-            "dir": "../build-cudatoolkit"
-          }
-        ]
-      }
-    },
-    "include": [
-      {
-        "manifest": {
-          "version": 1,
-          "install": {
-            "hello": {
-              "pkg-path": "hello"
-            }
-          },
-          "hook": {},
-          "profile": {},
-          "options": {
-            "systems": [
-              "aarch64-linux",
-              "x86_64-linux"
-            ]
-          }
-        },
-        "name": "build-cudatoolkit",
-        "descriptor": {
-          "dir": "../build-cudatoolkit"
-        }
-      }
-    ],
-    "warnings": [
-      {
-        "warning": {
-          "Overriding": [
-            "options",
-            "systems"
-          ]
-        },
-        "higher_priority_name": "Current manifest"
-      }
-    ]
-  }
+  ]
 }
