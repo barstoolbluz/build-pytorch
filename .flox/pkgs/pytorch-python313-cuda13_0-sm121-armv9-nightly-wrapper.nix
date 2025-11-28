@@ -10,6 +10,8 @@
 , cudaPackages_13
 }:
 
-pkgs.callPackage ./pytorch-python313-cuda13_0-sm121-armv9-nightly.nix {
-  cudaPackages = cudaPackages_13;
+# Import directly instead of using callPackage to avoid auto-injection of cudaPackages from pkgs
+import ./pytorch-python313-cuda13_0-sm121-armv9-nightly.nix {
+  inherit (pkgs) python3 lib fetchFromGitHub config addDriverRunpath;
+  cudaPackages = cudaPackages_13;  # Explicitly use CUDA 13.0
 }

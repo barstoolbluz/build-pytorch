@@ -9,7 +9,7 @@
 #
 # REQUIRES: nixpkgs with cudaPackages_13 (use --stability=unstable)
 
-{ python3Packages
+{ python3
 , lib
 , fetchFromGitHub
 , config
@@ -28,13 +28,11 @@ let
   ];
 
 in
-  # Two-stage override (same pattern as working builds):
-  # 1. Enable CUDA and specify GPU targets
-  (python3Packages.torch.override {
+  # Build torch from python3.pkgs scope with CUDA 13.0
+  ((python3.pkgs.torch.override {
     cudaSupport = true;
-    cudaPackages = cudaPackages;  # Use CUDA 13.0 passed from wrapper
+    cudaPackages = cudaPackages;
     gpuTargets = [ gpuArchSM ];
-  # 2. Customize build (source, CPU flags, metadata, patches)
   }).overrideAttrs (oldAttrs: let
     pytorchNightlySrc = fetchFromGitHub {
       owner = "pytorch";
@@ -148,4 +146,4 @@ in
       platforms = [ "aarch64-linux" ];
       broken = false;  # Experimental but attempt to build
     };
-  })
+  }))
