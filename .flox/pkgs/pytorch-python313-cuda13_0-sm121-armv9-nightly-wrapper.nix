@@ -35,8 +35,7 @@ let
         owner = "barstoolbluz";
         repo = "build-cudatoolkit";
         rev = "main";  # TODO: Replace with specific commit hash for reproducibility
-        hash = "";  # TODO: Fill in after first build - Nix will provide the correct hash
-        # Example: hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        hash = "sha256-eo0XzwIliOIQsOXcDPm1swSDLXvC8RfV/YjIetcnJk4=";
       };
 
   # Import CUDA 13.0 packages from the repo
