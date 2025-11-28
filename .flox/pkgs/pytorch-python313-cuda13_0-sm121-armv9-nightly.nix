@@ -15,7 +15,6 @@
 , config
 , addDriverRunpath
 , cudaPackages_13  # CUDA 13.0 package set from wrapper
-, callPackage
 }:
 
 let
@@ -29,10 +28,11 @@ let
   ];
 
   # Rebuild torch from nixpkgs source with CUDA 13.0
+  # Use python3.pkgs.callPackage to get Python dependencies automatically
   torchSource = "${toString <nixpkgs>}/pkgs/development/python-modules/torch/source";
 
-  torchWithCuda13 = callPackage torchSource {
-    inherit python3;
+  torchWithCuda13 = python3.pkgs.callPackage torchSource {
+    python = python3;
     cudaPackages = cudaPackages_13;
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
