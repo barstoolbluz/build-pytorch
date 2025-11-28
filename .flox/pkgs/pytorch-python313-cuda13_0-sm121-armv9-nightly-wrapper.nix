@@ -10,8 +10,9 @@
 , cudaPackages_13
 }:
 
-# Import directly instead of using callPackage to avoid auto-injection of cudaPackages from pkgs
+# Import and pass the full CUDA 13.0 package set for manual configuration
 import ./pytorch-python313-cuda13_0-sm121-armv9-nightly.nix {
-  inherit (pkgs) python3 lib fetchFromGitHub config addDriverRunpath;
-  cudaPackages = cudaPackages_13;  # Explicitly use CUDA 13.0
+  inherit (pkgs) python3Packages lib fetchFromGitHub config cudaPackages addDriverRunpath;
+  # Pass entire cudaPackages_13 set for complete CUDA 13.0 libraries
+  cudaPackages_13 = cudaPackages_13;
 }

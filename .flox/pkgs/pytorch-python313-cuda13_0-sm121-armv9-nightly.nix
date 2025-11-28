@@ -9,12 +9,13 @@
 #
 # REQUIRES: nixpkgs with cudaPackages_13 (use --stability=unstable)
 
-{ python3
+{ python3Packages
 , lib
 , fetchFromGitHub
 , config
-, cudaPackages  # CUDA 13.0 packages passed from wrapper
+, cudaPackages  # Default cudaPackages for base build
 , addDriverRunpath
+, cudaPackages_13  # CUDA 13.0 package set from wrapper
 }:
 
 let
@@ -28,10 +29,9 @@ let
   ];
 
 in
-  # Build torch from python3.pkgs scope with CUDA 13.0
-  ((python3.pkgs.torch.override {
+  # Override torch with CUDA support and SM121, then replace CUDA 13.0 paths manually
+  (python3Packages.torch.override {
     cudaSupport = true;
-    cudaPackages = cudaPackages;
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: let
     pytorchNightlySrc = fetchFromGitHub {
@@ -87,12 +87,26 @@ in
       echo "========================================="
     '';
 
-    # Set CPU optimization flags
-    # GPU architecture and CUDA paths are handled by nixpkgs via cudaPackages parameter
+    # Replace ALL CUDA libraries with 13.0 versions
+    buildInputs = lib.filter (pkg: !(lib.hasPrefix "cuda" (pkg.pname or ""))) (oldAttrs.buildInputs or [])
+      ++ (with cudaPackages_13; [
+        cuda_cccl cuda_cudart cuda_cupti cuda_nvcc cuda_nvml_dev cuda_nvrtc cuda_nvtx
+        libcublas libcufft libcufile libcurand libcusolver libcusparse libcusparse_lt
+        cudnn nccl cuda_profiler_api
+      ]);
+
+    # Set CPU optimization flags and override CUDA 13.0 paths
     preConfigure = (oldAttrs.preConfigure or "") + ''
       # CPU optimizations via compiler flags
       export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
       export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+
+      # Override CUDA paths to use 13.0 instead of nixpkgs default 12.8
+      export CUDA_HOME="${cudaPackages_13.cudatoolkit}"
+      export CUDNN_INCLUDE_DIR="${lib.getDev cudaPackages_13.cudnn}/include"
+      export CUDNN_LIB_DIR="${lib.getLib cudaPackages_13.cudnn}/lib"
+      export CUPTI_INCLUDE_DIR="${lib.getDev cudaPackages_13.cuda_cupti}/include"
+      export CUPTI_LIBRARY_DIR="${lib.getLib cudaPackages_13.cuda_cupti}/lib"
 
       echo "========================================="
       echo "PyTorch NIGHTLY Build Configuration"
@@ -100,7 +114,10 @@ in
       echo "Version: 2.9.0-nightly"
       echo "GPU Target: ${gpuArchSM} (DGX Spark - Compute Capability 12.1)"
       echo "CPU Features: ARMv9 + SVE/SVE2"
-      echo "CUDA: 13.0 (via cudaPackages, managed by nixpkgs)"
+      echo "CUDA: 13.0 (manually overridden - all libraries replaced)"
+      echo "CUDA_HOME: ${cudaPackages_13.cudatoolkit}"
+      echo "CUDNN: ${cudaPackages_13.cudnn}"
+      echo "NCCL: ${cudaPackages_13.nccl}"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
       echo "⚠ WARNING: This is an experimental nightly build"
