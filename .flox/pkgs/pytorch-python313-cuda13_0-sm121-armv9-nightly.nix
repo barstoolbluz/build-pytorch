@@ -39,7 +39,7 @@ let
 in
   # Two-stage override (same pattern as working builds):
   # 1. Enable CUDA and specify GPU targets
-  (python3Packages.pytorch.override {
+  (python3Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (source, CPU flags, metadata, patches)
