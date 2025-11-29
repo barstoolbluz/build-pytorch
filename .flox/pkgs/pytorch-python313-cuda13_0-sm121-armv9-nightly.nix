@@ -31,9 +31,14 @@ let
   # Use python3.pkgs.callPackage to get Python dependencies automatically
   torchSource = "${toString <nixpkgs>}/pkgs/development/python-modules/torch/source";
 
+  # Add aliases for naming differences between torch source and cudaPackages_13
+  cudaPackages_13_with_aliases = cudaPackages_13 // {
+    cusparselt = cudaPackages_13.libcusparse_lt;
+  };
+
   torchWithCuda13 = python3.pkgs.callPackage torchSource {
     python = python3;
-    cudaPackages = cudaPackages_13;
+    cudaPackages = cudaPackages_13_with_aliases;
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   };
