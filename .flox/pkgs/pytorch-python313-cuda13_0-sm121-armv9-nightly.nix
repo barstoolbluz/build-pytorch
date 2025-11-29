@@ -11,9 +11,11 @@
 }:
 
 let
-  inherit (pkgs) python3 lib fetchFromGitHub cmake ninja git which pybind11 pkg-config magma-cuda-static;
+  inherit (pkgs) python3 lib fetchFromGitHub cmake ninja git which pkg-config;
+  inherit (pkgs.python3.pkgs) pybind11;
 
   python = python3;
+  magma-cuda-static = cudaPackages_13.magma;
   cudaPackages = cudaPackages_13 // {
     # Add alias for naming difference
     cusparselt = cudaPackages_13.libcusparse_lt;
