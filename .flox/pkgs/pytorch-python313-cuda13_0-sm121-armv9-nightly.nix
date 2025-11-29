@@ -63,6 +63,20 @@ in
     # Override source to use PyTorch nightly
     src = pytorchNightlySrc;
 
+    # Force ALL buildInputs to use CUDA 13.0 by filtering and replacing
+    buildInputs =
+      # Keep non-CUDA inputs
+      (lib.filter (pkg:
+        let name = pkg.pname or (pkg.name or "");
+        in !(lib.hasPrefix "cuda" name || lib.hasPrefix "lib" name)
+      ) (oldAttrs.buildInputs or []))
+      # Add all CUDA 13.0 packages
+      ++ (with cudaPackages_13_with_aliases; [
+        cuda_cccl cuda_cudart cuda_cupti cuda_nvcc cuda_nvml_dev cuda_nvrtc cuda_nvtx
+        libcublas libcufft libcufile libcurand libcusolver libcusparse cusparselt
+        cudnn nccl cuda_profiler_api
+      ]);
+
     # Patch CMake to recognize SM121 architecture
     postPatch = (oldAttrs.postPatch or "") + ''
       echo "========================================="
