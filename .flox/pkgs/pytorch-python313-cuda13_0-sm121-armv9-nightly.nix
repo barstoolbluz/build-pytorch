@@ -65,10 +65,10 @@ in
 
     # Force ALL buildInputs to use CUDA 13.0 by filtering and replacing
     buildInputs =
-      # Keep non-CUDA inputs
+      # Keep non-CUDA inputs (filter out cuda12.* and cuda13.* packages only)
       (lib.filter (pkg:
         let name = pkg.pname or (pkg.name or "");
-        in !(lib.hasPrefix "cuda" name || lib.hasPrefix "lib" name)
+        in !(lib.hasInfix "cuda12" name || lib.hasInfix "cuda13" name)
       ) (oldAttrs.buildInputs or []))
       # Add all CUDA 13.0 packages
       ++ (with cudaPackages_13_with_aliases; [
@@ -76,6 +76,12 @@ in
         libcublas libcufft libcufile libcurand libcusolver libcusparse cusparselt
         cudnn nccl cuda_profiler_api
       ]);
+
+    # Also replace propagatedBuildInputs to prevent CUDA 12.8 from sneaking in
+    propagatedBuildInputs = lib.filter (pkg:
+      let name = pkg.pname or (pkg.name or "");
+      in !(lib.hasInfix "cuda12" name || lib.hasInfix "cuda13" name)
+    ) (oldAttrs.propagatedBuildInputs or []);
 
     # Patch CMake to recognize SM121 architecture
     postPatch = (oldAttrs.postPatch or "") + ''
