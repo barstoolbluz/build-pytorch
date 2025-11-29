@@ -15,7 +15,12 @@ let
   inherit (pkgs.python3.pkgs) pybind11;
 
   python = python3;
-  magma-cuda-static = cudaPackages_13.magma;
+
+  # Build MAGMA with CUDA 13.0 support
+  magma = pkgs.magma.override {
+    cudaPackages = cudaPackages_13;
+  };
+
   cudaPackages = cudaPackages_13 // {
     # Add alias for naming difference
     cusparselt = cudaPackages_13.libcusparse_lt;
@@ -53,7 +58,7 @@ in python.pkgs.buildPythonPackage rec {
   ]);
 
   buildInputs = [
-    magma-cuda-static
+    magma
   ] ++ (with cudaPackages; [
     cuda_cccl
     cuda_cudart
