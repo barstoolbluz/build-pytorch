@@ -16,9 +16,11 @@ let
 
   python = python3;
 
-  # Build MAGMA with CUDA 13.0 support
+  # Build MAGMA with CUDA 13.0 support only (disable ROCm for ARM compatibility)
   magma = pkgs.magma.override {
     cudaPackages = cudaPackages_13;
+    cudaSupport = true;
+    rocmSupport = false;  # ROCm not available on aarch64-linux
   };
 
   cudaPackages = cudaPackages_13 // {
