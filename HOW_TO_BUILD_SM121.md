@@ -11,13 +11,13 @@ cd ~/dev/builds/build-pytorch
 flox activate
 
 # Build PyTorch with CUDA 13.0 (requires unstable nixpkgs)
-flox build --stability=unstable pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
+flox build --stability=unstable pytorch-python313-cuda13_0-sm121-armv9-nightly
 ```
 
 **What happens:**
 - `--stability=unstable` uses newer nixpkgs with `cudaPackages_13`
-- The wrapper passes `cudaPackages_13` to torch.override
-- PyTorch's nixpkgs infrastructure automatically handles all CUDA wiring
+- PyTorch is built completely from scratch using `buildPythonPackage`
+- Only CUDA 13.0 libraries are used (no CUDA 12.8 mixing)
 
 ---
 
@@ -37,7 +37,7 @@ hash = "sha256-abc123def456...";  # Replace with actual hash
 ## Step 3: Rebuild
 
 ```bash
-flox build pytorch-python313-cuda13_0-sm121-armv9-nightly-wrapper
+flox build --stability=unstable pytorch-python313-cuda13_0-sm121-armv9-nightly
 
 # This will take 2-3 hours...
 ```
