@@ -13,10 +13,10 @@ let
   gpuArchNum = "61";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
   gpuArchSM = "6.1";  # For TORCH_CUDA_ARCH_LIST (dot notation required for older archs)
 
-  # CPU optimization: AVX (maximum compatibility)
+  # CPU optimization: AVX only (no FMA — Ivy Bridge lacks FMA3)
   cpuFlags = [
-    "-mavx"        # AVX instructions
-    "-mfma"        # Fused multiply-add
+    "-mavx"
+    "-mno-fma"
   ];
 
 in
@@ -29,12 +29,32 @@ in
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm61-avx";
 
-    # Set CPU optimization flags
-    # GPU architecture is handled by nixpkgs via gpuTargets parameter
+    # Prevent ATen from compiling AVX2/AVX512 dispatch kernels.
+    # FindAVX.cmake probe-compiles with -mavx2 and succeeds (the compiler
+    # supports it), then Codegen.cmake force-compiles kernel TUs with -mavx2
+    # regardless of project CXXFLAGS.  Lying to cmake here restricts the
+    # dispatch codegen to AVX + baseline only.
+    cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+      "-DCXX_AVX2_FOUND=FALSE"
+      "-DC_AVX2_FOUND=FALSE"
+      "-DCXX_AVX512_FOUND=FALSE"
+      "-DC_AVX512_FOUND=FALSE"
+      "-DCAFFE2_COMPILER_SUPPORTS_AVX512_EXTENSIONS=OFF"
+    ];
+
     preConfigure = (oldAttrs.preConfigure or "") + ''
-      # CPU optimizations via compiler flags
-      export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
-      export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      export CXXFLAGS="${lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${lib.concatStringsSep " " cpuFlags} $CFLAGS"
+
+      # cuDNN 9.11+ dropped SM < 7.5 support — disable for SM61
+      export USE_CUDNN=0
+      # FBGEMM hard-requires AVX2 with no fallback — disable entirely
+      export USE_FBGEMM=0
+      # oneDNN/MKLDNN compiles AVX2/AVX512 dispatch variants internally
+      export USE_MKLDNN=0
+      export USE_MKLDNN_CBLAS=0
+      # Force NNPACK to portable SIMD backend
+      export NNPACK_BACKEND=psimd
 
       echo "========================================="
       echo "PyTorch Build Configuration"
