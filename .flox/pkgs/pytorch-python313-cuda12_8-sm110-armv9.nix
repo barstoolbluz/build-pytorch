@@ -62,7 +62,7 @@ in
 
         Choose this if: You have NVIDIA DRIVE or Blackwell Thor GPU on modern ARM platform
         with ARMv9/SVE2 support (next-gen automotive SoCs). For older ARM platforms,
-        use armv8.2 variant instead.
+        use armv8_2 variant instead.
       '';
       platforms = [ "aarch64-linux" ];
     };

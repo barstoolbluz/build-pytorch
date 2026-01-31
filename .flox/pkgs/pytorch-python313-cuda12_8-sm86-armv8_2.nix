@@ -1,5 +1,5 @@
 # PyTorch optimized for NVIDIA Ampere (SM86: RTX 3090, A5000, A40) + ARMv8.2
-# Package name: pytorch-python313-cuda12_8-sm86-armv8.2
+# Package name: pytorch-python313-cuda12_8-sm86-armv8_2
 
 { python3Packages
 , lib
@@ -26,7 +26,7 @@ in
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm86-armv8.2";
+    pname = "pytorch-python313-cuda12_8-sm86-armv8_2";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter

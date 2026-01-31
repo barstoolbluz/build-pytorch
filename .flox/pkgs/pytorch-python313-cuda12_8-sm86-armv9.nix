@@ -62,7 +62,7 @@ in
 
         Choose this if: You have RTX 3090/A40 GPU on modern ARM server with
         ARMv9/SVE2 support (Grace, Graviton3+). For older ARM servers
-        (Graviton2), use armv8.2 variant instead.
+        (Graviton2), use armv8_2 variant instead.
       '';
       platforms = [ "aarch64-linux" ];
     };

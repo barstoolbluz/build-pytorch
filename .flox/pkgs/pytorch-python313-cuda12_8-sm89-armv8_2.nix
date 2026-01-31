@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell Datacenter (SM100: B100, B200) + ARMv8.2
-# Package name: pytorch-python313-cuda12_8-sm100-armv8.2
+# PyTorch optimized for NVIDIA Ada Lovelace (SM89: RTX 4090, L40) + ARMv8.2
+# Package name: pytorch-python313-cuda12_8-sm89-armv8_2
 
 { python3Packages
 , lib
@@ -9,9 +9,9 @@
 }:
 
 let
-  # GPU target: SM100 (Blackwell datacenter architecture - B100, B200)
-  gpuArchNum = "100";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "sm_100";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM89 (Ada Lovelace architecture - RTX 4090, L40)
+  gpuArchNum = "89";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "sm_89";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: ARMv8.2-A with FP16 and dot product
   cpuFlags = [
@@ -26,7 +26,7 @@ in
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm100-armv8.2";
+    pname = "pytorch-python313-cuda12_8-sm89-armv8_2";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -38,7 +38,7 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Blackwell Datacenter: B100, B200)"
+      echo "GPU Target: ${gpuArchSM} (Ada: RTX 4090, L40)"
       echo "CPU Features: ARMv8.2 + FP16 + DotProd"
       echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
@@ -46,21 +46,21 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + ARMv8.2";
+      description = "PyTorch for NVIDIA RTX 4090/L40 (SM89) + ARMv8.2";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell datacenter architecture (SM100) - B100, B200
+        - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, RTX 4080, L40, L40S
         - CPU: ARMv8.2-A with FP16 and dot product instructions
-        - CUDA: 12.8 with compute capability 10.0
+        - CUDA: 12.8 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
 
         Hardware requirements:
-        - GPU: B100, B200, or other SM100 GPUs
+        - GPU: RTX 4090, RTX 4080, RTX 4070 Ti, RTX 4070, RTX 4060 Ti, L40, or other SM89 GPUs
         - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
-        - Driver: NVIDIA 550+ required
+        - Driver: NVIDIA 520+ required
 
-        Choose this if: You have B100 or B200 datacenter GPU on ARM server (Graviton2)
+        Choose this if: You have RTX 4090/40x0 GPU on ARM server (Graviton2)
         and need GPU acceleration on ARM platform. For newer ARM servers
         (Graviton3+, Grace), use armv9 variant instead.
       '';

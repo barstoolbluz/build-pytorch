@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell Thor/DRIVE (SM110) + ARMv8.2
-# Package name: pytorch-python313-cuda12_8-sm110-armv8.2
+# PyTorch optimized for NVIDIA Ampere Datacenter (SM80: A100, A30) + ARMv8.2
+# Package name: pytorch-python313-cuda12_8-sm80-armv8_2
 
 { python3Packages
 , lib
@@ -9,13 +9,13 @@
 }:
 
 let
-  # GPU target: SM110 (Blackwell Thor/NVIDIA DRIVE - automotive/edge computing)
-  gpuArchNum = "110";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "sm_110";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
+  gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "sm_80";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
-  # CPU optimization: ARMv8.2-A
+  # CPU optimization: ARMv8.2-A with FP16 and dot product
   cpuFlags = [
-    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with FP16 and dot product
+    "-march=armv8.2-a+fp16+dotprod"  # ARMv8.2 with half-precision and dot product
   ];
 
 in
@@ -26,7 +26,7 @@ in
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm110-armv8.2";
+    pname = "pytorch-python313-cuda12_8-sm80-armv8_2";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -38,31 +38,31 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: ${gpuArchSM} (Blackwell Thor/DRIVE - Automotive/Edge)"
-      echo "CPU Features: ARMv8.2-A + FP16 + DotProd"
+      echo "GPU Target: ${gpuArchSM} (Ampere Datacenter: A100, A30)"
+      echo "CPU Features: ARMv8.2 + FP16 + DotProd"
       echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA DRIVE (SM110, Blackwell Thor) + ARMv8.2";
+      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) + ARMv8.2";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
-        - GPU: NVIDIA Blackwell Thor/DRIVE architecture (SM110)
+        - GPU: NVIDIA Ampere datacenter architecture (SM80) - A100, A30
         - CPU: ARMv8.2-A with FP16 and dot product instructions
-        - CUDA: 12.8 with compute capability 11.0
+        - CUDA: 12.8 with compute capability 8.0
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
 
         Hardware requirements:
-        - GPU: NVIDIA DRIVE platforms (Thor, Orin+), automotive/edge computing GPUs
-        - CPU: ARM Neoverse N1, Cortex-A75+, automotive ARM SoCs
-        - Driver: NVIDIA 550+ required
+        - GPU: A100 (40GB/80GB), A30, or other SM80 GPUs
+        - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
+        - Driver: NVIDIA 450+ required
 
-        Choose this if: You have NVIDIA DRIVE or Blackwell Thor GPU on older ARM platform
-        without SVE2 support (Orin, older automotive SoCs). For newer ARM platforms with
-        SVE2, use armv9 variant instead.
+        Choose this if: You have A100 or A30 datacenter GPU on ARM server (Graviton2)
+        and need GPU acceleration on ARM platform. For newer ARM servers
+        (Graviton3+, Grace), use armv9 variant instead.
       '';
       platforms = [ "aarch64-linux" ];
     };

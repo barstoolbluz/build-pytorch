@@ -81,8 +81,8 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
 
       Choose this if: You need CPU-only PyTorch on modern ARM servers with
       ARMv9/SVE2 support (Grace, Graviton3+). Provides better performance than
-      armv8.2 variant on supported hardware. For older ARM servers (Graviton2),
-      use armv8.2 variant instead.
+      armv8_2 variant on supported hardware. For older ARM servers (Graviton2),
+      use armv8_2 variant instead.
     '';
     platforms = [ "aarch64-linux" ];
   };

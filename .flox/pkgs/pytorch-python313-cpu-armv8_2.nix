@@ -1,5 +1,5 @@
 # PyTorch CPU-only optimized for ARMv8.2
-# Package name: pytorch-python313-cpu-armv8.2
+# Package name: pytorch-python313-cpu-armv8_2
 #
 # ARM server build for AWS Graviton2, general ARM servers
 # Hardware: ARM Neoverse N1, Cortex-A75+, Graviton2
@@ -19,7 +19,7 @@ let
   blasBackend = openblas;
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cpu-armv8.2";
+  pname = "pytorch-python313-cpu-armv8_2";
 
   # Disable CUDA support for CPU-only build
   passthru = oldAttrs.passthru // {
