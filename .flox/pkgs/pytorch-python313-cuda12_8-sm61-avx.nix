@@ -13,10 +13,13 @@ let
   gpuArchNum = "61";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
   gpuArchSM = "6.1";  # For TORCH_CUDA_ARCH_LIST (dot notation required for older archs)
 
-  # CPU optimization: AVX only (no FMA — Ivy Bridge lacks FMA3)
+  # CPU optimization: AVX only (Ivy Bridge lacks FMA3, BMI1, BMI2, AVX2)
   cpuFlags = [
     "-mavx"
     "-mno-fma"
+    "-mno-bmi"
+    "-mno-bmi2"
+    "-mno-avx2"
   ];
 
 in
