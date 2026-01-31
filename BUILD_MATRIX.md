@@ -63,6 +63,7 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 | **AVX-512 VNNI** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mavx512vnni -mfma` | Intel Skylake-SP+ (2017), AMD Zen 4+ (2022) | ~2.2x over baseline (INT8) | Limited |
 | **AVX-512** | `-mavx512f -mavx512dq -mavx512vl -mavx512bw -mfma` | Intel Skylake-X+ (2017), AMD Zen 4+ (2022) | ~2x over baseline | Limited |
 | **AVX2** | `-mavx2 -mfma -mf16c` | Intel Haswell+ (2013+), AMD Zen 1+ (2017) | ~1.5x over baseline | Broad |
+| **AVX** | `-mavx -mno-fma -mno-bmi -mno-bmi2 -mno-avx2` | Intel Sandy Bridge+ (2011+), AMD Bulldozer+ (2011+) | Baseline | Maximum |
 
 **AMD Zen ISA Support:**
 - Zen 1-3 (EPYC Naples/Rome/Milan): **AVX2** only
