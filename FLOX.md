@@ -7,49 +7,58 @@
 - **Find and install packages** → §3 (flox search/install), §5 (install section details)
 - **Understand the manifest structure** → §4 (Manifest Structure)
 
-### Common Development Tasks
-- **Set up Python with virtual environments** → §16a (Python patterns)
-- **Set up C/C++ development** → §16b (C/C++ environments)
-- **Set up Node.js projects** → §16c (Node.js patterns)
-- **Set up CUDA/GPU development** → §16d (CUDA environments)
-- **Handle package conflicts** → §5 (priority/pkg-group), §15 (Quick Tips)
+### Building Packages
+- **Package my application** → §9.1 (Manifest Builds)
+- **Create reproducible builds** → §9.2 (Sandbox modes & purity)
+- **Use Nix expressions for builds** → §10 (Nix Expression Builds)
+- **Understand $out directory layout** → §9.3 (Filesystem hierarchy)
+- **Run and test builds** → §9.4 (Running manifest builds)
+- **Create multi-stage builds** → §9.5 (Multi-stage examples)
+- **Minimize runtime dependencies** → §9.6 (Trimming dependencies)
+- **Add version metadata** → §9.7 (Version & description)
+- **Package configuration/assets** → §9.9 (Beyond code)
+- **Handle cross-platform builds** → §9.8, §17 (Platform considerations)
+
+### Publishing & Distribution
+- **Publish to team catalog** → §11 (Publishing to Flox Catalog)
+- **Publish to FloxHub** → §11 (FloxHub publishing workflow)
+- **Version and tag packages** → §11 (Versioning strategies)
+- **Share environments with team** → §11 (Catalog distribution)
+
+### Packaging Patterns
+- **Build containers from environments** → §13 (Containerization)
+- **Layer build environments** → §12 (Layering vs Composition)
+- **Compose reusable build toolchains** → §12 (Composition patterns)
+- **Create isolated build environments** → §9.2 (Sandbox modes)
 
 ### Services & Background Processes
-- **Run a database or web server** → §8 (Services)
+- **Run database or web server** → §8 (Services)
 - **Make services network-accessible** → §8 (Network services pattern)
 - **Debug a failing service** → §8 (Service logging pattern)
 
-### Building & Publishing
-- **Package my application** → §9.1 (Manifest Builds)
-- **Create reproducible builds** → §9.2 (Sandbox modes)
-- **Use Nix expressions** → §10 (Nix Expression Builds)
-- **Publish to team catalog** → §11 (Publishing)
-- **Package configuration/assets** → §9.9 (Beyond Code)
+### CI/CD & Automation
+- **Automate builds with GitHub Actions** → §14 (GitHub Actions)
+- **Integrate with CircleCI** → §14 (CircleCI patterns)
+- **Use GitLab CI for builds** → §14 (GitLab CI)
+- **Ensure build reproducibility in CI** → §14 (CI best practices)
 
-### Environment Composition
-- **Layer multiple environments** → §12 (Layering pattern)
-- **Compose reusable environments** → §12 (Composition pattern)
-- **Design environments for both** → §12 (Dual-purpose environments)
-
-### Platform-Specific
-- **Handle Linux-only packages** → §5 (systems attribute), §16d (CUDA)
+### Platform-Specific Builds
+- **Handle Linux-only packages** → §5 (systems attribute), §17 (Platform pattern)
 - **Handle macOS-specific frameworks** → §17 (Platform-Specific Pattern)
-- **Support multiple platforms** → §16d (Cross-platform GPU), §17 (Platform patterns)
+- **Support multiple platforms** → §9.8, §17 (Cross-platform builds)
+- **Deal with platform differences** → §17 (Platform conditionals)
 
 ### Troubleshooting
-- **Fix package conflicts** → §5 (priority), §15 (Conflicts tip)
+- **Fix package conflicts** → §5 (priority), §16 (Quick Tips)
 - **Debug hooks not working** → §6 (Best Practices), §0 (Working Style)
 - **Understand build vs runtime** → §9.1 (Build hooks don't run)
-- **Fix service startup issues** → §8 (Service patterns)
+- **Debug build failures** → §9.2, §9.4 (Sandbox & running builds)
 
 ### Advanced Topics
-- **Create multi-stage builds** → §9.5 (Multi-Stage Examples)
-- **Minimize runtime dependencies** → §9.6 (Trimming Dependencies)
-- **Containerize environments** → §13 (Containerization)
 - **Edit manifests programmatically** → §7 (Non-Interactive Editing)
+- **Understand environment variables** → §15 (Environment Variable Convention)
 
 ### Anti-Patterns to Avoid
-- **What NOT to do** → §13b (Common Anti-Patterns)
 - **Common pitfalls** → §4b (Common Pitfalls)
 
 ## 0 Working Style & Structure
@@ -61,7 +70,7 @@
 - Put persistent data/configs in `$FLOX_ENV_CACHE`
 - Return to `$FLOX_ENV_PROJECT` at end of hooks
 - Use `mktemp` for temp files, clean up immediately
-- Do not over-engineer: e.g., do not create unncessary echo statements or superfluous comments; do not print unnecessary information displays in `[hook]` or `[profile]`; do not create helper functions or aliases without the user requesting these explicitly.
+- Do not over-engineer: e.g., do not create unnecessary echo statements or superfluous comments; do not print unnecessary information displays in `[hook]` or `[profile]`; do not create helper functions or aliases without the user requesting these explicitly.
 
 ## 1 Configuration & Secrets
 - Support `VARIABLE=value flox activate` pattern for runtime overrides
@@ -72,7 +81,7 @@
 
 ## 2 Flox Basics
 - Flox is built on Nix; fully Nix-compatible
-- Flox uses nixpkgs as its upstream; packages are _usually_ named the same; unlike nixpkgs, FLox Catalog has millions of historical package-version combinations.
+- Flox uses nixpkgs as its upstream; packages are _usually_ named the same; unlike nixpkgs, Flox Catalog has millions of historical package-version combinations.
 - Key paths:
   - `.flox/env/manifest.toml`: Environment definition
   - `.flox/env.json`: Environment metadata
@@ -170,26 +179,25 @@ example.priority = 3                        # Optional: resolve file conflicts (
 - Resolves file conflicts between packages
 - Default: 5
 - Lower number = higher priority wins conflicts
-- **Critical for CUDA packages** (see §16d)
+- **Critical for CUDA packages**
 
 
 ### Practical Examples
 
 ```toml
-# Platform-specific Python
+# Platform-specific Python (Linux only)
 [install]
 python.pkg-path = "python311Full"
-uv.pkg-path = "uv" # installs uv, modern rust-based successor to uvicorn
-systems = ["x86_64-linux", "aarch64-linux"]  # Linux only
+python.systems = ["x86_64-linux", "aarch64-linux"]
+uv.pkg-path = "uv" # installs uv, modern Rust-based successor to pip
+uv.systems = ["x86_64-linux", "aarch64-linux"]
 
 # Version-pinned with custom priority
-[nodejs]
 nodejs.pkg-path = "nodejs"
-version = "^20.0"
-priority = 1  # Takes precedence in conflicts
+nodejs.version = "^20.0"
+nodejs.priority = 1  # Takes precedence in conflicts
 
 # Multiple package groups to avoid conflicts
-[install]
 gcc.pkg-path = "gcc12"
 gcc.pkg-group = "stable"
 ```
@@ -248,6 +256,7 @@ vars.PGDATABASE = "mydb"
 vars.PGPORT = "9001"
 ```
 
+
 # 9 Build System — Authoring and Running Reliable Packages with flox build
 
 Flox supports two build modes, each with its own strengths:
@@ -264,7 +273,7 @@ Manifest builds:
 
 Nix expression builds: 
 
-- Are isolated by default. The Nix sandbox seals the build off from the host system, so no state leak ins.
+- Are isolated by default. The Nix sandbox seals the build off from the host system, so no state leaks in.
 - Are functional. A Nix build is defined as a pure function of its declared inputs. 
 
 You can mix both approaches in the same project, but package names must be unique. A package cannot have the same name if it's defined in both a manifest and Nix expression build within the same environment.
@@ -314,10 +323,10 @@ command      = '''  # required – Bash, multiline string
   mkdir -p $out/bin
   cp path/to/artifact $out/bin/<name>
 '''
-version      = "1.2.3"               # optional – see §10.7
+version      = "1.2.3"               # optional – see §9.7
 description  = "one-line summary"    # optional
 sandbox      = "pure" | "off"        # default: off
-runtime-packages = [ "id1", "id2" ]  # optional – see §10.6
+runtime-packages = [ "id1", "id2" ]  # optional – see §9.6
 ```
 
 **One table per package.** Multiple `[build.*]` tables let you publish, for example, a stripped release binary and a debug build from the same sources.
@@ -425,7 +434,7 @@ command = '''
 runtime-packages = [ "clang" ]  # exclude pytest from runtime closure
 ```
 
-Smaller closures copy faster and occupy less disk wheh installed on users' systems.
+Smaller closures copy faster and occupy less disk when installed on users' systems.
 
 ## 9.7 Version and Description Metadata
 
@@ -446,7 +455,7 @@ version.file = "VERSION.txt" # read at build time
 
 ## 9.8 Cross-Platform Considerations for Manifest Builds
 
-`flox build` targets the host's systems triple. To ship binaries for additional platforms you must trigger the build on machines (or CI runners) of those architectures:
+`flox build` targets the host's system triple. To ship binaries for additional platforms you must trigger the build on machines (or CI runners) of those architectures:
 
 ```
 linux-x86_64 → build → publish
@@ -492,68 +501,194 @@ Teams install these packages and reference them via `$FLOX_ENV/etc/nginx.conf` o
 
 With these mechanics in place, a Flox build becomes an auditable, repeatable unit: same input sources, same declared toolchain, same closure every time—no matter where it runs.
 
-## 10 Nix Expression Builds
 
-You can write a Nix expression instead of (or in addition to) defining a manifest build.
+## 10 Nix Expression Builds (Repo-Specific Patterns)
 
-Put `*.nix` build files in `.flox/pkgs/` for Nix expression builds. Git add all files before building.
+This section documents the Nix expression patterns used in this PyTorch build repository. For general Nix expression build guidance applicable to any Flox project, see [FLOX-GENERAL.md](./FLOX-GENERAL.md).
 
-### File Naming
-- `hello.nix` → package named `hello`
-- `hello/default.nix` → package named `hello`
+Put `*.nix` build files in `.flox/pkgs/`. Git add all files before building.
 
-### Common Patterns
+### Pattern A: GPU Two-Stage Override
 
-**Shell Script**
+The dominant pattern in this repo (~44 files). Uses `.override` to enable CUDA, then `.overrideAttrs` to customize CPU flags and metadata.
+
+**Function signature:**
 ```nix
-{writeShellApplication, curl}:
-writeShellApplication {
-  name = "my-ip";
-  runtimeInputs = [ curl ];
-  text = ''curl icanhazip.com'';
-}
+{ python3Packages, lib, config, cudaPackages, addDriverRunpath }:
 ```
 
-**Your Project**
+> **Note on unused args:** `config` is imported but unused in GPU variants. `gpuArchNum` is declared in the `let` block but unused when `gpuArchSM` exists — it documents the raw integer for reference.
+
+**Example** (from `pytorch-python313-cuda12_8-sm90-avx512.nix`):
 ```nix
-{ rustPlatform, lib }:
-rustPlatform.buildRustPackage {
-  pname = "my-app";
-  version = "0.1.0";
-  src = ../../.;
-  cargoLock.lockFile = "${src}/Cargo.lock";
-}
+{ python3Packages, lib, config, cudaPackages, addDriverRunpath }:
+
+let
+  gpuArchNum = "90";       # Documentary — not used in build
+  gpuArchSM = "sm_90";     # Passed to gpuTargets
+  cpuFlags = [ "-mavx512f" "-mavx512dq" "-mavx512vl" "-mavx512bw" "-mfma" ];
+in
+  (python3Packages.pytorch.override {
+    cudaSupport = true;
+    gpuTargets = [ gpuArchSM ];
+  }).overrideAttrs (oldAttrs: {
+    pname = "pytorch-python313-cuda12_8-sm90-avx512";
+
+    preConfigure = (oldAttrs.preConfigure or "") + ''
+      export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      echo "========================================="
+      echo "GPU Target: ${gpuArchSM} (Hopper: H100, L40S)"
+      echo "CPU Features: AVX-512"
+      echo "========================================="
+    '';
+
+    meta = oldAttrs.meta // {
+      description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
+      platforms = [ "x86_64-linux" ];
+    };
+  })
 ```
 
-**Update Version**
+### Pattern B: CPU-Only Single Override
+
+Used by 6 files. No `.override` stage — goes straight to `.overrideAttrs` since the base nixpkgs pytorch is already CPU-capable. Filters out CUDA deps, injects BLAS backend.
+
+**Function signature (x86):**
 ```nix
-{ hello, fetchurl }:
-hello.overrideAttrs (finalAttrs: _: {
-  version = "2.12.2";
-  src = fetchurl {
-    url = "mirror://gnu/hello/hello-${finalAttrs.version}.tar.gz";
-    hash = "sha256-WpqZbcKSzCTc9BHO6H6S9qrluNE72caBm0x6nc4IGKs=";
+{ python3Packages, lib, openblas, mkl }:
+```
+
+**Function signature (ARM):**
+```nix
+{ python3Packages, lib, openblas }:
+```
+
+ARM variants don't import `mkl` (not available on aarch64).
+
+**Example** (from `pytorch-python313-cpu-avx2.nix`):
+```nix
+{ python3Packages, lib, openblas, mkl }:
+
+let
+  cpuFlags = [ "-mavx2" "-mfma" "-mf16c" ];
+  blasBackend = openblas;
+in python3Packages.pytorch.overrideAttrs (oldAttrs: {
+  pname = "pytorch-python313-cpu-avx2";
+
+  passthru = oldAttrs.passthru // {
+    gpuArch = null;
+    blasProvider = "openblas";
+  };
+
+  # Filter out CUDA deps, inject BLAS
+  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or "")))
+    oldAttrs.buildInputs ++ [ blasBackend ];
+  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath")
+    oldAttrs.nativeBuildInputs;
+
+  preConfigure = (oldAttrs.preConfigure or "") + ''
+    export USE_CUDA=0
+    export USE_CUDNN=0
+    export USE_CUBLAS=0
+    export BLAS=OpenBLAS
+    export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+    export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+  '';
+
+  meta = oldAttrs.meta // {
+    description = "PyTorch CPU-only optimized for AVX2";
+    platforms = [ "x86_64-linux" "aarch64-linux" ];
   };
 })
 ```
 
-**Apply Patches**
+### Pattern C: From-Scratch Build
+
+Used by 1 file (`pytorch-python313-cuda13_0-sm121-armv9-nightly.nix`). Uses `buildPythonPackage` with `fetchFromGitHub` and explicit dependency lists because the upstream nixpkgs pytorch doesn't support CUDA 13.0/SM121 yet.
+
+**Function signature:**
 ```nix
-{ hello }:
-hello.overrideAttrs (oldAttrs: {
-  patches = (oldAttrs.patches or []) ++ [ ./my.patch ];
-})
+{ pkgs ? import <nixpkgs> {}, cudaPackages_13 }:
 ```
 
-### Hash Generation
-1. Use `hash = "";`
-2. Run `flox build`
-3. Copy hash from error message
+Key differences from override patterns:
+- `rec` keyword enables self-referencing (`version` used in `src`)
+- `postPatch` phase patches CMake files to add SM121 support
+- All CUDA dependencies listed explicitly (no inheritance from upstream)
+- `dontUseCmakeConfigure = true` — PyTorch has its own cmake invocation via setup.py
+- `propagatedBuildInputs` lists Python runtime deps (astunparse, filelock, etc.)
 
-### Commands
-- `flox build` - build all
-- `flox build .#hello` - build specific
-- `git add .flox/pkgs/*` - track files
+### Special Case: SM61 (Legacy Escape Hatches)
+
+The SM61 variant (`pytorch-python313-cuda12_8-sm61-avx.nix`) uses Pattern A but with significant escape hatches because the standard override pipeline produces binaries that SIGILL on AVX-only CPUs:
+
+**cmakeFlags lies** — force cmake to believe AVX2/AVX512 don't exist:
+```nix
+cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+  "-DCXX_AVX2_FOUND=FALSE"
+  "-DC_AVX2_FOUND=FALSE"
+  "-DCXX_AVX512_FOUND=FALSE"
+  "-DC_AVX512_FOUND=FALSE"
+  "-DCAFFE2_COMPILER_SUPPORTS_AVX512_EXTENSIONS=OFF"
+  "-DUSE_NNPACK=OFF"
+];
+```
+
+**Feature disablement** — libraries that hard-require AVX2+ or newer cuDNN:
+```nix
+export USE_CUDNN=0    # cuDNN 9.11+ dropped SM < 7.5
+export USE_FBGEMM=0   # Hard-requires AVX2, no fallback
+export USE_MKLDNN=0   # Compiles AVX2/AVX512 dispatch internally
+export USE_NNPACK=0   # Requires AVX2+FMA3
+```
+
+**Negative CPU flags** — explicitly blacklist instructions the CPU lacks:
+```nix
+cpuFlags = [ "-mavx" "-mno-fma" "-mno-bmi" "-mno-bmi2" "-mno-avx2" ];
+```
+
+**gpuTargets format**: SM61 uses dot notation `"6.1"` instead of `"sm_61"`. See format reference below.
+
+### gpuTargets Format Reference
+
+Different GPU architectures use different string formats in `gpuTargets`:
+
+| Architecture | `gpuArchSM` value | Convention | Used by |
+|-------------|-------------------|------------|---------|
+| SM61 (Pascal) | `"6.1"` | Dot notation | Older architectures (< SM80) |
+| SM80–SM103 | `"sm_80"` .. `"sm_103"` | `sm_` prefix | Standard modern GPUs |
+| SM110–SM121 | `"sm_110"` .. `"sm_121"` | `sm_` prefix | Blackwell / next-gen |
+
+The dot notation (`"6.1"`) is required for older architectures because PyTorch's `TORCH_CUDA_ARCH_LIST` parser expects it. Modern architectures (SM80+) use the `sm_XX` prefix format which maps directly to `CMAKE_CUDA_ARCHITECTURES`.
+
+### Platform Routing
+
+CPU flags determine which `meta.platforms` a variant targets:
+
+| CPU ISA | `meta.platforms` |
+|---------|-----------------|
+| AVX, AVX2, AVX-512 (all x86 variants) | `[ "x86_64-linux" ]` |
+| ARMv8.2 | `[ "aarch64-linux" ]` |
+| ARMv9 | `[ "aarch64-linux" ]` |
+| CPU-only x86 (no GPU) | `[ "x86_64-linux" "aarch64-linux" ]` (some) |
+
+### Shared Idioms
+
+**Defensive `preConfigure` append** — every variant uses this pattern:
+```nix
+preConfigure = (oldAttrs.preConfigure or "") + ''...''
+```
+
+**`lib.concatStringsSep`** — joins CPU flag lists into space-separated strings:
+```nix
+export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+```
+
+**Parameterized `let` blocks** — variant-specific values at top, generic derivation below. This makes creating new variants a copy-and-edit-the-let-block operation.
+
+**Build banners** — every variant prints a configuration summary in `preConfigure` for build log readability.
+
 
 ## 11 Publishing to Flox Catalog
 
@@ -610,6 +745,7 @@ Flox clones your repo to a temp location and performs a clean build to ensure re
 - **Clean git state**: Commit and push ALL changes before `flox publish`
 - **runtime-packages**: List only what package needs at runtime, not build deps
 
+
 ## 12 Layering vs Composition - Environment Design Guide
 
 | Aspect     | Layering                          | Composition                     |
@@ -642,7 +778,7 @@ command = "..."
 - Document what the environment provides/expects
 - Keep hooks fast and idempotent
 
-**CUDA layering example:** Layer debugging tools (`flox activate -r team/cuda-debugging`) on base CUDA environment for ad-hoc development (see §16d).
+**Layering example:** Layer debugging tools (`flox activate -r team/debugging-tools`) on base development environment for ad-hoc development.
 
 ### Creating Composition-Optimized Environments
 **Design for clean merging at build time:**
@@ -704,6 +840,7 @@ fi
 - **Compose**: `[include] environments = [{ remote = "team/postgres" }]`
 - **Both**: Compose base, layer tools on top
 
+
 ## 13 Containerization
 
 ### Basic Usage
@@ -724,9 +861,10 @@ flox containerize --tag v1.0 -f - | docker load
 
 ### How Containers Behave
 **Containers activate the Flox environment on startup** (like `flox activate`):
-- **Interactive**: `docker run -it <image>` → Bash shell with environment activated
-- **Non-interactive**: `docker run <image> <cmd>` → Runs command with environment activated (like `flox activate -- <cmd>`)
+- **Interactive**: `docker run -it <image>` → Bash **subshell** with environment activated after hook runs
+- **Non-interactive**: `docker run <image> <cmd>` → Runs command **without subshell** (like `flox activate -- <cmd>`)
 - All packages, variables, and hooks are available inside the container
+- Flox sets an entrypoint that activates the environment; `cmd` runs inside that activation
 
 ### Command Options
 ```bash
@@ -739,20 +877,22 @@ flox containerize
 ```
 
 ### Manifest Configuration
-Configure container in `[containerize.config]` (experimental):
+
+**Warning**: `[containerize.config]` is **experimental** and its behavior is subject to change.
+
+Configure container in `[containerize.config]`:
 
 ```toml
 [containerize.config]
 user = "appuser"                    # Username or uid:gid format
-exposed-ports = ["8080/tcp"]        # Ports to expose (tcp/udp/default:tcp)
-cmd = ["python", "app.py"]          # Command to run (receives activated env)
+                                     # Auto-creates /etc/passwd and /etc/groups entries (no manual useradd needed)
+exposed-ports = ["8080/tcp"]        # Ports to expose (tcp/udp; default: tcp)
+cmd = ["python", "app.py"]          # Default command (overridable at container runtime; receives activated env)
 volumes = ["/data", "/config"]      # Mount points for persistent data
-working-dir = "/app"                # Working directory
-labels = { version = "1.0" }        # Arbitrary metadata
-stop-signal = "SIGTERM"             # Signal to stop container
+working-dir = "/app"                # Working directory (overridable at container runtime)
+labels = { version = "1.0" }        # Arbitrary metadata (must follow OCI annotation rules)
+stop-signal = "SIGTERM"             # Signal to stop container (must follow OCI annotation rules)
 ```
-
-**Note**: Flox sets an entrypoint that activates the environment, then runs `cmd` inside that activation.
 
 ### Complete Workflow Example
 ```bash
@@ -774,10 +914,15 @@ docker run -p 5000:5000 -v $(pwd):/app <container-id>
 ```
 
 ### Platform-Specific Notes
-**macOS**: 
-- Requires docker/podman runtime (uses proxy container for builds)
-- May prompt for file sharing permissions
-- Creates `flox-nix` volume for caching (safe to remove when not building: `docker volume rm flox-nix`)
+**macOS**:
+- **Requires** docker/podman runtime (uses proxy container for builds)
+- May prompt for file sharing permissions during first build
+- Creates `flox-nix` volume for caching build artifacts
+- **Cleanup**: Remove volume when no `flox containerize` command is running:
+  ```bash
+  docker volume rm flox-nix    # for Docker
+  podman volume rm flox-nix    # for Podman
+  ```
 
 **Linux**: Direct image creation without proxy
 
@@ -810,8 +955,159 @@ flox containerize --tag production
 flox containerize -r team/python-ml --tag latest
 ```
 
+### Container Execution Patterns
 
-## 14 Environment Variable Convention Example
+**Interactive with automatic cleanup**:
+```bash
+$ flox init
+$ flox install hello
+$ flox containerize -f - | docker load
+$ docker run --rm -it <container-id>
+[floxenv] $ hello
+Hello, world!
+```
+
+**Non-interactive command** (no subshell):
+```bash
+$ flox containerize -f - | docker load
+$ docker run <container-id> hello
+Hello, world
+```
+
+**Tagged container access**:
+```bash
+$ flox containerize --tag v1 -f - | docker load
+$ docker run --rm -it <container-name>:v1
+[floxenv] $ hello
+Hello, world!
+```
+
+**Custom docker path** (when docker not in PATH):
+```bash
+$ flox containerize -f - | /path/to/docker load
+```
+
+**Kubernetes deployment**: Flox environments can be deployed to Kubernetes clusters using imageless containers (not covered in this guide).
+
+
+## 14 CI/CD Integration
+
+Same environment locally and in CI. Cross-platform, reproducible by default. Commit `.flox/env/manifest.toml` and `.flox/env.json` to source control.
+
+### Platform Support
+
+| Platform | Method | Usage |
+|----------|--------|-------|
+| GitHub Actions | `flox/install-flox-action` + `flox/activate-action` | Declarative |
+| CircleCI | `flox/orb@1.0.0` | `flox/install` + `flox/activate` |
+| GitLab | `ghcr.io/flox/flox:latest` container | Direct CLI |
+| Generic | Install from flox.dev | Shell scripts |
+
+### GitHub Actions
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flox/install-flox-action@v2
+      - uses: flox/activate-action@v1
+        with:
+          command: npm run build
+```
+
+### CircleCI
+```yaml
+orbs:
+  flox: flox/orb@1.0.0
+jobs:
+  build:
+    steps:
+      - checkout
+      - flox/install
+      - flox/activate:
+          command: npm run build
+```
+
+### GitLab / Generic Shell
+```yaml
+# .gitlab-ci.yml
+image: ghcr.io/flox/flox:latest
+build:
+  script:
+    - eval "$(flox activate)"
+    - npm run build
+```
+
+**Shell pattern** (complex scripts, loops):
+```bash
+eval "$(flox activate)"
+# All subsequent commands run in environment
+```
+
+**Subprocess pattern** (single commands):
+```bash
+flox activate -- npm run build
+```
+
+### Authentication (Private Environments)
+
+**When required:** `flox activate -r team/private`, `flox publish`, `flox push/pull --remote`
+
+**Setup:** Create service credentials at https://flox.dev/docs/tutorials/ci-cd/, store as `FLOXHUB_CLIENT_ID` and `FLOXHUB_CLIENT_SECRET` secrets.
+
+**GitHub Actions:**
+```yaml
+- name: Auth FloxHub
+  run: |
+    export FLOX_FLOXHUB_TOKEN=$(
+      curl --fail --request POST \
+        --url https://auth.flox.dev/oauth/token \
+        --header 'content-type: application/x-www-form-urlencoded' \
+        --data "client_id=${{ secrets.FLOXHUB_CLIENT_ID }}" \
+        --data "audience=https://hub.flox.dev/api" \
+        --data "grant_type=client_credentials" \
+        --data "client_secret=${{ secrets.FLOXHUB_CLIENT_SECRET }}" \
+          | jq -e .access_token -r)
+    flox auth status
+    echo "FLOX_FLOXHUB_TOKEN=$FLOX_FLOXHUB_TOKEN" >> $GITHUB_ENV
+```
+
+**Critical:** `audience` must be exactly `https://hub.flox.dev/api`. Token persists via `$GITHUB_ENV` (Actions), `$BASH_ENV` (CircleCI), or `variables:` (GitLab).
+
+### Best Practices
+- Pin versions in CI: `version = "1.2.3"` not `"^1.2"`
+- Disable metrics: `FLOX_DISABLE_METRICS="true"`
+- Cache `~/.cache/flox` keyed on manifest checksum
+- Use `sandbox = "pure"` for published packages (§9.2)
+- Multi-arch: Same manifest works x86_64/arm64; use matrix builds
+- Auth per-job: Tokens expire; don't cache between jobs
+
+### Common Patterns
+```yaml
+# Containerize and push
+- flox/activate-action:
+    command: flox containerize --runtime docker --tag v1.0
+
+# Multi-platform
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest]
+
+# Conditional publish (main branch only)
+if: github.ref == 'refs/heads/main'
+```
+
+### Common Gotchas
+- GitHub Actions: Must `flox/install-flox-action` before `flox/activate-action`
+- Auth: Token required BEFORE accessing private envs; fails silently otherwise
+- Token persistence: Use platform-specific env export (`$GITHUB_ENV`, `$BASH_ENV`)
+- Manifest changes: Commit `.flox/env.json` after `flox install`; CI doesn't auto-update
+- Services: Use `flox activate -s` for background services (§8)
+- Build hooks don't run during `flox build` (§9.1)
+
+
+## 15 Environment Variable Convention Example
 
 - Use variables like `POSTGRES_HOST`, `POSTGRES_PORT` to define where services run.
 - These store connection details *separately*:
@@ -823,203 +1119,17 @@ flox containerize -r team/python-ml --tag latest
   ```
 - Use consistent naming across services so the meaning is clear to any system or person reading the variables.
 
-## 15 Quick Tips for [install] Section
-- **Tricky Dependencies**: If we need `libstdc++`, we get this from the `gcc-unwrapped` package, not from `gcc`; if we need to have both in the same environment, we use either package groups or assign priorities. (See **`Conflicts`**, below); also, if user is working with python and requests `uv`, they typically do not mean `uvicorn`; clarify which package user wants. 
-- **Conflicts**: If packages conflict, use different `pkg-group` values or adjust `priority`. **CUDA packages require explicit priorities** (see §16d).
+
+## 16 Quick Tips for [install] Section
+- **Tricky Dependencies**: If we need `libstdc++`, we get this from the `gcc-unwrapped` package, not from `gcc`; if we need to have both in the same environment, we use either package groups or assign priorities. (See **`Conflicts`**, below); also, if user is working with python and requests `uv`, they typically do not mean `uvicorn`; clarify which package user wants.
+- **Conflicts**: If packages conflict, use different `pkg-group` values or adjust `priority`. For packages with version conflicts, use explicit priorities.
 - **Versions**: Start loose (`"^1.0"`), tighten if needed (`"1.2.3"`)
-- **Platforms**: Only restrict `systems` when package is platform-specific. **CUDA is Linux-only**: `["aarch64-linux", "x86_64-linux"]`
+- **Platforms**: Only restrict `systems` when package is platform-specific. Example - Linux-only GPU packages: `["aarch64-linux", "x86_64-linux"]`
 - **Naming**: Install ID can differ from pkg-path (e.g., `gcc.pkg-path = "gcc13"`)
 - **Search**: Use `flox search` to find correct pkg-paths before installing
 
-## 16 Language-Specific Dev Patterns
 
-## 16a Python and Python Virtual Environments
-  - **venv creation pattern**: Always check existence before activation - `uv venv` may not complete synchronously:
-    ```bash
-    if [ ! -d "$venv" ]; then
-      uv venv "$venv" --python python3
-    fi
-    # Guard activation - venv creation might not be complete
-    if [ -f "$venv/bin/activate" ]; then
-      source "$venv/bin/activate"
-    fi
-	```
-  **venv location**: Always use $FLOX_ENV_CACHE/venv - survives environment rebuilds
-  **uv with venv**: Use `uv pip install --python "$venv/bin/python"` NOT `"$venv/bin/python" -m uv`
-  **Service commands**: Use venv Python directly: $FLOX_ENV_CACHE/venv/bin/python not python
-- **Activation**: Always `source "$venv/bin/activate"` before pip/uv operations
-- **PyTorch CUDA**: Install with `--index-url https://download.pytorch.org/whl/cu124` for GPU support (see §16d)
-- **PyTorch gotcha**: Needs `gcc-unwrapped` for libstdc++.so.6, not just `gcc`
-- **PyTorch CPU/GPU**: Use separate index URLs: `/whl/cpu` vs `/whl/cu124` (don't mix!)
-- **Service scripts**: Must activate venv inside service command, not rely on hook activation
-- **Cache dirs**: Set `UV_CACHE_DIR` and `PIP_CACHE_DIR` to `$FLOX_ENV_CACHE` subdirs
-- **Dependency installation flag**: Touch `$FLOX_ENV_CACHE/.deps_installed` to prevent reinstalls
-- **Service venv pattern**: Always use absolute paths and explicit activation in service commands:
-  ```toml
-  [services.myapp]
-  command = '''
-  source "$FLOX_ENV_CACHE/venv/bin/activate"
-  exec "$FLOX_ENV_CACHE/venv/bin/python" app.py
-  '''
-  ```
-- **Using Python packages from catalog**: Override data dirs to use local paths:
-  ```toml
-  [install]
-  myapp.pkg-path = "owner/myapp"
-  [vars]
-  MYAPP_DATA = "$FLOX_ENV_PROJECT"  # Use repo not ~/.myapp
-  ```
-- **Wrapping package commands**: Alias to customize behavior:
-  ```bash
-  # In [profile]
-  alias myapp-setup="MYAPP_DATA=$FLOX_ENV_PROJECT command myapp-setup"
-  ```
-
-**Note**: `uv` is installed in the Flox environment, not inside the venv. We use `uv pip install --python "$venv/bin/python"` so that `uv` targets the venv's Python interpreter.
-
-## 16b C/C++ Development Environments
-- **Package Names**: `gbenchmark` not `benchmark`, `catch2_3` for Catch2, `gcc13`/`clang_18` for specific versions
-- **System Constraints**: Linux-only tools need explicit systems: `valgrind.systems = ["x86_64-linux", "aarch64-linux"]`
-- **Essential Groups**: Separate `compilers`, `build`, `debug`, `testing`, `libraries` groups prevent conflicts
-- **Core Stack**: gcc13/clang_18, cmake/ninja/make, gdb/lldb, boost/eigen/fmt/spdlog, gtest/catch2/gbenchmark
-- **libstdc++ Access**: ALWAYS include `gcc-unwrapped` for C++ stdlib headers/libs (gcc alone doesn't expose them):
-```toml
-gcc-unwrapped.pkg-path = "gcc-unwrapped"
-gcc-unwrapped.priority = 5  # Lower priority to avoid conflicts
-gcc-unwrapped.pkg-group = "libraries"
-```
-
-## 16c Node.js Development Environments
-- **Package managers**: Install `nodejs` (includes npm); add `yarn` or `pnpm` separately if needed
-- **Version pinning**: Use `version = "^20.0"` for LTS, or exact versions for reproducibility
-- **Global tools pattern**: Use `npx` for one-off tools, install commonly-used globals in manifest
-- **Service pattern**: Always specify host/port for network services:
-  ```toml
-  [services.dev-server]
-  command = '''exec npm run dev -- --host "$DEV_HOST" --port "$DEV_PORT"'''
-  ```
-
-## 16d CUDA Development Environments
-
-### Prerequisites & Authentication
-- Sign up for early access at https://flox.dev, authenticate with `flox auth login`
-- **Linux-only**: CUDA packages only work on `["aarch64-linux", "x86_64-linux"]`
-- All CUDA packages are prefixed with `flox-cuda/` in the catalog
-
-### Package Discovery
-```bash
-flox search cudatoolkit --all | grep flox-cuda
-flox search nvcc --all | grep 12_8              # Specific versions
-flox show flox-cuda/cudaPackages.cudatoolkit    # All available versions
-```
-
-### Essential CUDA Packages
-| Package Pattern | Purpose | Example |
-|-----------------|---------|---------|
-| `cudaPackages_X_Y.cudatoolkit` | Main CUDA Toolkit | `cudaPackages_12_8.cudatoolkit` |
-| `cudaPackages_X_Y.cuda_nvcc` | NVIDIA C++ Compiler | `cudaPackages_12_8.cuda_nvcc` |
-| `cudaPackages.cuda_cudart` | CUDA Runtime API | `cuda_cudart` |
-| `cudaPackages_X_Y.libcublas` | Linear algebra | `cudaPackages_12_8.libcublas` |
-| `cudaPackages_X_Y.cudnn_9_11` | Deep neural networks | `cudaPackages_12_8.cudnn_9_11` |
-
-### Critical: Conflict Resolution
-**CUDA packages have LICENSE file conflicts requiring explicit priorities:**
-```toml
-[install]
-cuda_nvcc.pkg-path = "flox-cuda/cudaPackages_12_8.cuda_nvcc"
-cuda_nvcc.systems = ["aarch64-linux", "x86_64-linux"]
-cuda_nvcc.priority = 1                    # Highest priority
-
-cuda_cudart.pkg-path = "flox-cuda/cudaPackages.cuda_cudart"
-cuda_cudart.systems = ["aarch64-linux", "x86_64-linux"]
-cuda_cudart.priority = 2
-
-cudatoolkit.pkg-path = "flox-cuda/cudaPackages_12_8.cudatoolkit"
-cudatoolkit.systems = ["aarch64-linux", "x86_64-linux"]
-cudatoolkit.priority = 3                  # Lower for LICENSE conflicts
-
-gcc.pkg-path = "gcc"
-gcc-unwrapped.pkg-path = "gcc-unwrapped"  # For libstdc++
-gcc-unwrapped.priority = 5
-```
-
-### Cross-Platform GPU Development
-Dual CUDA/CPU packages for portability (Linux gets CUDA, macOS gets CPU fallback):
-```toml
-[install]
-## CUDA packages (Linux only)
-cuda-pytorch.pkg-path = "flox-cuda/python3Packages.torch"
-cuda-pytorch.systems = ["x86_64-linux", "aarch64-linux"]
-cuda-pytorch.priority = 1
-
-## Non-CUDA packages (macOS + Linux fallback)
-pytorch.pkg-path = "python313Packages.pytorch"
-pytorch.systems = ["x86_64-darwin", "aarch64-darwin"]
-pytorch.priority = 6                     # Lower priority
-```
-
-### GPU Detection Pattern
-**Dynamic CPU/GPU package installation in hooks:**
-```bash
-setup_gpu_packages() {
-  venv="$FLOX_ENV_CACHE/venv"
-  
-  if [ ! -f "$FLOX_ENV_CACHE/.deps_installed" ]; then
-    if lspci 2>/dev/null | grep -E 'NVIDIA|AMD' > /dev/null; then
-      echo "GPU detected, installing CUDA packages"
-      uv pip install --python "$venv/bin/python" \
-        torch torchvision --index-url https://download.pytorch.org/whl/cu129
-    else
-      echo "No GPU detected, installing CPU packages"
-      uv pip install --python "$venv/bin/python" \
-        torch torchvision --index-url https://download.pytorch.org/whl/cpu
-    fi
-    touch "$FLOX_ENV_CACHE/.deps_installed"
-  fi
-}
-```
-
-### Best Practices
-- **Always use priority values**: CUDA packages have predictable conflicts
-- **Version consistency**: Use specific versions (e.g., `_12_8`) for reproducibility
-- **Modular design**: Split base CUDA, math libs, debugging into separate environments
-- **Test compilation**: Verify `nvcc hello.cu -o hello` works after setup
-- **Platform constraints**: Always include `systems = ["aarch64-linux", "x86_64-linux"]`
-
-### Common CUDA Gotchas
-- **CUDA toolkit ≠ complete toolkit**: Add libraries (libcublas, cudnn) as needed
-- **License conflicts**: Every CUDA package may need explicit priority
-- **No macOS support**: Use Metal alternatives on Darwin
-- **Version mixing**: Don't mix CUDA versions; use consistent `_X_Y` suffixes
-
-### Complete Example
-```toml
-[install]
-cuda_nvcc.pkg-path = "flox-cuda/cudaPackages_12_8.cuda_nvcc"
-cuda_nvcc.priority = 1
-cuda_cudart.pkg-path = "flox-cuda/cudaPackages.cuda_cudart"
-cuda_cudart.priority = 2
-libcublas.pkg-path = "flox-cuda/cudaPackages.libcublas"
-torch.pkg-path = "flox-cuda/python3Packages.torch"
-python313Full.pkg-path = "python313Full"
-uv.pkg-path = "uv"
-gcc.pkg-path = "gcc"
-gcc-unwrapped.pkg-path = "gcc-unwrapped"
-gcc-unwrapped.priority = 5
-
-[vars]
-CUDA_VERSION = "12.8"
-PYTORCH_CUDA_ALLOC_CONF = "max_split_size_mb:128"
-
-[hook]
-setup_cuda_venv() {
-  venv="$FLOX_ENV_CACHE/venv"
-  [ ! -d "$venv" ] && uv venv "$venv" --python python3
-  [ -f "$venv/bin/activate" ] && source "$venv/bin/activate"
-}
-```
-
-## 17 **Platform-Specific Pattern**:
+## 17 Platform-Specific Pattern
 ```toml
 # Darwin-specific frameworks and tools
 IOKit.pkg-path = "darwin.apple_sdk.frameworks.IOKit"
@@ -1047,4 +1157,4 @@ bashInteractive.pkg-path = "bashInteractive"
 bashInteractive.systems = ["x86_64-darwin", "aarch64-darwin"]
 ```
 
-**Note**: CUDA is Linux-only (see §16d); use Metal-accelerated packages on Darwin when available.
+**Note**: Some GPU packages are Linux-only; use Metal-accelerated alternatives on Darwin when available.

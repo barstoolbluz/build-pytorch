@@ -2,7 +2,7 @@
 
 ## Choosing Your Variant
 
-**60 production-ready variants** are available. Choose based on your hardware:
+**52 production-ready variants** are available. Choose based on your hardware:
 
 ### Quick Selection
 
@@ -14,15 +14,16 @@ nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader
 
 | Your GPU | Compute Cap | Architecture | Example Package |
 |----------|-------------|--------------|-----------------|
-| DGX Spark | 12.1 | SM121 | `pytorch-python313-cuda12_8-sm121-avx512` |
+| DGX Spark | 12.1 | SM121 | `pytorch-python313-cuda13_0-sm121-armv9-nightly` |
 | RTX 5090 | 12.0 | SM120 | `pytorch-python313-cuda12_8-sm120-avx512` |
-| NVIDIA DRIVE Thor, Orin+ | 11.0 | SM110 | `pytorch-python313-cuda12_8-sm110-avx512` |
+| NVIDIA DRIVE Thor, Orin+ | 11.0 | SM110 | `pytorch-python313-cuda12_8-sm110-armv9` (ARM only) |
 | B300 | 10.3 | SM103 | `pytorch-python313-cuda12_8-sm103-avx512` |
 | B100, B200 | 10.0 | SM100 | `pytorch-python313-cuda12_8-sm100-avx512` |
 | H100, L40S | 9.0 | SM90 | `pytorch-python313-cuda12_8-sm90-avx512` |
 | RTX 4090, L40 | 8.9 | SM89 | `pytorch-python313-cuda12_8-sm89-avx512` |
 | RTX 3090, A40 | 8.6 | SM86 | `pytorch-python313-cuda12_8-sm86-avx512` |
 | A100, A30 | 8.0 | SM80 | `pytorch-python313-cuda12_8-sm80-avx512` |
+| GTX 1070/1080 Ti | 6.1 | SM61 | `pytorch-python313-cuda12_8-sm61-avx` (AVX only) |
 
 **CPU-only (no GPU)?**
 ```bash
@@ -35,7 +36,7 @@ lscpu | grep -E 'avx512|sve'
 - See `avx512f`? → Use `pytorch-python313-cpu-avx512` (general)
 - See `avx2` only? → Use `pytorch-python313-cpu-avx2` (broad compatibility)
 - See `sve2` (ARM)? → Use `pytorch-python313-cpu-armv9` (modern ARM)
-- ARM without sve2? → Use `pytorch-python313-cpu-armv8.2` (Graviton2)
+- ARM without sve2? → Use `pytorch-python313-cpu-armv8_2` (Graviton2)
 
 **Naming format:** `pytorch-python313-{cuda12_8-smXX|cpu}-{cpu-isa}`
 
@@ -63,9 +64,9 @@ flox build pytorch-python313-cuda12_8-sm89-avx512  # RTX 4090/L40
 flox build pytorch-python313-cuda12_8-sm90-avx512  # H100/L40S
 flox build pytorch-python313-cuda12_8-sm100-avx512 # B100/B200
 flox build pytorch-python313-cuda12_8-sm103-avx512 # B300
-flox build pytorch-python313-cuda12_8-sm110-avx512 # NVIDIA DRIVE Thor/Orin+
+flox build pytorch-python313-cuda12_8-sm110-armv9   # NVIDIA DRIVE Thor/Orin+ (ARM only)
 flox build pytorch-python313-cuda12_8-sm120-avx2   # RTX 5090
-flox build pytorch-python313-cuda12_8-sm121-avx512 # DGX Spark
+flox build pytorch-python313-cuda13_0-sm121-armv9-nightly # DGX Spark (nightly)
 
 # ARM variants (if on ARM server)
 flox build pytorch-python313-cpu-armv9             # Grace, Graviton3+
@@ -76,13 +77,13 @@ flox build pytorch-python313-cuda12_8-sm90-armv9   # H100 + Grace
 
 ```bash
 # Result appears as a symlink
-ls -lh result-pytorch-python313-cuda12_8-cpu-avx2
+ls -lh result-pytorch-python313-cpu-avx2
 
 # Test it
-./result-pytorch-python313-cuda12_8-cpu-avx2/bin/python -c "import torch; print(torch.__version__)"
+./result-pytorch-python313-cpu-avx2/bin/python -c "import torch; print(torch.__version__)"
 
 # Activate the environment
-source result-pytorch-python313-cuda12_8-cpu-avx2/bin/activate
+source result-pytorch-python313-cpu-avx2/bin/activate
 python -c "import torch; print(torch.__version__)"
 ```
 
@@ -90,24 +91,24 @@ python -c "import torch; print(torch.__version__)"
 
 The build command:
 ```bash
-flox build pytorch-python313-cuda12_8-cpu-avx2
+flox build pytorch-python313-cpu-avx2
 ```
 
 Is doing:
-1. Reading `.flox/pkgs/pytorch-python313-cuda12_8-cpu-avx2.nix`
+1. Reading `.flox/pkgs/pytorch-python313-cpu-avx2.nix`
 2. Calling `python3Packages.pytorch.overrideAttrs` with custom flags
 3. Setting `CXXFLAGS="-mavx2 -mfma"` for CPU optimization
 4. Compiling PyTorch from source (~1-3 hours)
-5. Creating a result symlink: `./result-pytorch-python313-cuda12_8-cpu-avx2`
+5. Creating a result symlink: `./result-pytorch-python313-cpu-avx2`
 
 ## Successful Output
 
 You saw this output which confirms everything is working:
 
 ```
-Building python3.13-pytorch-python313-cuda12_8-cpu-avx2-2.8.0 in Nix expression mode
+Building python3.13-pytorch-python313-cpu-avx2-2.8.0 in Nix expression mode
 this derivation will be built:
-  /nix/store/...-python3.13-pytorch-python313-cuda12_8-cpu-avx2-2.8.0.drv
+  /nix/store/...-python3.13-pytorch-python313-cpu-avx2-2.8.0.drv
 these 104 paths will be fetched (346.24 MiB download, 1977.98 MiB unpacked):
 ```
 
@@ -134,7 +135,7 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to Flox catalog (requires flox auth login)
-flox publish -o <your-org> pytorch-python313-cuda12_8-cpu-avx2
+flox publish -o <your-org> pytorch-python313-cpu-avx2
 flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512
 flox publish -o <your-org> pytorch-python313-cuda12_8-sm86-avx2
 
