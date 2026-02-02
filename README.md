@@ -1,31 +1,43 @@
-# PyTorch Builds — CUDA 12.9 Branch (SM103)
+# PyTorch Builds — CUDA 12.9 Branch
 
-This branch contains PyTorch build recipes that require **CUDA 12.9+**, which is needed for SM103 (Blackwell B300) GPU architecture.
+This branch contains PyTorch build recipes using **CUDA 12.9** via a pinned nixpkgs with the `cudaPackages_12_9` overlay. It covers all GPU architectures from `main` plus SM103 (Blackwell B300).
 
 ## Why a Separate Branch?
 
-SM103 (`sm_103`) is not recognized by `nvcc` in CUDA 12.8 (the default in nixpkgs on `main`). CUDA 12.9 adds SM103 support. Since the PyTorch override pattern binds `cudaPackages` from the nixpkgs scope, the only way to use CUDA 12.9 is to pin nixpkgs to a revision that defaults to CUDA 12.9.
+SM103 (`sm_103`) is not recognized by `nvcc` in CUDA 12.8 (the default in nixpkgs on `main`). CUDA 12.9 adds SM103 support. This branch pins nixpkgs and applies an overlay to select `cudaPackages_12_9` for all builds.
 
-## Recipes (6 variants)
+## Recipes (50 variants)
 
-| Package Name | CPU ISA | Platform |
+### GPU Architectures
+
+| Architecture | GPU Examples | Variants |
 |---|---|---|
-| `pytorch-python313-cuda12_9-sm103-avx2` | AVX2 | x86_64-linux |
-| `pytorch-python313-cuda12_9-sm103-avx512` | AVX-512 | x86_64-linux |
-| `pytorch-python313-cuda12_9-sm103-avx512bf16` | AVX-512 BF16 | x86_64-linux |
-| `pytorch-python313-cuda12_9-sm103-avx512vnni` | AVX-512 VNNI | x86_64-linux |
-| `pytorch-python313-cuda12_9-sm103-armv8_2` | ARMv8.2-A | aarch64-linux |
-| `pytorch-python313-cuda12_9-sm103-armv9` | ARMv9-A | aarch64-linux |
+| SM61 (Pascal) | GTX 1070, 1080 Ti | avx, avx2 |
+| SM80 (Ampere DC) | A100, A30 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM86 (Ampere) | RTX 3090, A40 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM89 (Ada) | RTX 4090, L40 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM90 (Hopper) | H100, L40S | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM100 (Blackwell DC) | B100, B200 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM103 (Blackwell DC) | B300 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+| SM120 (Blackwell) | RTX 5090 | avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
 
-## Setup
+### CPU-Only
 
-The nixpkgs pin in each `.nix` file must point to a nixpkgs commit where `cudaPackages` defaults to CUDA 12.9. Update the `url` in `builtins.fetchTarball` accordingly.
+| Variants |
+|---|
+| avx2, avx512, avx512bf16, avx512vnni, armv8_2, armv9 |
+
+### SM61 Notes
+
+- **sm61-avx**: AVX-only build for older CPUs. Disables cuDNN, FBGEMM, MKLDNN, NNPACK (require AVX2+).
+- **sm61-avx2**: Modern CPU with Pascal GPU. Only cuDNN disabled (SM61 < SM75 GPU limitation).
 
 ## Building
 
 ```bash
 git checkout cuda-12_9
-flox build pytorch-python313-cuda12_9-sm103-avx2
+flox build pytorch-python313-cuda12_9-sm90-avx2
+flox build pytorch-python313-cpu-avx512
 ```
 
 ## Related Branches
