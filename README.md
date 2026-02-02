@@ -13,7 +13,7 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 ## Build Matrix
 
-**52 production-ready variants** covering GPU architectures (SM80/SM86/SM89/SM90/SM100/SM103/SM120) × 6 CPU instruction sets (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9), plus SM110 (2 ARM-only variants), SM61 (1 AVX-only legacy variant), SM121 (1 ARMv9-only nightly), plus 6 CPU-only builds.
+**43 variants on main** (CUDA 12.8) covering GPU architectures SM61/SM80/SM86/SM89/SM90/SM100/SM120 × CPU instruction sets, plus 6 CPU-only builds. Additional variants on separate branches: **6 on cuda-12_9** (SM103) and **3 on cuda-13_0** (SM110 + SM121). **52 total across all branches.**
 
 ### Complete Variant Matrix
 
@@ -55,44 +55,48 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 | | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm100-avx512vnni` | B100/B200 + INT8 inference |
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm100-armv8_2` | B100/B200 + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm100-armv9` | B100/B200 + ARM Grace |
-| **SM103 (Blackwell B300)** | AVX2 | `pytorch-python313-cuda12_8-sm103-avx2` | B300 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm103-avx512` | B300 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm103-avx512bf16` | B300 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm103-avx512vnni` | B300 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm103-armv8_2` | B300 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm103-armv9` | B300 + ARM Grace |
 | **SM61 (Pascal)** | AVX | `pytorch-python313-cuda12_8-sm61-avx` | GTX 1070/1080 Ti + legacy AVX CPUs |
-| **SM110 (Blackwell Thor/DRIVE)** | ARMv8.2 | `pytorch-python313-cuda12_8-sm110-armv8_2` | NVIDIA DRIVE + ARM automotive |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm110-armv9` | NVIDIA DRIVE + ARM Grace |
 | **SM120 (Blackwell)** | AVX2 | `pytorch-python313-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
 | | AVX-512 | `pytorch-python313-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
 | | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
 | | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm120-armv8_2` | RTX 5090 + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
-| **SM121 (DGX Spark)** | ARMv9 | `pytorch-python313-cuda13_0-sm121-armv9-nightly` | DGX Spark (ARMv9-only, CUDA 13.0 nightly) |
+### Variants on Other Branches
+
+Some GPU architectures require a newer CUDA toolkit than what's in nixpkgs on main. These live on dedicated branches with pinned nixpkgs:
+
+| Branch | CUDA | Architectures | Variants |
+|--------|------|---------------|----------|
+| `cuda-12_9` | 12.9 | SM103 (B300) | 6 (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9) |
+| `cuda-13_0` | 13.0 | SM110 (Thor/DRIVE), SM121 (DGX Spark) | 2 ARM + 1 nightly |
+
+```bash
+git checkout cuda-12_9 && flox build pytorch-python313-cuda12_9-sm103-avx2
+git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm110-armv9
+```
 
 ### GPU Architecture Reference
 
-**SM121 (DGX Spark) - Compute Capability 12.1**
+**SM121 (DGX Spark) - Compute Capability 12.1** *(cuda-13_0 branch)*
 - Specialized Datacenter: DGX Spark
 - Driver: NVIDIA 570+
-- Features: Specialized datacenter workloads, high-performance computing
+- CUDA: Requires 12.9+ (nvcc 12.8 does not recognize sm_121)
 
 **SM120 (Blackwell) - Compute Capability 12.0**
 - Consumer: RTX 5090
 - Driver: NVIDIA 570+
 - Note: Requires PyTorch 2.7+ or nightly builds
 
-**SM110 (Blackwell Thor/NVIDIA DRIVE) - Compute Capability 11.0**
+**SM110 (Blackwell Thor/NVIDIA DRIVE) - Compute Capability 11.0** *(cuda-13_0 branch)*
 - Automotive/Edge: NVIDIA DRIVE platforms (Thor, Orin+)
 - Driver: NVIDIA 550+
-- Features: Automotive AI, autonomous driving, edge computing
+- CUDA: Requires 13.0+ (nvcc 12.8 does not recognize sm_110)
 
-**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3**
+**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3** *(cuda-12_9 branch)*
 - Datacenter: B300
 - Driver: NVIDIA 550+
-- Features: Advanced Blackwell datacenter capabilities
+- CUDA: Requires 12.9+ (nvcc 12.8 does not recognize sm_103)
 
 **SM100 (Blackwell Datacenter) - Compute Capability 10.0**
 - Datacenter: B100, B200
@@ -309,7 +313,7 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (52 variants)
+│   └── pkgs/                      # Nix expression builds (43 variants on main)
 │       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants
 │       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 1 SM61 variant (legacy)
 │       ├── pytorch-python313-cuda12_8-sm80-*.nix  # 6 SM80 variants
@@ -317,10 +321,7 @@ build-pytorch/
 │       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 6 SM89 variants
 │       ├── pytorch-python313-cuda12_8-sm90-*.nix  # 6 SM90 variants
 │       ├── pytorch-python313-cuda12_8-sm100-*.nix # 6 SM100 variants
-│       ├── pytorch-python313-cuda12_8-sm103-*.nix # 6 SM103 variants
-│       ├── pytorch-python313-cuda12_8-sm110-*.nix # 2 SM110 variants (ARM only)
-│       ├── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
-│       └── pytorch-python313-cuda13_0-sm121-*.nix # 1 SM121 variant (nightly)
+│       └── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
 ├── README.md
 ├── QUICKSTART.md
 ├── BLAS_DEPENDENCIES.md

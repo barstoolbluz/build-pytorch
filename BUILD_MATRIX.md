@@ -5,10 +5,8 @@
 This document defines the complete build matrix for custom PyTorch builds, explaining all dimensions and their interactions.
 
 **📖 Related Documentation:**
-- **[RECIPE_TEMPLATE.md](./RECIPE_TEMPLATE.md)** - Copy-paste templates for generating any variant
-- **[VERIFICATION_NOTES.md](./VERIFICATION_NOTES.md)** - Technical verification and sources
-- **[BLAS_DEPENDENCIES.md](./BLAS_DEPENDENCIES.md)** - BLAS backend details
 - **[README.md](./README.md)** - User guide and quick start
+- **[FLOX.md](./FLOX.md)** - Complete Flox environment guide
 
 ## Matrix Dimensions
 
@@ -33,25 +31,59 @@ Build Variant = f(Python_Version, GPU_Architecture, CPU_ISA, CUDA_Toolkit)
 
 **Supported GPU Architectures:**
 
-| SM Version | Architecture | GPUs | CUDA Requirement | Status |
-|------------|--------------|------|------------------|--------|
-| **SM120** | Blackwell | RTX 5090 | CUDA 12.8+ | Cutting edge |
-| **SM90** | Hopper | H100, H200, L40S | CUDA 12.0+ | Datacenter |
-| **SM89** | Ada Lovelace | RTX 4090, L4, L40 | CUDA 11.8+ | High-end gaming/workstation |
-| **SM86** | Ampere | RTX 3090, A5000, A40 | CUDA 11.1+ | Mainstream gaming/workstation |
-| **SM80** | Ampere | A100 | CUDA 11.0+ | Datacenter |
-| **SM75** | Turing | T4, RTX 20xx | CUDA 10.0+ | Legacy datacenter/gaming |
-| **CPU** | None | N/A | N/A | CPU-only builds |
+| SM Version | Architecture | GPUs | Min CUDA | Branch | Variants |
+|------------|--------------|------|----------|--------|----------|
+| **SM121** | Blackwell (DGX Spark) | DGX Spark | CUDA 12.9+ | `cuda-13_0` | 1 (ARMv9 nightly) |
+| **SM120** | Blackwell | RTX 5090 | CUDA 12.8+ | `main` | 6 |
+| **SM110** | Blackwell Thor/DRIVE | NVIDIA DRIVE | CUDA 13.0+ | `cuda-13_0` | 2 (ARM only) |
+| **SM103** | Blackwell B300 DC | B300 | CUDA 12.9+ | `cuda-12_9` | 6 |
+| **SM100** | Blackwell DC | B100, B200 | CUDA 12.8+ | `main` | 6 |
+| **SM90** | Hopper | H100, H200, L40S | CUDA 12.0+ | `main` | 6 |
+| **SM89** | Ada Lovelace | RTX 4090, L4, L40 | CUDA 11.8+ | `main` | 6 |
+| **SM86** | Ampere | RTX 3090, A5000, A40 | CUDA 11.1+ | `main` | 6 |
+| **SM80** | Ampere DC | A100, A30 | CUDA 11.0+ | `main` | 6 |
+| **SM61** | Pascal | GTX 1070/1080 Ti | CUDA 9.0+ | `main` | 1 (AVX only) |
+| **CPU** | None | N/A | N/A | `main` | 6 |
 
-**Naming:** `sm120`, `sm90`, `sm89`, `sm86`, `sm80`, `sm75`, `cpu`
-
-**Example:** `pytorch-py313-sm120-...`
+**Total: 52 variants** across 3 branches (43 on main, 6 on cuda-12_9, 3 on cuda-13_0).
 
 **Important Notes:**
-- SM120 requires PyTorch 2.7+ with CUDA 12.8+ (stable release available as of April 2025)
-- Older architectures (SM35-SM70) are deprecated in CUDA 13.0+
+- SM103 requires CUDA 12.9+ — `nvcc` 12.8 does not recognize `sm_103`
+- SM110 and SM121 require CUDA 13.0+ — `nvcc` 12.8 does not recognize them
 - GPU architecture determines MINIMUM CUDA toolkit version
 - PyTorch 2.7 ships with pre-built wheels for CUDA 12.8
+
+### Multi-Branch CUDA Strategy
+
+Architectures that require a newer CUDA toolkit than what's available in the default nixpkgs live on separate branches. Each branch pins nixpkgs to a revision with the required CUDA version.
+
+| Branch | CUDA Version | Architectures | Pattern |
+|--------|-------------|---------------|---------|
+| `main` | 12.8 (nixpkgs default) | SM61–SM100, SM120, CPU | Standard `python3Packages.pytorch.override` |
+| `cuda-12_9` | 12.9 (pinned nixpkgs) | SM103 | `nixpkgs_pinned.python3Packages.pytorch.override` |
+| `cuda-13_0` | 13.0 (pinned nixpkgs) | SM110, SM121 | Pinned nixpkgs (SM110) / from-scratch (SM121) |
+
+To build from a non-main branch:
+```bash
+git checkout cuda-12_9
+flox build pytorch-python313-cuda12_9-sm103-avx2
+```
+
+### SM → Minimum CUDA Version Reference
+
+| SM | Min CUDA | Notes |
+|----|----------|-------|
+| SM61 | 9.0 | Pascal (legacy) |
+| SM75 | 10.0 | Turing (no variants yet) |
+| SM80 | 11.0 | Ampere datacenter |
+| SM86 | 11.1 | Ampere consumer |
+| SM89 | 11.8 | Ada Lovelace |
+| SM90 | 12.0 | Hopper |
+| SM100 | 12.8 | Blackwell datacenter |
+| SM103 | 12.9 | Blackwell B300 — **not in CUDA 12.8** |
+| SM110 | 13.0 | Blackwell Thor/DRIVE — **not in CUDA 12.8** |
+| SM120 | 12.8 | Blackwell consumer |
+| SM121 | 12.9 | DGX Spark — **not in CUDA 12.8** |
 
 ### 3. CPU Instruction Set Architecture (ISA)
 
@@ -267,33 +299,31 @@ pytorch-python313-cuda12_8-cpu-avx2             # CPU-only
 
 ## Current Implementation Status
 
-### Implemented Variants (Proof-of-Concept)
+### main branch (CUDA 12.8) — 43 variants
 
-✅ `pytorch-python313-cuda12_8-sm120-avx512` - RTX 5090 (no CUDA version suffix yet)
-✅ `pytorch-python313-cuda12_8-sm90-avx512` - H100/L40S (no CUDA version suffix yet)
-✅ `pytorch-python313-cuda12_8-sm86-avx2` - RTX 3090/A40 (no CUDA version suffix yet)
-✅ `pytorch-python313-cuda12_8-cpu-avx2` - CPU-only
+| GPU | Variants | Status |
+|-----|----------|--------|
+| CPU-only | 6 (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9) | ✅ |
+| SM61 (Pascal) | 1 (AVX only) | ✅ |
+| SM80 (Ampere DC) | 6 | ✅ |
+| SM86 (Ampere) | 6 | ✅ |
+| SM89 (Ada) | 6 | ✅ |
+| SM90 (Hopper) | 6 | ✅ |
+| SM100 (Blackwell DC) | 6 | ✅ |
+| SM120 (Blackwell) | 6 | ✅ |
 
-**Current CUDA Version:** Uses whatever is in nixpkgs (likely 12.4-12.6)
+### cuda-12_9 branch — 6 variants
 
-### Recommended Next Steps
+| GPU | Variants | Status |
+|-----|----------|--------|
+| SM103 (B300) | 6 (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9) | ✅ |
 
-1. **Determine CUDA version in current nixpkgs:**
-   ```bash
-   nix eval nixpkgs#cudaPackages.cudatoolkit.version
-   ```
+### cuda-13_0 branch — 3 variants
 
-2. **Update naming to include CUDA version:**
-   - Rename files to include `-cu{version}` suffix
-   - Update `pname` in each .nix file
-   - Document CUDA version in README
-
-3. **Choose build strategy:** Minimal (Strategy 1) or Hybrid (Strategy 3)
-
-4. **Add CUDA version detection to builds:**
-   - Print CUDA version during build
-   - Verify compatibility with target SM arch
-   - Warn if mismatch detected
+| GPU | Variants | Status |
+|-----|----------|--------|
+| SM110 (Thor/DRIVE) | 2 (ARMv8.2, ARMv9) | ✅ |
+| SM121 (DGX Spark) | 1 (ARMv9 nightly) | ✅ |
 
 ## Naming Convention
 
@@ -569,10 +599,6 @@ All SM120 variants require:
 3. CPU ISA (AVX-512, AVX2, ARMv9, ARMv8)
 4. CUDA Toolkit (13.0, 12.9, 12.8, 12.6, 12.4, 12.2)
 
-**Current Implementation:** Minimal matrix with 4 variants (Python 3.13 only)
+**Current Implementation:** 52 variants across 3 branches (Python 3.13)
 
-**Recommended Strategy:** Hybrid approach (7 variants per Python version)
-
-**Total Potential Matrix:** 3 × 8 × 4 × 6 = **576 possible combinations**
-
-**Practical Matrix:** 7 variants × 3 Python versions = **21 total builds**
+**Branch Strategy:** main (CUDA 12.8, 43 variants) + cuda-12_9 (6 variants) + cuda-13_0 (3 variants)
