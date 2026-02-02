@@ -53,6 +53,7 @@
 - **Debug hooks not working** → §6 (Best Practices), §0 (Working Style)
 - **Understand build vs runtime** → §9.1 (Build hooks don't run)
 - **Debug build failures** → §9.2, §9.4 (Sandbox & running builds)
+- **Fixed-output derivations & hashes** → §10 (Fixed-Output Derivations)
 
 ### Advanced Topics
 - **Edit manifests programmatically** → §7 (Non-Interactive Editing)
@@ -688,6 +689,81 @@ export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
 **Parameterized `let` blocks** — variant-specific values at top, generic derivation below. This makes creating new variants a copy-and-edit-the-let-block operation.
 
 **Build banners** — every variant prints a configuration summary in `preConfigure` for build log readability.
+
+### Fixed-Output Derivations (FODs) and Hashes
+
+A **fixed-output derivation** is a derivation whose output is identified by a cryptographic hash of its *content*, not its build instructions. Nix grants FODs network access inside the otherwise-sealed sandbox — this is the **only** exception — because the content hash guarantees reproducibility: if the output doesn't match the declared hash, the build fails. This is why you see `hash`, `vendorHash`, `cargoHash`, and `npmDepsHash` attributes throughout Nix package definitions.
+
+#### Implicit FODs (fetchers)
+
+The most common FODs are the built-in fetchers:
+
+| Fetcher | Purpose | Key attributes |
+|---------|---------|----------------|
+| `fetchurl` | Download a single file | `url`, `hash` |
+| `fetchFromGitHub` | Download a repository snapshot | `owner`, `repo`, `rev`, `hash` |
+| `fetchgit` | Clone a git repo | `url`, `rev`, `hash` |
+
+These are FODs: Nix allows them to access the network during build, then verifies the output hash. If the hash doesn't match, the build fails — guaranteeing that the downloaded content is exactly what the packager intended.
+
+#### Language-builder sugar
+
+Several language-specific builders wrap FODs internally so you don't have to write them by hand:
+
+| Attribute | Builder | What it fetches |
+|-----------|---------|-----------------|
+| `vendorHash` | `buildGoModule` | Go module dependencies |
+| `cargoHash` | `rustPlatform.buildRustPackage` | Cargo crate dependencies |
+| `npmDepsHash` | `buildNpmPackage` | npm package dependencies |
+
+Each of these creates a hidden FOD that downloads dependencies into a store path, then feeds that path into a **pure** (no-network) build phase. You only interact with the hash attribute.
+
+#### Custom FODs
+
+When no built-in fetcher or language builder fits your use case, you can write an explicit FOD:
+
+```nix
+stdenv.mkDerivation {
+  name = "my-deps";
+  nativeBuildInputs = [ cacert curl ];  # tools needed to fetch
+
+  buildCommand = ''
+    # ... fetch dependencies into $out ...
+  '';
+
+  outputHashMode = "recursive";   # hash the whole directory tree
+  outputHashAlgo = "sha256";
+  outputHash = "sha256-AAAA...";  # from first failed build (see below)
+}
+```
+
+The main derivation then consumes this FOD as a regular input — a pure build with no network access:
+
+```nix
+stdenv.mkDerivation {
+  name = "my-package";
+  src = ./.;
+  myDeps = my-deps;  # the FOD above
+  # ... build using pre-fetched deps, no network needed ...
+}
+```
+
+#### Hash bootstrapping workflow
+
+1. Set `hash = "";` (empty string) or `hash = lib.fakeHash;`
+2. Run `flox build` — it **will fail** with: `hash mismatch, got sha256-XXXX...`
+3. Copy the correct `sha256-XXXX...` hash into your derivation
+4. Rebuild — succeeds
+
+This works for **all** hash attributes: `hash`, `vendorHash`, `cargoHash`, `npmDepsHash`, and custom `outputHash`.
+
+#### Gotcha: hash invalidation on version bumps
+
+Changing `version`, `rev`, `url`, or any attribute that alters the fetched content **invalidates** the hash. You must reset it (back to `""`) and re-derive it via the bootstrapping workflow above. The resulting "hash mismatch" error looks identical to step 2 — this is expected behavior, not a bug.
+
+#### Repo-specific note
+
+In this repository's Pattern A (simple override) and Pattern B (two-stage override), FOD hashes are inherited from the upstream nixpkgs `pytorch` derivation — you don't need to manage them. FOD hashes only matter when using **Pattern C** (from-scratch builds) or when adding new fetchers (e.g., a `fetchFromGitHub` for custom patches or third-party sources). If you add a new fetcher to any variant, use the hash bootstrapping workflow above to obtain the correct hash.
 
 
 ## 11 Publishing to Flox Catalog
