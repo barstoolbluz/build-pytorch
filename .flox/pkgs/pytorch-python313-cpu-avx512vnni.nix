@@ -7,17 +7,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: AVX-512 + VNNI (Vector Neural Network Instructions)
   cpuFlags = [
@@ -87,24 +83,24 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for AVX-512 VNNI (INT8 quantized inference)";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: x86-64 with AVX-512 + VNNI instruction set
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
-      - Workload: INT8 quantized model inference acceleration
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for AVX-512 VNNI (INT8 quantized inference)";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: x86-64 with AVX-512 + VNNI instruction set
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
+        - Workload: INT8 quantized model inference acceleration
 
-      Hardware support:
-      - CPU: Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
+        Hardware support:
+        - CPU: Intel Skylake-SP+ (2017+), AMD Zen 4+ (2022+)
 
-      Choose this if: You need CPU-only inference with quantized (INT8) models
-      on CPUs supporting AVX-512 VNNI instructions. Provides significant speedup
-      for INT8 inference compared to standard AVX-512 build.
-      NOT for training (use avx512bf16) or general FP32 (use avx512).
-    '';
-    platforms = [ "x86_64-linux" ];
-  };
+        Choose this if: You need CPU-only inference with quantized (INT8) models
+        on CPUs supporting AVX-512 VNNI instructions. Provides significant speedup
+        for INT8 inference compared to standard AVX-512 build.
+        NOT for training (use avx512bf16) or general FP32 (use avx512).
+      '';
+      platforms = [ "x86_64-linux" ];
+    };
 })

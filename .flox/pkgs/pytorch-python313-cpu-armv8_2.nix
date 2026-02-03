@@ -7,17 +7,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: ARMv8.2-A with FP16 and dot product
   cpuFlags = [
@@ -81,22 +77,22 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for ARMv8.2 (Graviton2, ARM servers)";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: ARMv8.2-A with FP16 and dot product instructions
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for ARMv8.2 (Graviton2, ARM servers)";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: ARMv8.2-A with FP16 and dot product instructions
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
 
-      Hardware support:
-      - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
+        Hardware support:
+        - CPU: ARM Neoverse N1, Cortex-A75+, AWS Graviton2
 
-      Choose this if: You need CPU-only PyTorch on ARM servers like
-      AWS Graviton2, or general ARMv8.2 hardware. For newer ARM servers
-      with ARMv9/SVE2 support (Graviton3+, Grace), use armv9 variant instead.
-    '';
-    platforms = [ "aarch64-linux" ];
-  };
+        Choose this if: You need CPU-only PyTorch on ARM servers like
+        AWS Graviton2, or general ARMv8.2 hardware. For newer ARM servers
+        with ARMv9/SVE2 support (Graviton3+, Grace), use armv9 variant instead.
+      '';
+      platforms = [ "aarch64-linux" ];
+    };
 })

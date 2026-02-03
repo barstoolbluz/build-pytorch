@@ -4,17 +4,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: AVX2 (no GPU)
   cpuFlags = [
@@ -78,22 +74,22 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for AVX2";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: x86-64 with AVX2 instruction set
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for AVX2";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: x86-64 with AVX2 instruction set
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
 
-      Hardware support:
-      - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
+        Hardware support:
+        - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
 
-      Choose this if: You need CPU-only PyTorch on older hardware without
-      AVX-512 support, or want maximum compatibility across x86-64 systems.
-      Good for development, testing, and inference on commodity hardware.
-    '';
-    platforms = [ "x86_64-linux" "aarch64-linux" ];
-  };
+        Choose this if: You need CPU-only PyTorch on older hardware without
+        AVX-512 support, or want maximum compatibility across x86-64 systems.
+        Good for development, testing, and inference on commodity hardware.
+      '';
+      platforms = [ "x86_64-linux" "aarch64-linux" ];
+    };
 })

@@ -7,17 +7,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: ARMv9-A with SVE/SVE2
   cpuFlags = [
@@ -81,23 +77,23 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for ARMv9 (Grace, Graviton3+, SVE2)";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: ARMv9-A with SVE/SVE2 (Scalable Vector Extensions)
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for ARMv9 (Grace, Graviton3+, SVE2)";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: ARMv9-A with SVE/SVE2 (Scalable Vector Extensions)
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
 
-      Hardware support:
-      - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
+        Hardware support:
+        - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
 
-      Choose this if: You need CPU-only PyTorch on modern ARM servers with
-      ARMv9/SVE2 support (Grace, Graviton3+). Provides better performance than
-      armv8_2 variant on supported hardware. For older ARM servers (Graviton2),
-      use armv8_2 variant instead.
-    '';
-    platforms = [ "aarch64-linux" ];
-  };
+        Choose this if: You need CPU-only PyTorch on modern ARM servers with
+        ARMv9/SVE2 support (Grace, Graviton3+). Provides better performance than
+        armv8_2 variant on supported hardware. For older ARM servers (Graviton2),
+        use armv8_2 variant instead.
+      '';
+      platforms = [ "aarch64-linux" ];
+    };
 })

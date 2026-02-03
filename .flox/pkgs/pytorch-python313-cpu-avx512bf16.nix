@@ -7,17 +7,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: AVX-512 + BF16 (Brain Float 16)
   cpuFlags = [
@@ -87,24 +83,24 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for AVX-512 BF16 (mixed-precision training)";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: x86-64 with AVX-512 + BF16 instruction set
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
-      - Workload: BF16 mixed-precision training acceleration
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for AVX-512 BF16 (mixed-precision training)";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: x86-64 with AVX-512 + BF16 instruction set
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
+        - Workload: BF16 mixed-precision training acceleration
 
-      Hardware support:
-      - CPU: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
+        Hardware support:
+        - CPU: Intel Cooper Lake+ (2020+), AMD Zen 4+ (2022+)
 
-      Choose this if: You need CPU-only mixed-precision training with BF16
-      on modern CPUs supporting AVX-512 BF16 instructions. Provides hardware
-      acceleration for BF16 operations compared to standard AVX-512 build.
-      NOT for INT8 inference (use avx512vnni) or general FP32 (use avx512).
-    '';
-    platforms = [ "x86_64-linux" ];
-  };
+        Choose this if: You need CPU-only mixed-precision training with BF16
+        on modern CPUs supporting AVX-512 BF16 instructions. Provides hardware
+        acceleration for BF16 operations compared to standard AVX-512 build.
+        NOT for INT8 inference (use avx512vnni) or general FP32 (use avx512).
+      '';
+      platforms = [ "x86_64-linux" ];
+    };
 })

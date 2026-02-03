@@ -4,17 +4,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision (pinned for consistency with CUDA builds)
+  # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
   }) {
     config = {
       allowUnfree = true;
-      cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # CPU optimization: AVX-512 (no GPU)
   cpuFlags = [
@@ -83,26 +79,26 @@ in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
-  meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for AVX-512 (general FP32 workloads)";
-    longDescription = ''
-      Custom PyTorch build for CPU-only workloads:
-      - GPU: None (CPU-only)
-      - CPU: x86-64 with AVX-512 instruction set
-      - BLAS: OpenBLAS for CPU linear algebra operations
-      - Python: 3.13
-      - Workload: General FP32 training and inference
+    meta = oldAttrs.meta // {
+      description = "PyTorch CPU-only optimized for AVX-512 (general FP32 workloads)";
+      longDescription = ''
+        Custom PyTorch build for CPU-only workloads:
+        - GPU: None (CPU-only)
+        - CPU: x86-64 with AVX-512 instruction set
+        - BLAS: OpenBLAS for CPU linear algebra operations
+        - Python: 3.13
+        - Workload: General FP32 training and inference
 
-      Hardware support:
-      - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+        Hardware support:
+        - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
 
-      Performance: ~2x improvement over AVX2 for FP32 operations.
+        Performance: ~2x improvement over AVX2 for FP32 operations.
 
-      Choose this if: You have modern server CPU with AVX-512 and need
-      general-purpose CPU-only PyTorch for FP32 training and inference.
-      For specialized workloads, consider avx512bf16 (BF16 training)
-      or avx512vnni (INT8 inference) variants instead.
-    '';
-    platforms = [ "x86_64-linux" ];
-  };
+        Choose this if: You have modern server CPU with AVX-512 and need
+        general-purpose CPU-only PyTorch for FP32 training and inference.
+        For specialized workloads, consider avx512bf16 (BF16 training)
+        or avx512vnni (INT8 inference) variants instead.
+      '';
+      platforms = [ "x86_64-linux" ];
+    };
 })
