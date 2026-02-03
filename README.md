@@ -1,6 +1,16 @@
-# PyTorch Builds — CUDA 12.9 Branch
+# PyTorch 2.9.1 Builds — CUDA 12.9.1 Branch
 
-This branch contains PyTorch build recipes using **CUDA 12.9** via a pinned nixpkgs with the `cudaPackages_12_9` overlay. It covers all GPU architectures from `main` plus SM103 (Blackwell B300).
+This branch contains **PyTorch 2.9.1** build recipes using **CUDA 12.9.1** via a pinned nixpkgs (`6a030d535719...`) with the `cudaPackages_12_9` overlay. It covers all GPU architectures from `main` plus SM103 (Blackwell B300).
+
+## Version Info
+
+| Component | Version |
+|-----------|---------|
+| PyTorch | 2.9.1 |
+| CUDA Toolkit | 12.9.1 |
+| cuDNN | 9.13.0 |
+| Python | 3.13 |
+| nixpkgs | `6a030d535719c5190187c4cec156f335e95e3211` |
 
 ## Why a Separate Branch?
 
@@ -42,5 +52,8 @@ flox build pytorch-python313-cpu-avx512
 
 ## Related Branches
 
-- **`main`** — CUDA 12.8 recipes (SM61, SM80–SM100, SM120, CPU)
-- **`cuda-13_0`** — CUDA 13.0 recipes (SM110, SM121)
+| Branch | PyTorch | CUDA | Architectures |
+|--------|---------|------|---------------|
+| **`main`** | 2.8.0 | 12.8 | SM61, SM80–SM100, SM120, CPU |
+| **`cuda-12_9`** | **2.9.1** | **12.9.1** | SM61, SM80–SM120, SM103, CPU |
+| **`cuda-13_0`** | TBD | 13.0 | SM110, SM121 |
