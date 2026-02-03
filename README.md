@@ -11,9 +11,19 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 - **Faster startup** - Less code to load means faster initialization
 - **Easier deployment** - Install only the variant you need
 
-## Build Matrix
+## Multi-Branch Strategy
 
-**43 variants on main** (CUDA 12.8) covering GPU architectures SM61/SM80/SM86/SM89/SM90/SM100/SM120 × CPU instruction sets, plus 6 CPU-only builds. Additional variants on separate branches: **6 on cuda-12_9** (SM103) and **3 on cuda-13_0** (SM110 + SM121). **52 total across all branches.**
+This repository provides PyTorch builds across multiple branches, each targeting a specific PyTorch + CUDA combination:
+
+| Branch | PyTorch | CUDA | Variants | Key Additions |
+|--------|---------|------|----------|---------------|
+| **`main`** | 2.8.0 | 12.8 | 43 | Stable baseline |
+| **`cuda-12_9`** | **2.9.1** | **12.9.1** | **50** | Full coverage + SM103 (B300) |
+| **`cuda-13_0`** | 2.10 | 13.0 | TBD | SM110 (DRIVE Thor), SM121 (DGX Spark) |
+
+Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
+
+## Build Matrix (this branch: main)
 
 ### Complete Variant Matrix
 
@@ -64,16 +74,19 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 | | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
 ### Variants on Other Branches
 
-Some GPU architectures require a newer CUDA toolkit than what's in nixpkgs on main. These live on dedicated branches with pinned nixpkgs:
+Different PyTorch + CUDA combinations live on dedicated branches:
 
-| Branch | CUDA | Architectures | Variants |
-|--------|------|---------------|----------|
-| `cuda-12_9` | 12.9 | SM103 (B300) | 6 (AVX2, AVX-512, AVX-512 BF16, AVX-512 VNNI, ARMv8.2, ARMv9) |
-| `cuda-13_0` | 13.0 | SM110 (Thor/DRIVE), SM121 (DGX Spark) | 2 ARM + 1 nightly |
+| Branch | PyTorch | CUDA | Architectures | Variants |
+|--------|---------|------|---------------|----------|
+| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM103 (B300) | **50** (full coverage) |
+| `cuda-13_0` | 2.10 | 13.0 | SM110 (DRIVE Thor), SM121 (DGX Spark) | TBD |
 
 ```bash
-git checkout cuda-12_9 && flox build pytorch-python313-cuda12_9-sm103-avx2
-git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm110-armv9
+# PyTorch 2.9.1 + CUDA 12.9.1 (recommended for latest features)
+git checkout cuda-12_9 && flox build pytorch-python313-cuda12_9-sm90-avx512
+
+# PyTorch 2.10 + CUDA 13.0 (DGX Spark, DRIVE Thor)
+git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm121-avx512
 ```
 
 ### GPU Architecture Reference
