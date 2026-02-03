@@ -29,7 +29,7 @@ let
   # Note: Official PyTorch binaries bundle MKL, but OpenBLAS is open-source
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512bf16";
 
     # Limit build parallelism to prevent memory saturation

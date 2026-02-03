@@ -23,7 +23,7 @@ let
   # Use OpenBLAS for CPU linear algebra
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python3Packages.pytorch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-armv8_2";
 
     # Limit build parallelism to prevent memory saturation

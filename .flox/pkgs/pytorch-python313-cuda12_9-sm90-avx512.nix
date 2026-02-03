@@ -31,7 +31,7 @@ let
 
 in
   # First, enable CUDA support via override
-  (nixpkgs_pinned.python3Packages.pytorch.override {
+  (nixpkgs_pinned.python3Packages.torch.override {
     cudaSupport = true;
     # Specify GPU targets using nixpkgs parameter
     gpuTargets = [ gpuArchSM ];

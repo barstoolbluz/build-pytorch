@@ -28,7 +28,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python3Packages.pytorch.override {
+  (nixpkgs_pinned.python3Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
