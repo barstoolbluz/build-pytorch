@@ -19,7 +19,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| `main` | 2.8.0 | 12.8 | 43 | Stable baseline |
+| `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
 | **`cuda-12_9`** ⬅️ | **2.9.1** | **12.9.1** | **50** | **This branch** — Full coverage + SM103 (B300) |
 | `cuda-13_0` | 2.10 | 13.0 | 3 | SM110 (DRIVE Thor), SM121 (DGX Spark) |
 
@@ -95,7 +95,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
-| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 43 (stable baseline) |
+| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
 | `cuda-13_0` | 2.10 | 13.0 | SM110 (DRIVE Thor), SM121 (DGX Spark) | 3 |
 
 ```bash
@@ -158,7 +158,7 @@ git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm121-avx512
 **SM61 (Pascal) - Compute Capability 6.1**
 - Consumer: GTX 1070, GTX 1080, GTX 1080 Ti
 - Driver: NVIDIA 390+
-- Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+). Only AVX CPU variant available.
+- Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+) for AVX variant. AVX2 variant disables cuDNN only.
 
 **Other Supported Architectures** (no variants yet, add as needed):
 - SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
@@ -354,9 +354,7 @@ build-pytorch/
 │       ├── pytorch-python313-cuda12_9-sm103-*.nix # 6 SM103 variants (B300)
 │       └── pytorch-python313-cuda12_9-sm120-*.nix # 6 SM120 variants
 ├── README.md
-├── QUICKSTART.md
-├── BLAS_DEPENDENCIES.md
-└── SUMMARY.md
+└── FLOX.md
 ```
 
 ### How It Works
