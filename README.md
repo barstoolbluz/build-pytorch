@@ -17,7 +17,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| **`main`** | 2.8.0 | 12.8 | 43 | Stable baseline |
+| **`main`** | 2.8.0 | 12.8 | 44 | Stable baseline |
 | **`cuda-12_9`** | **2.9.1** | **12.9.1** | **50** | Full coverage + SM103 (B300) |
 | **`cuda-13_0`** | 2.10 | 13.0 | 3 | SM110 (DRIVE Thor), SM121 (DGX Spark) |
 
@@ -74,6 +74,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | | ARMv8.2 | `pytorch-python313-cuda12_8-sm100-armv8_2` | B100/B200 + ARM Graviton2 |
 | | ARMv9 | `pytorch-python313-cuda12_8-sm100-armv9` | B100/B200 + ARM Grace |
 | **SM61 (Pascal)** | AVX | `pytorch-python313-cuda12_8-sm61-avx` | GTX 1070/1080 Ti + legacy AVX CPUs |
+| | AVX2 | `pytorch-python313-cuda12_8-sm61-avx2` | GTX 1070/1080 Ti + modern CPUs |
 | **SM120 (Blackwell)** | AVX2 | `pytorch-python313-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
 | | AVX-512 | `pytorch-python313-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
 | | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
@@ -149,7 +150,7 @@ git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm121-avx512
 **SM61 (Pascal) - Compute Capability 6.1**
 - Consumer: GTX 1070, GTX 1080, GTX 1080 Ti
 - Driver: NVIDIA 390+
-- Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+). Only AVX CPU variant available.
+- Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+) for AVX variant. AVX2 variant disables cuDNN only.
 
 **Other Supported Architectures** (no variants yet, add as needed):
 - SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
@@ -334,9 +335,9 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (43 variants on main)
+│   └── pkgs/                      # Nix expression builds (44 variants on main)
 │       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants
-│       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 1 SM61 variant (legacy)
+│       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 2 SM61 variants (Pascal)
 │       ├── pytorch-python313-cuda12_8-sm80-*.nix  # 6 SM80 variants
 │       ├── pytorch-python313-cuda12_8-sm86-*.nix  # 6 SM86 variants
 │       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 6 SM89 variants
@@ -344,9 +345,12 @@ build-pytorch/
 │       ├── pytorch-python313-cuda12_8-sm100-*.nix # 6 SM100 variants
 │       └── pytorch-python313-cuda12_8-sm120-*.nix # 6 SM120 variants
 ├── README.md
+├── FLOX.md
 ├── QUICKSTART.md
 ├── BLAS_DEPENDENCIES.md
-└── SUMMARY.md
+├── BUILD_MATRIX.md
+├── RECIPE_TEMPLATE.md
+└── TEST_GUIDE.md
 ```
 
 ### How It Works
