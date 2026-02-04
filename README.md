@@ -93,6 +93,8 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | | ARMv9 | `pytorch-python313-cuda12_9-sm120-armv9` | RTX 5090 + ARM Grace |
 ### Variants on Other Branches
 
+Different PyTorch + CUDA combinations live on dedicated branches:
+
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
@@ -473,7 +475,7 @@ in
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, L4, L40
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.8 with compute capability 8.9
+        - CUDA: 12.9 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
       '';
