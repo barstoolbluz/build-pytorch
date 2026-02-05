@@ -11,7 +11,7 @@
 let
   # GPU target: SM100 (Blackwell datacenter architecture - B100, B200)
   gpuArchNum = "100";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "sm_100";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  gpuArchSM = "10.0";  # For TORCH_CUDA_ARCH_LIST (dot notation)
 
   # CPU optimization: AVX-512 + VNNI (Vector Neural Network Instructions)
   cpuFlags = [
