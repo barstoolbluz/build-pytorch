@@ -12,9 +12,6 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # GPU target: SM90 (Hopper architecture - H100, L40S)
   gpuArchNum = "90";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)

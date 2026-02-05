@@ -12,9 +12,6 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # GPU target: SM89 (Ada Lovelace architecture - RTX 4090, L40)
   gpuArchNum = "89";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)

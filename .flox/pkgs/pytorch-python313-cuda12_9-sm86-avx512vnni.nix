@@ -12,9 +12,6 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
-    overlays = [
-      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
-    ];
   };
   # GPU target: SM86 (Ampere architecture - RTX 3090, A5000, A40)
   # PyTorch's CMake accepts numeric format (8.6) not sm_86
