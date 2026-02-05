@@ -18,7 +18,7 @@ let
 
   # GPU target: SM110 (Blackwell Thor/NVIDIA DRIVE - automotive/edge computing)
   gpuArchNum = "110";
-  gpuArchSM = "sm_110";
+  gpuArchSM = "11.0";
 
   # CPU optimization: ARMv9-A with SVE/SVE2
   cpuFlags = [
@@ -44,7 +44,7 @@ in
       echo "========================================="
       echo "PyTorch Build Configuration"
       echo "========================================="
-      echo "GPU Target: sm_110 (Blackwell Thor/DRIVE - Automotive/Edge)"
+      echo "GPU Target: 11.0 (Blackwell Thor/DRIVE - Automotive/Edge)"
       echo "CPU Features: ARMv9 + SVE/SVE2"
       echo "CUDA: 13.0 (pinned nixpkgs)"
       echo "========================================="

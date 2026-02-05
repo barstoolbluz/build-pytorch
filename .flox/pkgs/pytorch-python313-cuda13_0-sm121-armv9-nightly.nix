@@ -29,7 +29,7 @@ let
   };
 
   # GPU target: SM121 only
-  gpuArchSM = "sm_121";
+  gpuArchSM = "12.1";
   gpuArchNum = "121";
 
   # CPU optimizations
