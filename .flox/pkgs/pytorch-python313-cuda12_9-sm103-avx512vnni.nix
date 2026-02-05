@@ -20,7 +20,7 @@ let
 
   # GPU target: SM103 (Blackwell B300 datacenter architecture)
   gpuArchNum = "103";
-  gpuArchSM = "sm_103";
+  gpuArchSM = "10.3";
 
   # CPU optimization: AVX-512 with VNNI
   cpuFlags = [

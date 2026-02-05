@@ -18,7 +18,7 @@ let
   };
   # GPU target: SM90 (Hopper architecture - H100, L40S)
   gpuArchNum = "90";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
-  gpuArchSM = "sm_90";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+  gpuArchSM = "9.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
 
   # CPU optimization: AVX-512
   cpuFlags = [
