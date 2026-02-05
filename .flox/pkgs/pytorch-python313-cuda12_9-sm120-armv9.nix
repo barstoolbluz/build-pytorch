@@ -12,6 +12,9 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
+    overlays = [
+      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
+    ];
   };
   # GPU target: SM120 (Blackwell architecture - RTX 5090)
   # PyTorch's CMake accepts numeric format (12.0) not sm_120

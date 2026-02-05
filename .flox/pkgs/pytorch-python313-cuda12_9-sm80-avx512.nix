@@ -12,6 +12,9 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
+    overlays = [
+      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
+    ];
   };
   # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
   gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)

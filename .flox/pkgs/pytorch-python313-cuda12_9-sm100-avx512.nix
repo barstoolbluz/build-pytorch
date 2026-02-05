@@ -12,6 +12,9 @@ let
       allowUnfree = true;
       cudaSupport = true;
     };
+    overlays = [
+      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
+    ];
   };
   # GPU target: SM100 (Blackwell datacenter architecture - B100, B200)
   gpuArchNum = "100";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
