@@ -1,8 +1,9 @@
-# Future Session: Refactor PyTorch Build Recipes
+# Future Session: Refactor and Expand PyTorch Build Recipes
 
 ## Objective
 
-Refactor the remaining PyTorch build recipes to use the working three-overlay pattern established in `pytorch-python313-cuda13_0-sm120-avx512.nix`.
+1. **Refactor** the remaining PyTorch build recipes to use the working three-overlay pattern established in `pytorch-python313-cuda13_0-sm120-avx512.nix`
+2. **Create** new variants to align with TorchVision (sm121-armv8_2, sm121-armv9)
 
 ## Background
 
@@ -71,6 +72,19 @@ After refactoring is complete, update:
 2. **`/home/daedalus/dev/builds/build-pytorch/README.md`** (if applicable)
    - Document all available build variants
    - Add build instructions for each target
+
+## New Variants to Create
+
+TorchVision has variants that don't have standalone PyTorch counterparts. Create these for consistency:
+
+| Variant | GPU Target | CPU ISA | Platform | Notes |
+|---------|------------|---------|----------|-------|
+| `sm121-armv8_2` | SM121 (DGX Spark) | ARMv8.2 | aarch64-linux | Copy from sm120-avx512, adjust gpuArchSM and cpuFlags |
+| `sm121-armv9` | SM121 (DGX Spark) | ARMv9 | aarch64-linux | Copy from sm120-avx512, adjust gpuArchSM and cpuFlags |
+
+**Reference for ARM cpuFlags:**
+- ARMv8.2: `["-march=armv8.2-a+fp16+dotprod"]`
+- ARMv9: `["-march=armv9-a+sve2"]`
 
 ## Test Recipe
 
