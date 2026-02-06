@@ -1,10 +1,10 @@
-# PyTorch 2.10 optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
+# PyTorch 2.9.1 optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
 # Package name: pytorch-python313-cuda13_0-sm120-avx512
 
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Import nixpkgs at a specific revision with CUDA 13.0 and PyTorch 2.10
+  # Import nixpkgs at a specific revision with CUDA 13.0 and PyTorch 2.9.1
   nixpkgs_pinned = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
   }) {
@@ -31,18 +31,29 @@ let
     "-mfma"        # Fused multiply-add
   ];
 
+  # Helper to filter out magma from dependency lists
+  filterMagma = deps: builtins.filter (d: !(nixpkgs_pinned.lib.hasPrefix "magma" (d.pname or d.name or ""))) deps;
+
 in
   (nixpkgs_pinned.python3Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
-    # Disable MAGMA - incompatible with CUDA 13.0 (clockRate removed from cudaDeviceProp)
-    magma = null;
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda13_0-sm120-avx512";
+
+    # Remove MAGMA from all dependency lists - incompatible with CUDA 13.0
+    buildInputs = filterMagma (oldAttrs.buildInputs or []);
+    nativeBuildInputs = filterMagma (oldAttrs.nativeBuildInputs or []);
+    propagatedBuildInputs = filterMagma (oldAttrs.propagatedBuildInputs or []);
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];
+
+    # CMake flags to disable MAGMA at build configuration time
+    cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+      "-DUSE_MAGMA=OFF"
+    ];
 
     preConfigure = (oldAttrs.preConfigure or "") + ''
       export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
@@ -63,12 +74,13 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch 2.10 for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
+      description = "PyTorch 2.9.1 for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Blackwell consumer architecture (SM120) - RTX 5090
         - CPU: x86-64 with AVX-512 instruction set
         - CUDA: 13.0 with compute capability 12.0
+        - PyTorch: 2.9.1
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
 
