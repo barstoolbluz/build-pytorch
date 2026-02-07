@@ -1,5 +1,5 @@
-# PyTorch 2.10.0 optimized for NVIDIA DRIVE Thor (SM110) + ARMv9
-# Package name: pytorch210-python313-cuda13_0-sm110-armv9
+# PyTorch 2.10.0 optimized for NVIDIA RTX 40 Ada (SM89) + AVX512-BF16
+# Package name: pytorch210-python313-cuda13_0-sm89-avx512bf16
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -47,15 +47,15 @@ let
     ];
   };
 
-  gpuArchSM = "11.0";
-  cpuFlags = [ "-march=armv9-a+sve+sve2" ];
+  gpuArchSM = "8.9";
+  cpuFlags = [ "-mavx512f" "-mavx512dq" "-mavx512vl" "-mavx512bw" "-mavx512bf16" "-mfma" ];
 
 in
   (nixpkgs_pinned.python3Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch210-python313-cuda13_0-sm110-armv9";
+    pname = "pytorch210-python313-cuda13_0-sm89-avx512bf16";
     patches = [];
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];
@@ -82,7 +82,7 @@ in
       export CFLAGS="-I/build/cccl-compat $CFLAGS"
       export CUDAFLAGS="-I/build/cccl-compat $CUDAFLAGS"
 
-      echo "GPU: SM110 (DRIVE Thor) | CPU: ARMv9 | PyTorch 2.10.0 | CUDA 13.0"
+      echo "GPU: SM89 (RTX 40 Ada) | CPU: AVX512-BF16 | PyTorch 2.10.0 | CUDA 13.0"
     '';
 
     postPatch = (oldAttrs.postPatch or "") + ''
@@ -98,7 +98,7 @@ EOF
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch 2.10.0 for NVIDIA DRIVE Thor (SM110) + ARMv9";
-      platforms = [ "aarch64-linux" ];
+      description = "PyTorch 2.10.0 for NVIDIA RTX 40 Ada (SM89) + AVX512-BF16";
+      platforms = [ "x86_64-linux" ];
     };
   })

@@ -21,7 +21,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
 | `cuda-12_9` | 2.9.1 | 12.9.1 | 50 | Full coverage + SM103 (B300) |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **3** | **This branch** — SM110 (DRIVE Thor), SM121 (DGX Spark) |
+| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **44** | **This branch** — Full matrix with CUDA 13.0 |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -31,23 +31,43 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 |--------|---------|------|-------|--------|------------|-------------|
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `cuda-12_9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **TBD** | **3.13** | **570+** | **TBD** |
+| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **9.x** | **3.13** | **570+** | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 
 ## Build Matrix (this branch: cuda-13_0)
 
-**This branch builds PyTorch 2.10 with CUDA 13.0** — specialized for SM110 (DRIVE Thor) and SM121 (DGX Spark) which require CUDA 13.0+.
+**This branch builds PyTorch 2.10 with CUDA 13.0** — the complete 44-variant matrix including new architectures requiring CUDA 13.0+.
 
-### Variant Matrix (this branch)
+### Variant Matrix (this branch) — 44 Total Variants
 
-This branch contains specialized variants for SM110 (DRIVE Thor) and SM121 (DGX Spark) which require CUDA 13.0+:
+#### GPU x86 Variants (36 variants: 9 architectures × 4 ISAs)
 
-| GPU Architecture | CPU ISA | Package Name | Primary Use Case |
-|-----------------|---------|--------------|------------------|
-| **SM110 (DRIVE Thor)** | ARMv8.2 | `pytorch-python313-cuda13_0-sm110-armv8_2` | DRIVE Thor + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda13_0-sm110-armv9` | DRIVE Thor + ARM Grace |
-| **SM121 (DGX Spark)** | ARMv9 | `pytorch-python313-cuda13_0-sm121-armv9-nightly` | DGX Spark (nightly build) |
+| Architecture | avx2 | avx512 | avx512bf16 | avx512vnni |
+|--------------|------|--------|------------|------------|
+| **SM121** (DGX Spark) | ✓ | ✓ | ✓ | ✓ |
+| **SM120** (RTX 5090) | ✓ | ✓ | ✓ | ✓ |
+| **SM110** (DRIVE Thor) | ✓ | ✓ | ✓ | ✓ |
+| **SM103** (B300) | ✓ | ✓ | ✓ | ✓ |
+| **SM100** (B100/B200) | ✓ | ✓ | ✓ | ✓ |
+| **SM90** (H100 Hopper) | ✓ | ✓ | ✓ | ✓ |
+| **SM89** (RTX 40 Ada) | ✓ | ✓ | ✓ | ✓ |
+| **SM86** (RTX 30 Ampere) | ✓ | ✓ | ✓ | ✓ |
+| **SM80** (A100 Ampere DC) | ✓ | ✓ | ✓ | ✓ |
 
-For other GPU architectures (SM61–SM120, CPU-only), see the `main` or `cuda-12_9` branches.
+#### GPU ARM Variants (4 variants: 2 architectures × 2 CPU types)
+
+| Architecture | ARMv8.2 | ARMv9 |
+|--------------|---------|-------|
+| **SM121** (DGX Spark) | ✓ | ✓ |
+| **SM110** (DRIVE Thor) | ✓ | ✓ |
+
+#### CPU-Only Variants (4 variants)
+
+| CPU ISA | Package Name |
+|---------|--------------|
+| AVX2 | `pytorch-python313-cpu-avx2` |
+| AVX-512 | `pytorch-python313-cpu-avx512` |
+| AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` |
+| AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` |
 ### Variants on Other Branches
 
 For most GPU architectures (SM61–SM120, CPU-only), use these branches:
@@ -302,10 +322,17 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (3 variants on this branch)
-│       ├── pytorch-python313-cuda13_0-sm110-armv8_2.nix  # SM110 ARM variant
-│       ├── pytorch-python313-cuda13_0-sm110-armv9.nix    # SM110 ARM variant
-│       └── pytorch-python313-cuda13_0-sm121-armv9-nightly.nix # SM121 nightly
+│   └── pkgs/                      # Nix expression builds (44 variants on this branch)
+│       ├── pytorch-python313-cuda13_0-sm80-*.nix    # A100 Ampere DC (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm86-*.nix    # RTX 30 Ampere (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm89-*.nix    # RTX 40 Ada (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm90-*.nix    # H100 Hopper (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm100-*.nix   # B100/B200 (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm103-*.nix   # B300 (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm110-*.nix   # DRIVE Thor (4 x86 + 2 ARM)
+│       ├── pytorch-python313-cuda13_0-sm120-*.nix   # RTX 5090 (4 x86 ISAs)
+│       ├── pytorch-python313-cuda13_0-sm121-*.nix   # DGX Spark (4 x86 + 2 ARM)
+│       └── pytorch-python313-cpu-*.nix              # CPU-only (4 x86 ISAs)
 ├── README.md
 └── FLOX.md
 ```

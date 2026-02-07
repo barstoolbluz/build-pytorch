@@ -1,5 +1,5 @@
-# PyTorch 2.10.0 optimized for NVIDIA DRIVE Thor (SM110) + ARMv9
-# Package name: pytorch210-python313-cuda13_0-sm110-armv9
+# PyTorch 2.10.0 optimized for NVIDIA B300 (SM103) + AVX2
+# Package name: pytorch210-python313-cuda13_0-sm103-avx2
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -47,15 +47,15 @@ let
     ];
   };
 
-  gpuArchSM = "11.0";
-  cpuFlags = [ "-march=armv9-a+sve+sve2" ];
+  gpuArchSM = "10.3";
+  cpuFlags = [ "-mavx2" "-mfma" "-mf16c" ];
 
 in
   (nixpkgs_pinned.python3Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch210-python313-cuda13_0-sm110-armv9";
+    pname = "pytorch210-python313-cuda13_0-sm103-avx2";
     patches = [];
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];
@@ -82,7 +82,7 @@ in
       export CFLAGS="-I/build/cccl-compat $CFLAGS"
       export CUDAFLAGS="-I/build/cccl-compat $CUDAFLAGS"
 
-      echo "GPU: SM110 (DRIVE Thor) | CPU: ARMv9 | PyTorch 2.10.0 | CUDA 13.0"
+      echo "GPU: SM103 (B300) | CPU: AVX2 | PyTorch 2.10.0 | CUDA 13.0"
     '';
 
     postPatch = (oldAttrs.postPatch or "") + ''
@@ -98,7 +98,7 @@ EOF
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch 2.10.0 for NVIDIA DRIVE Thor (SM110) + ARMv9";
-      platforms = [ "aarch64-linux" ];
+      description = "PyTorch 2.10.0 for NVIDIA B300 (SM103) + AVX2";
+      platforms = [ "x86_64-linux" ];
     };
   })
