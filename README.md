@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `cuda-12_9` branch** — PyTorch 2.9.1 + CUDA 12.9.1 (50 variants)
+> **You are on the `cuda-12_9` branch** — PyTorch 2.9.1 + CUDA 12.9.1 (57 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -20,7 +20,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
-| **`cuda-12_9`** ⬅️ | **2.9.1** | **12.9.1** | **50** | **This branch** — Full coverage + SM103 (B300) |
+| **`cuda-12_9`** ⬅️ | **2.9.1** | **12.9.1** | **57** | **This branch** — Full coverage + SM75/SM103 (B300) |
 | `cuda-13_0` | 2.10 | 13.0 | 3 | SM110 (DRIVE Thor), SM121 (DGX Spark) |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
@@ -35,18 +35,25 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 ## Build Matrix (this branch: cuda-12_9)
 
-**This branch builds PyTorch 2.9.1 with CUDA 12.9.1** — 50 variants covering all GPU architectures plus SM103 (B300).
+**This branch builds PyTorch 2.9.1 with CUDA 12.9.1** — 57 variants covering all GPU architectures plus SM75 (Turing) and SM103 (B300).
 
 ### Complete Variant Matrix
 
 | GPU Architecture | CPU ISA | Package Name | Primary Use Case |
 |-----------------|---------|--------------|------------------|
-| **CPU-only** | AVX2 | `pytorch-python313-cpu-avx2` | Development, broad x86-64 compatibility |
+| **CPU-only** | AVX | `pytorch-python313-cpu-avx` | Sandy Bridge+ maximum compatibility |
+| | AVX2 | `pytorch-python313-cpu-avx2` | Development, broad x86-64 compatibility |
 | | AVX-512 | `pytorch-python313-cpu-avx512` | General FP32 CPU training/inference |
 | | AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` | BF16 mixed-precision training |
 | | AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` | INT8 quantized inference |
 | | ARMv8.2 | `pytorch-python313-cpu-armv8_2` | ARM Graviton2, older ARM servers |
 | | ARMv9 | `pytorch-python313-cpu-armv9` | ARM Grace, Graviton3+, modern ARM |
+| **SM75 (Turing)** | AVX2 | `pytorch-python313-cuda12_9-sm75-avx2` | T4/RTX 2080 Ti + broad CPU compatibility |
+| | AVX-512 | `pytorch-python313-cuda12_9-sm75-avx512` | T4/RTX 2080 Ti + general workloads |
+| | AVX-512 BF16 | `pytorch-python313-cuda12_9-sm75-avx512bf16` | T4/RTX 2080 Ti + BF16 training |
+| | AVX-512 VNNI | `pytorch-python313-cuda12_9-sm75-avx512vnni` | T4/RTX 2080 Ti + INT8 inference |
+| | ARMv8.2 | `pytorch-python313-cuda12_9-sm75-armv8_2` | T4/RTX 2080 Ti + ARM Graviton2 |
+| | ARMv9 | `pytorch-python313-cuda12_9-sm75-armv9` | T4/RTX 2080 Ti + ARM Grace |
 | **SM80 (Ampere DC)** | AVX2 | `pytorch-python313-cuda12_9-sm80-avx2` | A100/A30 + broad CPU compatibility |
 | | AVX-512 | `pytorch-python313-cuda12_9-sm80-avx512` | A100/A30 + general workloads |
 | | AVX-512 BF16 | `pytorch-python313-cuda12_9-sm80-avx512bf16` | A100/A30 + BF16 training |
@@ -98,6 +105,7 @@ Different PyTorch + CUDA combinations live on dedicated branches:
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
+| **`cuda-12_9`** ⬅️ | 2.9.1 | 12.9.1 | SM61–SM120, SM75, SM103, CPU | 57 (this branch) |
 | `cuda-13_0` | 2.10 | 13.0 | SM110 (DRIVE Thor), SM121 (DGX Spark) | 3 |
 
 ```bash
@@ -157,17 +165,26 @@ git checkout cuda-13_0 && flox build pytorch-python313-cuda13_0-sm121-avx512
 - Driver: NVIDIA 450+
 - Features: Multi-Instance GPU (MIG), Tensor cores (3rd gen), FP64 Tensor cores
 
+**SM75 (Turing) - Compute Capability 7.5**
+- Datacenter: Tesla T4, Quadro RTX 8000
+- Consumer: RTX 2080 Ti, RTX 2080, RTX 2070
+- Driver: NVIDIA 418+
+- Features: Tensor cores (1st gen), RT cores (1st gen), FP16 acceleration
+
 **SM61 (Pascal) - Compute Capability 6.1**
 - Consumer: GTX 1070, GTX 1080, GTX 1080 Ti
 - Driver: NVIDIA 390+
 - Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+) for AVX variant. AVX2 variant disables cuDNN only.
 
-**Other Supported Architectures** (no variants yet, add as needed):
-- SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
-
 ### CPU Variant Guide
 
 Choose the right CPU variant based on your hardware and workload:
+
+**AVX (Maximum Compatibility)**
+- Hardware: Intel Sandy Bridge+ (2011+), AMD Bulldozer+ (2011+)
+- Use for: Legacy hardware, maximum x86-64 compatibility
+- Choose when: Running on very old CPUs without AVX2 support
+- Note: FBGEMM, MKLDNN, NNPACK disabled (require AVX2+)
 
 **AVX2 (Broad Compatibility)**
 - Hardware: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
@@ -233,6 +250,7 @@ nvidia-smi --query-gpu=compute_cap --format=csv,noheader
 | RTX 4090, RTX 4080, RTX 4070 series, L4, L40 | 8.9 | **SM89** |
 | RTX 3090, RTX 3090 Ti, RTX 3080 Ti, A5000, A40 | 8.6 | **SM86** |
 | A100, A30 | 8.0 | **SM80** |
+| T4, RTX 2080 Ti, Quadro RTX 8000 | 7.5 | **SM75** |
 | GTX 1070, 1080, 1080 Ti | 6.1 | **SM61** |
 
 **3. Which CPU ISA should you use?**
@@ -249,6 +267,7 @@ grep -E 'avx|sve' /proc/cpuinfo
 | `avx512_vnni` | x86-64 | INT8 inference | `avx512vnni` |
 | `avx512f` | x86-64 | General workloads | `avx512` |
 | `avx2` (no avx512) | x86-64 | General workloads | `avx2` |
+| `avx` only (no avx2) | x86-64 | Legacy Sandy Bridge+ | `avx` |
 | `sve` and `sve2` | ARM | Modern ARM (Grace, Graviton3+) | `armv9` |
 | Neither | ARM | Older ARM (Graviton2) | `armv8_2` |
 
@@ -345,9 +364,10 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (50 variants on this branch)
-│       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants
+│   └── pkgs/                      # Nix expression builds (57 variants on this branch)
+│       ├── pytorch-python313-cpu-*.nix            # 7 CPU-only variants (including AVX)
 │       ├── pytorch-python313-cuda12_9-sm61-*.nix  # 2 SM61 variants (Pascal)
+│       ├── pytorch-python313-cuda12_9-sm75-*.nix  # 6 SM75 variants (Turing)
 │       ├── pytorch-python313-cuda12_9-sm80-*.nix  # 6 SM80 variants
 │       ├── pytorch-python313-cuda12_9-sm86-*.nix  # 6 SM86 variants
 │       ├── pytorch-python313-cuda12_9-sm89-*.nix  # 6 SM89 variants
