@@ -21,7 +21,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
 | `cuda-12_9` | 2.9.1 | 12.9.1 | 50 | Full coverage + SM103 (B300) |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **36** | **This branch** — Full matrix with CUDA 13.0 |
+| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **41** | **This branch** — Full matrix with CUDA 13.0 |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -37,19 +37,20 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 **This branch builds PyTorch 2.10 with CUDA 13.0** — the complete 44-variant matrix including new architectures requiring CUDA 13.0+.
 
-### Variant Matrix (this branch) — 36 Total Variants
+### Variant Matrix (this branch) — 41 Total Variants
 
-#### GPU x86 Variants (28 variants: 7 architectures × 4 ISAs)
+#### GPU x86 Variants (32 variants: 8 architectures × 4 ISAs)
 
 | Architecture | avx2 | avx512 | avx512bf16 | avx512vnni |
 |--------------|------|--------|------------|------------|
-| **SM120** (RTX 5090) | ✓ | ✓ | ✓ | ✓ |
+| **SM120** (RTX 5090 Blackwell) | ✓ | ✓ | ✓ | ✓ |
 | **SM103** (B300) | ✓ | ✓ | ✓ | ✓ |
 | **SM100** (B100/B200) | ✓ | ✓ | ✓ | ✓ |
 | **SM90** (H100 Hopper) | ✓ | ✓ | ✓ | ✓ |
 | **SM89** (RTX 40 Ada) | ✓ | ✓ | ✓ | ✓ |
 | **SM86** (RTX 30 Ampere) | ✓ | ✓ | ✓ | ✓ |
 | **SM80** (A100 Ampere DC) | ✓ | ✓ | ✓ | ✓ |
+| **SM75** (T4/RTX 20 Turing) | ✓ | ✓ | ✓ | ✓ |
 
 #### GPU ARM Variants (4 variants: 2 architectures × 2 CPU types)
 
@@ -60,14 +61,15 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | **SM121** (DGX Spark) | ✓ | ✓ |
 | **SM110** (DRIVE Thor) | ✓ | ✓ |
 
-#### CPU-Only Variants (4 variants)
+#### CPU-Only Variants (5 variants)
 
-| CPU ISA | Package Name |
-|---------|--------------|
-| AVX2 | `pytorch-python313-cpu-avx2` |
-| AVX-512 | `pytorch-python313-cpu-avx512` |
-| AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` |
-| AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` |
+| CPU ISA | Package Name | Hardware Target |
+|---------|--------------|-----------------|
+| AVX | `pytorch-python313-cpu-avx` | Sandy Bridge+ (2011+) - Maximum compatibility |
+| AVX2 | `pytorch-python313-cpu-avx2` | Haswell+ (2013+) |
+| AVX-512 | `pytorch-python313-cpu-avx512` | Skylake-X+ (2017+) |
+| AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` | Cooper Lake+ (2020+) |
+| AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` | Skylake-SP+ (2017+) |
 ### Variants on Other Branches
 
 For most GPU architectures (SM61–SM120, CPU-only), use these branches:
@@ -134,17 +136,26 @@ git checkout main && flox build pytorch-python313-cuda12_8-sm90-avx512
 - Driver: NVIDIA 450+
 - Features: Multi-Instance GPU (MIG), Tensor cores (3rd gen), FP64 Tensor cores
 
+**SM75 (Turing) - Compute Capability 7.5**
+- Consumer: RTX 2080 Ti, RTX 2080, RTX 2070, RTX 2060
+- Datacenter: T4, Quadro RTX 8000, Quadro RTX 6000
+- Driver: NVIDIA 418+
+- Features: RT cores (1st gen), Tensor cores (2nd gen)
+
 **SM61 (Pascal) - Compute Capability 6.1**
 - Consumer: GTX 1070, GTX 1080, GTX 1080 Ti
 - Driver: NVIDIA 390+
 - Note: cuDNN 9.11+ dropped SM < 7.5 support. FBGEMM, MKLDNN, NNPACK disabled (require AVX2+) for AVX variant. AVX2 variant disables cuDNN only.
 
-**Other Supported Architectures** (no variants yet, add as needed):
-- SM75 (Turing): T4, RTX 2080 Ti, Quadro RTX 8000
-
 ### CPU Variant Guide
 
 Choose the right CPU variant based on your hardware and workload:
+
+**AVX (Maximum Compatibility)**
+- Hardware: Intel Sandy Bridge+ (2011+), AMD Bulldozer+ (2011+)
+- Use for: Maximum CPU compatibility, legacy systems
+- Choose when: Running on older CPUs without AVX2 support
+- Note: Disables FBGEMM, MKLDNN, NNPACK (require AVX2+)
 
 **AVX2 (Broad Compatibility)**
 - Hardware: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
@@ -210,6 +221,7 @@ nvidia-smi --query-gpu=compute_cap --format=csv,noheader
 | RTX 4090, RTX 4080, RTX 4070 series, L4, L40 | 8.9 | **SM89** |
 | RTX 3090, RTX 3090 Ti, RTX 3080 Ti, A5000, A40 | 8.6 | **SM86** |
 | A100, A30 | 8.0 | **SM80** |
+| T4, RTX 2080 Ti, Quadro RTX 8000 | 7.5 | **SM75** |
 | GTX 1070, 1080, 1080 Ti | 6.1 | **SM61** |
 
 **3. Which CPU ISA should you use?**
@@ -322,7 +334,8 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (36 variants on this branch)
+│   └── pkgs/                      # Nix expression builds (41 variants on this branch)
+│       ├── pytorch-python313-cuda13_0-sm75-*.nix    # T4/RTX 20 Turing (4 x86 ISAs)
 │       ├── pytorch-python313-cuda13_0-sm80-*.nix    # A100 Ampere DC (4 x86 ISAs)
 │       ├── pytorch-python313-cuda13_0-sm86-*.nix    # RTX 30 Ampere (4 x86 ISAs)
 │       ├── pytorch-python313-cuda13_0-sm89-*.nix    # RTX 40 Ada (4 x86 ISAs)
@@ -332,7 +345,7 @@ build-pytorch/
 │       ├── pytorch-python313-cuda13_0-sm110-*.nix   # DRIVE Thor (2 ARM only)
 │       ├── pytorch-python313-cuda13_0-sm120-*.nix   # RTX 5090 (4 x86 ISAs)
 │       ├── pytorch-python313-cuda13_0-sm121-*.nix   # DGX Spark (2 ARM only)
-│       └── pytorch-python313-cpu-*.nix              # CPU-only (4 x86 ISAs)
+│       └── pytorch-python313-cpu-*.nix              # CPU-only (5 x86 ISAs)
 ├── README.md
 └── FLOX.md
 ```
