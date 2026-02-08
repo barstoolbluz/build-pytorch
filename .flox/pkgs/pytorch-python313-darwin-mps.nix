@@ -33,7 +33,7 @@ let
     ];
   };
 
-  darwinFrameworks = with nixpkgs_pinned.darwin.apple_sdk.frameworks; [
+  darwinFrameworks = with nixpkgs_pinned.darwin.apple_sdk_14_0.frameworks; [
     Accelerate
     Metal
     MetalPerformanceShaders
