@@ -23,12 +23,46 @@
     "profile": {},
     "options": {
       "systems": [
+        "aarch64-darwin",
         "aarch64-linux",
+        "x86_64-darwin",
         "x86_64-linux"
       ]
     }
   },
   "packages": [
+    {
+      "attr_path": "gcc",
+      "broken": false,
+      "derivation": "/nix/store/wj4k4brjq51724ma0i35ch5j272jb9l1-gcc-wrapper-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-wrapper-14.3.0",
+      "pname": "gcc",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:02:27.726489Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/cmkfhc8ydb11ci4d7p9zvfwa8ldlqj9i-gcc-wrapper-14.3.0-info",
+        "man": "/nix/store/zyj3s791p5gmh1inlh7dabp0nkhhyghw-gcc-wrapper-14.3.0-man",
+        "out": "/nix/store/qdi5hxxqwhvljdwa2z8caziynwrfq19m-gcc-wrapper-14.3.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
     {
       "attr_path": "gcc",
       "broken": false,
@@ -64,6 +98,38 @@
     {
       "attr_path": "gcc",
       "broken": false,
+      "derivation": "/nix/store/nv460qxkgwdxa5b2p1ywj9mjc86fxyh1-gcc-wrapper-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0 (wrapper script)",
+      "install_id": "gcc",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-wrapper-14.3.0",
+      "pname": "gcc",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:01:04.307148Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/xdj9w2c9pv7pwz3dhklwnpfpqk8gyjy7-gcc-wrapper-14.3.0-info",
+        "man": "/nix/store/2xwg44ir12p6l3r0rmc2gsdwn782lgyn-gcc-wrapper-14.3.0-man",
+        "out": "/nix/store/m7v6w0gms0fcz0cqwxnign7kfm6mx1h3-gcc-wrapper-14.3.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gcc",
+      "broken": false,
       "derivation": "/nix/store/20y7rngzq2487g4hmdgn94a9gdhjdn5k-gcc-wrapper-14.3.0.drv",
       "description": "GNU Compiler Collection, version 14.3.0 (wrapper script)",
       "install_id": "gcc",
@@ -92,6 +158,39 @@
       "system": "x86_64-linux",
       "group": "toplevel",
       "priority": 5
+    },
+    {
+      "attr_path": "gcc-unwrapped",
+      "broken": false,
+      "derivation": "/nix/store/np62waa1jb4jllaps79ca9jbil4yd8cj-gcc-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0",
+      "install_id": "gcc-unwrapped",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-14.3.0",
+      "pname": "gcc-unwrapped",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:02:27.727573Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/ax1rs3ldmkwfm5qvzz1qx1m8yj1kka4l-gcc-14.3.0-info",
+        "lib": "/nix/store/a7nc0jv9kjwqwr0lk9kkc8pi7a9h3mp6-gcc-14.3.0-lib",
+        "man": "/nix/store/n3za4s5dir36cycvgzxfllgjv5frdkni-gcc-14.3.0-man",
+        "out": "/nix/store/54v1wz1xc9vs2s6742lk6s8n0sl6vvj0-gcc-14.3.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 6
     },
     {
       "attr_path": "gcc-unwrapped",
@@ -131,6 +230,39 @@
     {
       "attr_path": "gcc-unwrapped",
       "broken": false,
+      "derivation": "/nix/store/zrxcv6v2cnpwkfkqbr3k3jp01f3p1rll-gcc-14.3.0.drv",
+      "description": "GNU Compiler Collection, version 14.3.0",
+      "install_id": "gcc-unwrapped",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "gcc-14.3.0",
+      "pname": "gcc-unwrapped",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:01:04.307704Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "14.3.0",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/r1cws18g3hfnbfpg5lvf6ildvb3y9gpd-gcc-14.3.0-info",
+        "lib": "/nix/store/j0nafq9rf69lvj0199mdqz0ihpsj69ic-gcc-14.3.0-lib",
+        "man": "/nix/store/sq997a0fh71lxd8nmq9yvw8y17p8mx9n-gcc-14.3.0-man",
+        "out": "/nix/store/2did06badcbgyx95pcxy2kri5byhzlsl-gcc-14.3.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 6
+    },
+    {
+      "attr_path": "gcc-unwrapped",
+      "broken": false,
       "derivation": "/nix/store/3mv6qnrxadlfs9mr39i76l0rrjli5zc4-gcc-14.3.0.drv",
       "description": "GNU Compiler Collection, version 14.3.0",
       "install_id": "gcc-unwrapped",
@@ -149,6 +281,8 @@
       "version": "14.3.0",
       "outputs_to_install": [
         "man",
+        "out",
+        "out",
         "out"
       ],
       "outputs": {
@@ -162,6 +296,36 @@
       "system": "x86_64-linux",
       "group": "toplevel",
       "priority": 6
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/yimqxnjr2llky01qrvl573f33jw3cbnl-git-2.50.1.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "git-2.50.1",
+      "pname": "git",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:02:27.811898Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.50.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/36rqvcm3q9jdbzysr6x6si9i15yyy9yh-git-2.50.1-doc",
+        "out": "/nix/store/56avrmkafl3ymr5azsgx4lagzrhc79nd-git-2.50.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
     },
     {
       "attr_path": "git",
@@ -191,6 +355,36 @@
         "out": "/nix/store/jpadzfxc9zz3cacng4wlyn6vzhgf3mga-git-2.50.1"
       },
       "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/wrk624mik2q1kg5nf70bjxsnbj6sj76a-git-2.50.1.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "git-2.50.1",
+      "pname": "git",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:01:04.387006Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.50.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/axw33im2q7q6bi3j8cbhi139n9k1q9zb-git-2.50.1-doc",
+        "out": "/nix/store/h32rn7zl7ac3jl0iidf7ll3rwj81961x-git-2.50.1"
+      },
+      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
@@ -228,6 +422,35 @@
     {
       "attr_path": "python313Full",
       "broken": false,
+      "derivation": "/nix/store/ji54ahlg2i3aak8a749j903q1pwy9vms-python3-3.13.6.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python313Full",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "python3-3.13.6",
+      "pname": "python313Full",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T02:03:25.951764Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/hazbazlwrri3yjgs7m0xfckzdvliyppw-python3-3.13.6"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313Full",
+      "broken": false,
       "derivation": "/nix/store/z3w5j4q3wypmpy1iz672941yy8b68afm-python3-3.13.6.drv",
       "description": "High-level dynamically-typed programming language",
       "install_id": "python313Full",
@@ -252,6 +475,35 @@
         "out": "/nix/store/k0xjq43s8vqxpq38wi2qgjv8nwyh26pf-python3-3.13.6"
       },
       "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313Full",
+      "broken": false,
+      "derivation": "/nix/store/zmxwjd8gkxnw19ig890lz4hcgz54mx6g-python3-3.13.6.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python313Full",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "name": "python3-3.13.6",
+      "pname": "python313Full",
+      "rev": "b599843bad24621dcaa5ab60dac98f9b0eb1cabe",
+      "rev_count": 858212,
+      "rev_date": "2025-09-08T16:06:28Z",
+      "scrape_date": "2025-09-10T03:02:04.628958Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.6",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xsp2xa0yl974lilapxidnzaxamh2pcjl-python3-3.13.6"
+      },
+      "system": "x86_64-darwin",
       "group": "toplevel",
       "priority": 5
     },
