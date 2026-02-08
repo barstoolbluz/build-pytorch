@@ -19,9 +19,9 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
-| `cuda-12_9` | 2.9.1 | 12.9.1 | 57 | Full coverage + SM75/SM103 |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **59** | **This branch** — Full matrix with CUDA 13.0 + ARM |
+| `main` | 2.8.0 | 12.8 | 45 | Stable baseline + Darwin MPS |
+| `cuda-12_9` | 2.9.1 | 12.9.1 | 58 | Full coverage + SM75/SM103 + Darwin MPS |
+| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **60** | **This branch** — Full matrix SM75–SM121 + ARM + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -35,9 +35,9 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 ## Build Matrix (this branch: cuda-13_0)
 
-**This branch builds PyTorch 2.10 with CUDA 13.0** — the complete 59-variant matrix including new architectures requiring CUDA 13.0+ and ARM CPU support.
+**This branch builds PyTorch 2.10 with CUDA 13.0** — 60 variants including new architectures requiring CUDA 13.0+, ARM CPU support, and 1 Darwin/macOS variant.
 
-### Complete Variant Matrix — 59 Variants
+### Complete Variant Matrix — 60 Variants
 
 *Package pattern: `pytorch-python313-cuda13_0-{gpu}-{cpu}` | CPU-only: `pytorch-python313-cpu-{cpu}`*
 *Click package names to view build recipes.*
@@ -103,6 +103,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | | ARMv9 | [`sm120-armv9`](.flox/pkgs/pytorch-python313-cuda13_0-sm120-armv9.nix) | RTX 5090 + Grace/Graviton3+ |
 | **SM121 (DGX Spark)** | ARMv8.2 | [`sm121-armv8_2`](.flox/pkgs/pytorch-python313-cuda13_0-sm121-armv8_2.nix) | DGX Spark + Graviton2/older ARM |
 | | ARMv9 | [`sm121-armv9`](.flox/pkgs/pytorch-python313-cuda13_0-sm121-armv9.nix) | DGX Spark + Grace/Graviton3+ |
+| **Darwin MPS** | — | [`darwin-mps`](.flox/pkgs/pytorch-python313-darwin-mps.nix) | Apple Silicon (M1–M4) with Metal GPU |
 
 ### Variants on Other Branches
 
@@ -110,8 +111,8 @@ For most GPU architectures (SM61–SM120, CPU-only), use these branches:
 
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
-| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
-| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 | **57** (recommended) |
+| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 45 (stable baseline) |
+| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103, Darwin | **58** (recommended) |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for most use cases)
@@ -227,9 +228,27 @@ Choose the right CPU variant based on your hardware and workload:
 - Choose when: You have Grace, Graviton3+, or other modern ARM processors
 - Detection: `lscpu | grep sve` or `/proc/cpuinfo` shows `sve` and `sve2`
 
+### Darwin / macOS Variants
+
+| Package | GPU | Platform | Requirements |
+|---------|-----|----------|--------------|
+| `pytorch-python313-darwin-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
+
+```bash
+# Build on Apple Silicon Mac
+flox build pytorch-python313-darwin-mps
+```
+
+- **MPS (Metal Performance Shaders)**: GPU-accelerated builds for Apple Silicon Macs
+- BLAS: vecLib (Apple Accelerate framework)
+
 ## Variant Selection Guide
 
 ### Quick Decision Tree
+
+**0. Are you on macOS?**
+- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python313-darwin-mps`
+- Linux → Continue to step 1
 
 **1. Do you have an NVIDIA GPU?**
 - NO → Use CPU-only variant (choose CPU ISA below)
@@ -291,7 +310,7 @@ grep -E 'avx|sve' /proc/cpuinfo
 lscpu | grep avx512f  # ✓ Found AVX-512
 
 # Build variant
-flox build pytorch-python313-cuda12_8-sm86-avx512
+flox build pytorch-python313-cuda13_0-sm86-avx512
 ```
 
 **Scenario 2: H100 Datacenter + AMD EPYC Zen 4**
@@ -300,10 +319,10 @@ flox build pytorch-python313-cuda12_8-sm86-avx512
 lscpu | grep avx512_vnni  # ✓ Found for INT8 inference
 
 # For training
-flox build pytorch-python313-cuda12_8-sm90-avx512
+flox build pytorch-python313-cuda13_0-sm90-avx512
 
 # For INT8 inference
-flox build pytorch-python313-cuda12_8-sm90-avx512vnni
+flox build pytorch-python313-cuda13_0-sm90-avx512vnni
 ```
 
 **Scenario 3: Development Laptop (no GPU)**
@@ -321,6 +340,11 @@ lscpu | grep sve2  # ✓ Found (Graviton3 has SVE2)
 flox build pytorch-python313-cuda13_0-sm90-armv9
 ```
 
+**Scenario 5: MacBook Pro M3**
+```bash
+flox build pytorch-python313-darwin-mps
+```
+
 ## Quick Start
 
 ```bash
@@ -328,10 +352,10 @@ flox build pytorch-python313-cuda13_0-sm90-armv9
 flox activate
 
 # Build a specific variant
-flox build pytorch-python313-cuda12_8-sm90-avx512
+flox build pytorch-python313-cuda13_0-sm90-avx512
 
-# The result will be in ./result-pytorch-python313-cuda12_8-sm90-avx512/
-ls -lh result-pytorch-python313-cuda12_8-sm90-avx512/lib/python3.13/site-packages/torch/
+# The result will be in ./result-pytorch-python313-cuda13_0-sm90-avx512/
+ls -lh result-pytorch-python313-cuda13_0-sm90-avx512/lib/python3.13/site-packages/torch/
 ```
 
 ## Build Configuration Details
@@ -368,8 +392,9 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (59 variants on this branch)
+│   └── pkgs/                      # Nix expression builds (60 variants on this branch)
 │       ├── pytorch-python313-cpu-*.nix              # CPU-only (5 x86 + 2 ARM)
+│       ├── pytorch-python313-darwin-mps.nix         # MPS variant (Apple Silicon)
 │       ├── pytorch-python313-cuda13_0-sm75-*.nix    # T4/RTX 20 Turing (4 x86 + 2 ARM)
 │       ├── pytorch-python313-cuda13_0-sm80-*.nix    # A100 Ampere DC (4 x86 + 2 ARM)
 │       ├── pytorch-python313-cuda13_0-sm86-*.nix    # RTX 30 Ampere (4 x86 + 2 ARM)
@@ -419,12 +444,12 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to your Flox organization
-flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512
-flox publish -o <your-org> pytorch-python313-cuda12_8-sm86-avx2
-flox publish -o <your-org> pytorch-python313-cuda12_8-cpu-avx2
+flox publish -o <your-org> pytorch-python313-cuda13_0-sm90-avx512
+flox publish -o <your-org> pytorch-python313-cuda13_0-sm86-avx2
+flox publish -o <your-org> pytorch-python313-cuda13_0-cpu-avx2
 
 # Users install with:
-flox install <your-org>/pytorch-python313-cuda12_8-sm90-avx512
+flox install <your-org>/pytorch-python313-cuda13_0-sm90-avx512
 ```
 
 ## Build Times & Requirements
@@ -451,7 +476,7 @@ To add more variants (e.g., SM89 for RTX 4090):
 ### Example: Adding SM89 (RTX 4090) with AVX-512
 
 ```nix
-# .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
+# .flox/pkgs/pytorch-python313-cuda13_0-sm89-avx512.nix
 { python3Packages, lib, config, cudaPackages, addDriverRunpath }:
 
 let
@@ -476,7 +501,7 @@ in
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm89-avx512";
+    pname = "pytorch-python313-cuda13_0-sm89-avx512";
 
     # Set CPU optimization flags
     preConfigure = (oldAttrs.preConfigure or "") + ''
@@ -500,7 +525,7 @@ in
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, L4, L40
         - CPU: x86-64 with AVX-512 instruction set
-        - CUDA: 12.8 with compute capability 8.9
+        - CUDA: 13.0 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
         - Python: 3.13
       '';
@@ -547,6 +572,20 @@ blasBackend = mkl;  # Instead of openblas
 Use parallel compilation:
 ```bash
 NIX_BUILD_CORES=8 flox build <variant>
+```
+
+### MPS not available on Apple Silicon
+
+Ensure you're running macOS 12.3 or later:
+```bash
+sw_vers -productVersion  # Should be 12.3+
+```
+
+Verify MPS is available in Python:
+```python
+import torch
+print(torch.backends.mps.is_available())  # Should be True
+print(torch.backends.mps.is_built())      # Should be True
 ```
 
 ## Related Documentation
