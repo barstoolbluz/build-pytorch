@@ -124,5 +124,6 @@ echo ""
 systems = [
   "aarch64-linux",
   "x86_64-linux",
+  "aarch64-darwin"
 ]
 # GPU builds (CUDA) are Linux-only
