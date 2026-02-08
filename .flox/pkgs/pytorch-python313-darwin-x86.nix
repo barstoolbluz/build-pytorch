@@ -11,7 +11,7 @@
 
 let
   # Darwin frameworks for Accelerate BLAS
-  darwinFrameworks = with darwin.apple_sdk.frameworks; [
+  darwinFrameworks = with darwin.apple_sdk_14_0.frameworks; [
     Accelerate
   ];
 
