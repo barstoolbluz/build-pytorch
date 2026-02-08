@@ -58,6 +58,10 @@ in
       echo "CPU-only build | CPU: ARMv8.2 | PyTorch: 2.10.0"
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch 2.10.0 CPU-only + ARMv8.2";
       longDescription = ''

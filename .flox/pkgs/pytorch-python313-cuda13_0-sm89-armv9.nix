@@ -97,6 +97,10 @@ endif()
 EOF
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch 2.10.0 for NVIDIA RTX 4090/L40 (SM89) + ARMv9";
       platforms = [ "aarch64-linux" ];

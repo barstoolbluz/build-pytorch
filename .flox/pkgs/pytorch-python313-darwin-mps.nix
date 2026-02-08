@@ -90,6 +90,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch 2.10.0 with MPS GPU acceleration for Apple Silicon";
       longDescription = ''

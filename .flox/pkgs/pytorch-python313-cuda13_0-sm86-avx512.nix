@@ -97,6 +97,10 @@ endif()
 EOF
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch 2.10.0 for NVIDIA RTX 30 Ampere (SM86) + AVX-512";
       platforms = [ "x86_64-linux" ];

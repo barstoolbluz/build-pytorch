@@ -83,6 +83,10 @@ in
       echo "CPU-only build | CPU: AVX (max compat) | PyTorch: 2.10.0"
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch 2.10.0 CPU-only + AVX (maximum compatibility)";
       longDescription = ''

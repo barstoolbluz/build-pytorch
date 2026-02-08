@@ -544,6 +544,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
       platforms = [ "x86_64-linux" ];
@@ -595,6 +599,10 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     export BLAS=OpenBLAS
     export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
     export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+  '';
+
+  postInstall = (oldAttrs.postInstall or "") + ''
+    echo 1 > $out/.metadata-rev
   '';
 
   meta = oldAttrs.meta // {
@@ -689,6 +697,14 @@ export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
 **Parameterized `let` blocks** — variant-specific values at top, generic derivation below. This makes creating new variants a copy-and-edit-the-let-block operation.
 
 **Build banners** — every variant prints a configuration summary in `preConfigure` for build log readability.
+
+**Catalog metadata revision** — every variant includes a `postInstall` that writes a revision marker to `$out`:
+```nix
+postInstall = (oldAttrs.postInstall or "") + ''
+  echo 1 > $out/.metadata-rev
+'';
+```
+Nix derivation hashes depend on build outputs, not `meta` attributes. Without this, metadata-only changes (descriptions, platforms) produce the same store path and the Flox catalog never re-indexes them. Bump the number when changing only metadata.
 
 ### Fixed-Output Derivations (FODs) and Hashes
 
