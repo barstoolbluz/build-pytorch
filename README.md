@@ -20,7 +20,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
-| `cuda-12_9` | 2.9.1 | 12.9.1 | 50 | Full coverage + SM103 (B300) |
+| `cuda-12_9` | 2.9.1 | 12.9.1 | 57 | Full coverage + SM75/SM103 |
 | **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **59** | **This branch** — Full matrix with CUDA 13.0 + ARM |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
@@ -111,7 +111,7 @@ For most GPU architectures (SM61–SM120, CPU-only), use these branches:
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
-| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM103 (B300) | **50** (recommended) |
+| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 | **57** (recommended) |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for most use cases)
