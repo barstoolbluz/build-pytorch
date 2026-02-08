@@ -3,23 +3,28 @@
 #
 # macOS build for Intel-based Macs (x86_64)
 # Hardware: Intel Core i5/i7/i9, Xeon Mac Pro
+#
+# Note: Darwin builds use Flox's nixpkgs directly (not pinned) for SDK compatibility
 
-{ pkgs ? import <nixpkgs> {} }:
+{ python3Packages
+, lib
+, darwin
+}:
 
 let
-  nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
-  }) {
-    config = { allowUnfree = true; };
-  };
-
-  darwinFrameworks = with nixpkgs_pinned.darwin.apple_sdk.frameworks; [
+  # Darwin frameworks for Accelerate BLAS
+  darwinFrameworks = with darwin.apple_sdk.frameworks; [
     Accelerate
   ];
 
-  cpuFlags = [ "-mavx2" "-mfma" "-mf16c" ];
+  # CPU optimization: AVX2 (standard for Intel Macs)
+  cpuFlags = [
+    "-mavx2"
+    "-mfma"
+    "-mf16c"
+  ];
 
-in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
+in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-darwin-x86";
 
   passthru = oldAttrs.passthru // {
@@ -27,10 +32,10 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
     blasProvider = "accelerate";
   };
 
-  buildInputs = nixpkgs_pinned.lib.filter (p: !(nixpkgs_pinned.lib.hasPrefix "cuda" (p.pname or "")))
+  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or "")))
     (oldAttrs.buildInputs or []) ++ darwinFrameworks;
 
-  nativeBuildInputs = nixpkgs_pinned.lib.filter (p: p.pname or "" != "addDriverRunpath")
+  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath")
     (oldAttrs.nativeBuildInputs or []);
 
   preConfigure = (oldAttrs.preConfigure or "") + ''
@@ -41,8 +46,8 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
     export BLAS=Accelerate
     export USE_MKLDNN=1
 
-    export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
-    export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
+    export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
+    export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
 
     echo "========================================="
     echo "PyTorch Build Configuration"
