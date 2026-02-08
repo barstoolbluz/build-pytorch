@@ -203,8 +203,8 @@ Choose the right CPU variant based on your hardware and workload:
 
 | Package | GPU | Platform | Requirements |
 |---------|-----|----------|--------------|
-| `pytorch-python313-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
-| `pytorch-python313-cpu-darwin` | None (CPU-only) | x86_64-darwin | Intel Mac |
+| `pytorch-python313-darwin-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
+| `pytorch-python313-darwin-x86` | None (CPU-only) | x86_64-darwin | Intel Mac |
 
 **MPS (Apple Silicon)**
 - Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
@@ -223,8 +223,8 @@ Choose the right CPU variant based on your hardware and workload:
 ### Quick Decision Tree
 
 **0. Are you on macOS?**
-- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python313-mps`
-- Intel Mac → Use `pytorch-python313-cpu-darwin`
+- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python313-darwin-mps`
+- Intel Mac → Use `pytorch-python313-darwin-x86`
 - Linux → Continue to step 1
 
 **1. Do you have an NVIDIA GPU?**
@@ -318,12 +318,12 @@ flox build pytorch-python313-cuda12_8-sm90-armv9
 
 **Scenario 5: MacBook Pro M3**
 ```bash
-flox build pytorch-python313-mps
+flox build pytorch-python313-darwin-mps
 ```
 
 **Scenario 6: Intel Mac Pro**
 ```bash
-flox build pytorch-python313-cpu-darwin
+flox build pytorch-python313-darwin-x86
 ```
 
 ## Quick Start
@@ -375,8 +375,8 @@ build-pytorch/
 │   │   └── manifest.toml          # Build environment definition
 │   └── pkgs/                      # Nix expression builds (46 variants on main)
 │       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants (Linux)
-│       ├── pytorch-python313-mps.nix              # MPS variant (Apple Silicon)
-│       ├── pytorch-python313-cpu-darwin.nix       # CPU-only variant (Intel Mac)
+│       ├── pytorch-python313-darwin-mps.nix       # MPS variant (Apple Silicon)
+│       ├── pytorch-python313-darwin-x86.nix       # CPU-only variant (Intel Mac)
 │       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 2 SM61 variants (Pascal)
 │       ├── pytorch-python313-cuda12_8-sm80-*.nix  # 6 SM80 variants
 │       ├── pytorch-python313-cuda12_8-sm86-*.nix  # 6 SM86 variants
@@ -576,7 +576,7 @@ print(torch.backends.mps.is_built())      # Should be True
 
 Intel Macs do not support MPS (Metal Performance Shaders). Use the CPU-only variant:
 ```bash
-flox build pytorch-python313-cpu-darwin
+flox build pytorch-python313-darwin-x86
 ```
 
 For better CPU performance, the build uses Apple Accelerate framework and AVX2 optimizations.

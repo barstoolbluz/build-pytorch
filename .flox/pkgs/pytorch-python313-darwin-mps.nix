@@ -1,5 +1,5 @@
 # PyTorch with MPS (Metal Performance Shaders) for Apple Silicon
-# Package name: pytorch-python313-mps
+# Package name: pytorch-python313-darwin-mps
 #
 # macOS build for Apple Silicon (M1/M2/M3/M4) with Metal GPU acceleration
 # Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
@@ -21,7 +21,7 @@ let
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-mps";
+  pname = "pytorch-python313-darwin-mps";
 
   passthru = oldAttrs.passthru // {
     gpuArch = "mps";

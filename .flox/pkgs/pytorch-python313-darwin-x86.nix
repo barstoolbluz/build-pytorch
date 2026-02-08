@@ -1,5 +1,5 @@
 # PyTorch CPU-only for Intel Mac
-# Package name: pytorch-python313-cpu-darwin
+# Package name: pytorch-python313-darwin-x86
 #
 # macOS build for Intel-based Macs (x86_64)
 # Hardware: Intel Core i5/i7/i9, Xeon Mac Pro
@@ -23,7 +23,7 @@ let
   ];
 
 in python3Packages.pytorch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cpu-darwin";
+  pname = "pytorch-python313-darwin-x86";
 
   passthru = oldAttrs.passthru // {
     gpuArch = null;
