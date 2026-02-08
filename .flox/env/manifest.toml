@@ -122,10 +122,7 @@ echo ""
 [options]
 # Systems that environment is compatible with
 systems = [
-  "aarch64-darwin",
   "aarch64-linux",
-  "x86_64-darwin",
   "x86_64-linux",
 ]
 # GPU builds (CUDA) are Linux-only
-# Darwin variants use MPS (Apple Silicon) or CPU-only (Intel Mac)
