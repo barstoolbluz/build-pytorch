@@ -19,9 +19,9 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| `main` | 2.8.0 | 12.8 | 46 | Stable baseline + Darwin |
-| `cuda-12_9` | 2.9.1 | 12.9.1 | 59 | Full coverage + SM75/SM103 + Darwin |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **61** | **This branch** — Full matrix with CUDA 13.0 + ARM + Darwin |
+| `main` | 2.8.0 | 12.8 | 44 | Stable baseline |
+| `cuda-12_9` | 2.9.1 | 12.9.1 | 57 | Full coverage + SM75/SM103 |
+| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **59** | **This branch** — Full matrix with CUDA 13.0 + ARM |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -35,9 +35,9 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 ## Build Matrix (this branch: cuda-13_0)
 
-**This branch builds PyTorch 2.10 with CUDA 13.0** — the complete 61-variant matrix including new architectures requiring CUDA 13.0+, ARM CPU support, and 2 Darwin/macOS variants.
+**This branch builds PyTorch 2.10 with CUDA 13.0** — the complete 59-variant matrix including new architectures requiring CUDA 13.0+ and ARM CPU support.
 
-### Complete Variant Matrix — 61 Variants
+### Complete Variant Matrix — 59 Variants
 
 *Package pattern: `pytorch-python313-cuda13_0-{gpu}-{cpu}` | CPU-only: `pytorch-python313-cpu-{cpu}`*
 *Click package names to view build recipes.*
@@ -110,8 +110,8 @@ For most GPU architectures (SM61–SM120, CPU-only), use these branches:
 
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
-| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 46 (stable baseline) |
-| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103, Darwin | **59** (recommended) |
+| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU | 44 (stable baseline) |
+| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 | **57** (recommended) |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for most use cases)
@@ -227,33 +227,9 @@ Choose the right CPU variant based on your hardware and workload:
 - Choose when: You have Grace, Graviton3+, or other modern ARM processors
 - Detection: `lscpu | grep sve` or `/proc/cpuinfo` shows `sve` and `sve2`
 
-### Darwin / macOS Variants
-
-| Package | GPU | Platform | Requirements |
-|---------|-----|----------|--------------|
-| `pytorch-python313-darwin-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
-| `pytorch-python313-darwin-x86` | None (CPU-only) | x86_64-darwin | Intel Mac |
-
-**MPS (Apple Silicon)**
-- Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
-- Use for: GPU-accelerated training and inference on Apple Silicon
-- BLAS: Apple Accelerate framework
-- Note: MPS provides automatic GPU acceleration - no architecture variants needed
-
-**CPU-Darwin (Intel Mac)**
-- Hardware: Intel Core i5/i7/i9, Xeon Mac Pro
-- Use for: CPU-only workloads on Intel Macs
-- BLAS: Apple Accelerate framework
-- Note: Intel Macs do not support MPS
-
 ## Variant Selection Guide
 
 ### Quick Decision Tree
-
-**0. Are you on macOS?**
-- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python313-darwin-mps`
-- Intel Mac → Use `pytorch-python313-darwin-x86`
-- Linux → Continue to step 1
 
 **1. Do you have an NVIDIA GPU?**
 - NO → Use CPU-only variant (choose CPU ISA below)
@@ -345,16 +321,6 @@ lscpu | grep sve2  # ✓ Found (Graviton3 has SVE2)
 flox build pytorch-python313-cuda13_0-sm90-armv9
 ```
 
-**Scenario 5: MacBook Pro M3**
-```bash
-flox build pytorch-python313-darwin-mps
-```
-
-**Scenario 6: Intel Mac Pro**
-```bash
-flox build pytorch-python313-darwin-x86
-```
-
 ## Quick Start
 
 ```bash
@@ -402,10 +368,8 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (61 variants on this branch)
+│   └── pkgs/                      # Nix expression builds (59 variants on this branch)
 │       ├── pytorch-python313-cpu-*.nix              # CPU-only (5 x86 + 2 ARM)
-│       ├── pytorch-python313-darwin-mps.nix         # MPS variant (Apple Silicon)
-│       ├── pytorch-python313-darwin-x86.nix         # CPU-only variant (Intel Mac)
 │       ├── pytorch-python313-cuda13_0-sm75-*.nix    # T4/RTX 20 Turing (4 x86 + 2 ARM)
 │       ├── pytorch-python313-cuda13_0-sm80-*.nix    # A100 Ampere DC (4 x86 + 2 ARM)
 │       ├── pytorch-python313-cuda13_0-sm86-*.nix    # RTX 30 Ampere (4 x86 + 2 ARM)
@@ -584,29 +548,6 @@ Use parallel compilation:
 ```bash
 NIX_BUILD_CORES=8 flox build <variant>
 ```
-
-### MPS not available on Apple Silicon
-
-Ensure you're running macOS 12.3 or later:
-```bash
-sw_vers -productVersion  # Should be 12.3+
-```
-
-Verify MPS is available in Python:
-```python
-import torch
-print(torch.backends.mps.is_available())  # Should be True
-print(torch.backends.mps.is_built())      # Should be True
-```
-
-### Intel Mac performance is slow
-
-Intel Macs do not support MPS (Metal Performance Shaders). Use the CPU-only variant:
-```bash
-flox build pytorch-python313-darwin-x86
-```
-
-For better CPU performance, the build uses Apple Accelerate framework and AVX2 optimizations.
 
 ## Related Documentation
 
