@@ -21,7 +21,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 46 | Stable baseline + Darwin |
 | **`cuda-12_9`** ⬅️ | **2.9.1** | **12.9.1** | **59** | **This branch** — Full coverage + SM75/SM103 + Darwin |
-| `cuda-13_0` | 2.10 | 13.0 | 59 | Full matrix SM75–SM121 + ARM |
+| `cuda-13_0` | 2.10 | 13.0 | 61 | Full matrix SM75–SM121 + ARM + Darwin |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
