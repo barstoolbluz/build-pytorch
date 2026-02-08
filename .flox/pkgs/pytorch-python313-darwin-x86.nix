@@ -13,7 +13,7 @@ let
     config = { allowUnfree = true; };
   };
 
-  darwinFrameworks = with nixpkgs_pinned.darwin.apple_sdk_14_0.frameworks; [
+  darwinFrameworks = with nixpkgs_pinned.darwin.apple_sdk_12_3.frameworks; [
     Accelerate
   ];
 
