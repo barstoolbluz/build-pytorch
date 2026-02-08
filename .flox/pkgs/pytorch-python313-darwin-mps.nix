@@ -12,7 +12,7 @@
 
 let
   # Darwin frameworks for MPS and Accelerate
-  darwinFrameworks = with darwin.apple_sdk_14_0.frameworks; [
+  darwinFrameworks = with darwin.apple_sdk.frameworks; [
     Accelerate
     Metal
     MetalPerformanceShaders
