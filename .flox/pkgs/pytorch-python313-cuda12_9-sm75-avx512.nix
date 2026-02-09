@@ -38,6 +38,11 @@ in
     # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_9-sm75-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];

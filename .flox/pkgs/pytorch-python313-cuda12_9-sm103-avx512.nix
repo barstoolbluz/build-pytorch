@@ -33,6 +33,11 @@ in
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_9-sm103-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];

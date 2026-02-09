@@ -34,6 +34,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_9-sm75-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];

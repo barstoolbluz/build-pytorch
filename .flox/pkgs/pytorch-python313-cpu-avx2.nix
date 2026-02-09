@@ -34,6 +34,7 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
+    cpuISA = "avx2";
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS

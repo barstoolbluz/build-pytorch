@@ -27,6 +27,7 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = "mps";
     blasProvider = "veclib";
+    cpuISA = null;
   };
 
   # Filter out CUDA deps (base pytorch may include them)
