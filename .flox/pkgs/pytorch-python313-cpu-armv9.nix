@@ -39,6 +39,11 @@ in
     cudaSupport = false;
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch210-python313-cpu-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = null;
+      blasProvider = "openblas";
+      cpuISA = "armv9";
+    };
     patches = [];
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];

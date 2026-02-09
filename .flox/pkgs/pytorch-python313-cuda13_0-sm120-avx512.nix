@@ -81,6 +81,11 @@ in
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch210-python313-cuda13_0-sm120-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Clear patches - they reference submodule paths that don't exist in tarball
     patches = [];

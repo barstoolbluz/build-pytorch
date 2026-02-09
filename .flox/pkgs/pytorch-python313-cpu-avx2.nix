@@ -39,6 +39,11 @@ in
     cudaSupport = false;
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch210-python313-cpu-avx2";
+    passthru = oldAttrs.passthru // {
+      gpuArch = null;
+      blasProvider = "openblas";
+      cpuISA = "avx2";
+    };
     patches = [];
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];

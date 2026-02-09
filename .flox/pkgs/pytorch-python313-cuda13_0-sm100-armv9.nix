@@ -56,6 +56,11 @@ in
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch210-python313-cuda13_0-sm100-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
     patches = [];
     ninjaFlags = [ "-j32" ];
     requiredSystemFeatures = [ "big-parallel" ];

@@ -48,6 +48,7 @@ in
     passthru = oldAttrs.passthru // {
       gpuArch = "mps";
       blasProvider = "veclib";
+      cpuISA = null;
     };
 
     # Filter out CUDA deps
