@@ -52,6 +52,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA B300 (SM103, Blackwell DC) + ARMv9 (SVE2)";
       longDescription = ''

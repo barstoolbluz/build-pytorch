@@ -58,6 +58,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) with AVX2";
       longDescription = ''

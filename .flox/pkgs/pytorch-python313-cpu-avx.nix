@@ -90,6 +90,10 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch CPU-only optimized for AVX (Sandy Bridge+ maximum compatibility)";
       longDescription = ''

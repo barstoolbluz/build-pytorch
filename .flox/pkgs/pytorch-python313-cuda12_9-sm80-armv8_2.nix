@@ -56,6 +56,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) + ARMv8.2";
       longDescription = ''

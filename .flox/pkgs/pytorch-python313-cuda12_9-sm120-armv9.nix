@@ -56,6 +56,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA RTX 5090 (SM120) + ARMv9 (SVE2)";
       longDescription = ''

@@ -58,6 +58,10 @@ in
       echo "========================================="
     '';
 
+    postInstall = (oldAttrs.postInstall or "") + ''
+      echo 1 > $out/.metadata-rev
+    '';
+
     meta = oldAttrs.meta // {
       description = "PyTorch for NVIDIA T4/RTX 2080 Ti (SM75, Turing) with AVX2";
       longDescription = ''
