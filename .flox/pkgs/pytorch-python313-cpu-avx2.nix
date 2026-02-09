@@ -65,6 +65,10 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     echo "========================================="
   '';
 
+  postInstall = (oldAttrs.postInstall or "") + ''
+    echo 1 > $out/.metadata-rev
+  '';
+
   meta = oldAttrs.meta // {
     description = "PyTorch CPU-only optimized for AVX2";
     longDescription = ''
