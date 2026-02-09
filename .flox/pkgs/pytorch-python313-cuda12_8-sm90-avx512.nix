@@ -31,6 +31,11 @@ in
     # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm90-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter

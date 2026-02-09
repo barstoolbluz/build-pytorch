@@ -32,6 +32,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm86-avx512bf16";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchNum;
+      blasProvider = "cublas";
+      cpuISA = "avx512bf16";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter

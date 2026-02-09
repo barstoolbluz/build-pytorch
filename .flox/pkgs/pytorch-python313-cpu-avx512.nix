@@ -28,6 +28,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
+    cpuISA = "avx512";
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS

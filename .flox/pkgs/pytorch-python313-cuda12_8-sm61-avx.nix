@@ -31,6 +31,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm61-avx";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx";
+    };
 
     # Prevent ATen from compiling AVX2/AVX512 dispatch kernels.
     # FindAVX.cmake probe-compiles with -mavx2 and succeeds (the compiler
