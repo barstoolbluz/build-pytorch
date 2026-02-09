@@ -27,6 +27,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm89-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -46,7 +51,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA RTX 4090/L40 (SM89) + ARMv9 (SVE2)";
+      description = "PyTorch for NVIDIA RTX 40xx/L40 (SM89, Ada Lovelace) + ARMv9 (Graviton3+)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Ada Lovelace architecture (SM89) - RTX 4090, RTX 4080, L40, L40S

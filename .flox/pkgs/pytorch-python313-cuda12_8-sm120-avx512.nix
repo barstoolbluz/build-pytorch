@@ -31,6 +31,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm120-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchNum;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -50,7 +55,7 @@ in
     '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
+    description = "PyTorch for NVIDIA RTX 50xx (SM120, Blackwell) + AVX-512";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090

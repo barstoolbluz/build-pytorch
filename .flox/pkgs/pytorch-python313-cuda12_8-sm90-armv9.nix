@@ -27,6 +27,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm90-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -46,7 +51,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA H100/L40S (SM90) + ARMv9 (SVE2)";
+      description = "PyTorch for NVIDIA H100/H200 (SM90, Hopper) + ARMv9 (Graviton3+)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S

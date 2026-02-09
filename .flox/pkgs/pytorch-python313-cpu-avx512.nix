@@ -28,6 +28,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
+    cpuISA = "avx512";
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS
@@ -71,7 +72,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for AVX-512 (general FP32 workloads)";
+    description = "PyTorch CPU-only optimized for AVX-512";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)

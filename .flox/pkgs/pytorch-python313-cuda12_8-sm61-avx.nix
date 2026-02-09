@@ -31,6 +31,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm61-avx";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx";
+    };
 
     # Prevent ATen from compiling AVX2/AVX512 dispatch kernels.
     # FindAVX.cmake probe-compiles with -mavx2 and succeeds (the compiler
@@ -72,7 +77,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA GTX 1070/1080 Ti (SM61, Pascal) with AVX";
+      description = "PyTorch for NVIDIA GTX 10xx (SM61, Pascal) + AVX (Sandy Bridge+)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Pascal consumer architecture (SM61) - GTX 1070, 1080, 1080 Ti

@@ -27,6 +27,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm100-armv8_2";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv8_2";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -46,7 +51,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + ARMv8.2";
+      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + ARMv8.2 (Graviton2)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Blackwell datacenter architecture (SM100) - B100, B200

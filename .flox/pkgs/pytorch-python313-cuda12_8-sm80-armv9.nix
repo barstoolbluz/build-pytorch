@@ -27,6 +27,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm80-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -46,7 +51,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere) + ARMv9 (SVE2)";
+      description = "PyTorch for NVIDIA A100/A30 (SM80, Ampere DC) + ARMv9 (Graviton3+)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Ampere datacenter architecture (SM80) - A100, A30

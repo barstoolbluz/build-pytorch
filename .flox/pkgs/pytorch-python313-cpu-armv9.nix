@@ -25,6 +25,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = null;
     blasProvider = "openblas";
+    cpuISA = "armv9";
   };
 
   # Override build configuration - remove CUDA deps, ensure BLAS
@@ -68,7 +69,7 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch CPU-only optimized for ARMv9 (Grace, Graviton3+, SVE2)";
+    description = "PyTorch CPU-only optimized for ARMv9 (Graviton3+)";
     longDescription = ''
       Custom PyTorch build for CPU-only workloads:
       - GPU: None (CPU-only)

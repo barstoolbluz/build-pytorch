@@ -31,6 +31,11 @@ in
     # cudaPackages is automatically passed and uses the one from inputs
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm90-avx512";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -50,7 +55,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA H100/L40S (SM90, Hopper) with CUDA";
+      description = "PyTorch for NVIDIA H100/H200 (SM90, Hopper) + AVX-512";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Hopper architecture (SM90) - H100, L40S

@@ -32,6 +32,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm100-avx512vnni";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx512vnni";
+    };
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -51,7 +56,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + AVX-512 VNNI";
+      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + AVX-512 VNNI (INT8 inference)";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Blackwell datacenter architecture (SM100) - B100, B200

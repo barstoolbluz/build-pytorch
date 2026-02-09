@@ -18,6 +18,7 @@ python3Packages.pytorch.overrideAttrs (oldAttrs: {
   passthru = oldAttrs.passthru // {
     gpuArch = "mps";
     blasProvider = "veclib";
+    cpuISA = null;
   };
 
   # Filter out CUDA deps (base pytorch may include them)

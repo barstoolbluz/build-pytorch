@@ -29,6 +29,11 @@ in
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
     pname = "pytorch-python313-cuda12_8-sm61-avx2";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "avx2";
+    };
 
     # Limit build parallelism to prevent memory saturation
     ninjaFlags = [ "-j32" ];
@@ -52,7 +57,7 @@ in
     '';
 
     meta = oldAttrs.meta // {
-      description = "PyTorch for NVIDIA GTX 1070/1080 Ti (SM61, Pascal) with AVX2";
+      description = "PyTorch for NVIDIA GTX 10xx (SM61, Pascal) + AVX2";
       longDescription = ''
         Custom PyTorch build with targeted optimizations:
         - GPU: NVIDIA Pascal consumer architecture (SM61) - GTX 1070, 1080, 1080 Ti
