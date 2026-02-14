@@ -4,16 +4,27 @@
 # macOS build for Apple Silicon (M1/M2/M3/M4) with Metal GPU acceleration
 # Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
 # Requires: macOS 12.3+
-#
-# Note: Frameworks (Metal, Accelerate, etc.) are provided automatically by
-# apple-sdk_13 via $SDKROOT — no individual framework packages needed.
 
-{ python3Packages
-, lib
-}:
+{ pkgs ? import <nixpkgs> {} }:
 
-python3Packages.pytorch.overrideAttrs (oldAttrs: {
+let
+  # Import nixpkgs at a specific revision (pinned for version consistency)
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) {
+    config = {
+      allowUnfree = true;
+    };
+  };
+
+in (nixpkgs_pinned.python3Packages.torch.override {
+  cudaSupport = false;
+}).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-darwin-mps";
+
+  # Limit build parallelism to prevent memory saturation
+  ninjaFlags = [ "-j32" ];
+  requiredSystemFeatures = [ "big-parallel" ];
 
   passthru = oldAttrs.passthru // {
     gpuArch = "mps";
@@ -21,10 +32,10 @@ python3Packages.pytorch.overrideAttrs (oldAttrs: {
   };
 
   # Filter out CUDA deps (base pytorch may include them)
-  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or "")))
+  buildInputs = nixpkgs_pinned.lib.filter (p: !(nixpkgs_pinned.lib.hasPrefix "cuda" (p.pname or "")))
     (oldAttrs.buildInputs or []);
 
-  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath")
+  nativeBuildInputs = nixpkgs_pinned.lib.filter (p: p.pname or "" != "addDriverRunpath")
     (oldAttrs.nativeBuildInputs or []);
 
   preConfigure = (oldAttrs.preConfigure or "") + ''
