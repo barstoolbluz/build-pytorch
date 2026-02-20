@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `main` branch** — PyTorch 2.8.0 + CUDA 12.8 (58 variants)
+> **You are on the `main` branch** — PyTorch 2.8.0 + CUDA 12.8 (62 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -19,7 +19,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| **`main`** ⬅️ | 2.8.0 | 12.8 | 58 | Stable baseline + SM75 + Darwin MPS |
+| **`main`** ⬅️ | 2.8.0 | 12.8 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
 | `cuda-12_9` | **2.9.1** | **12.9.1** | **58** | Full coverage + SM75/SM103 + Darwin MPS |
 | `cuda-13_0` | 2.10 | 13.0 | 60 | Full matrix SM75–SM121 + ARM + Darwin MPS |
 
@@ -35,7 +35,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 ## Build Matrix (this branch: main)
 
-**This branch builds PyTorch 2.8.0 with CUDA 12.8** — 58 variants covering GPU architectures from SM61 (Pascal) through SM75 (Turing) to SM120 (Blackwell), plus 6 CPU-only variants and 1 Darwin/macOS variant.
+**This branch builds PyTorch 2.8.0 with CUDA 12.8** — 62 variants covering GPU architectures from SM61 (Pascal) through SM75 (Turing) to SM120 (Blackwell), plus 6 CPU-only variants, 1 Darwin/macOS variant, and companion torchvision/torchaudio builds.
 
 ### Complete Variant Matrix
 
@@ -238,6 +238,27 @@ flox build pytorch-python313-darwin-mps
 - **MPS (Metal Performance Shaders)**: GPU-accelerated builds for Apple Silicon Macs
 - BLAS: vecLib (Apple Accelerate framework)
 
+### Companion Libraries (Torchvision & Torchaudio)
+
+AVX-only torchvision and torchaudio builds for SM61/SM75 GPUs paired with older CPUs (Sandy Bridge/Ivy Bridge) that lack AVX2:
+
+| Package | GPU | CPU ISA | Linked PyTorch |
+|---------|-----|---------|---------------|
+| `torchvision-python313-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
+| `torchvision-python313-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
+| `torchaudio-python313-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
+| `torchaudio-python313-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
+
+Each companion recipe imports its matching PyTorch recipe via `import`, so building torchvision/torchaudio automatically uses the exact same PyTorch configuration. The PyTorch derivation is shared via the Nix store and not rebuilt if already cached.
+
+```bash
+# Build torchvision for GTX 1080 Ti + Sandy Bridge CPU
+flox build torchvision-python313-cuda12_8-sm61-avx
+
+# Build torchaudio for T4 + Ivy Bridge CPU
+flox build torchaudio-python313-cuda12_8-sm75-avx
+```
+
 ## Variant Selection Guide
 
 ### Quick Decision Tree
@@ -389,7 +410,7 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (58 variants on main)
+│   └── pkgs/                      # Nix expression builds (62 variants on main)
 │       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants (Linux)
 │       ├── pytorch-python313-darwin-mps.nix       # MPS variant (Apple Silicon)
 │       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 2 SM61 variants (Pascal)
@@ -399,7 +420,9 @@ build-pytorch/
 │       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 7 SM89 variants
 │       ├── pytorch-python313-cuda12_8-sm90-*.nix  # 7 SM90 variants
 │       ├── pytorch-python313-cuda12_8-sm100-*.nix # 7 SM100 variants
-│       └── pytorch-python313-cuda12_8-sm120-*.nix # 7 SM120 variants
+│       ├── pytorch-python313-cuda12_8-sm120-*.nix # 7 SM120 variants
+│       ├── torchvision-python313-cuda12_8-*.nix   # 2 torchvision variants
+│       └── torchaudio-python313-cuda12_8-*.nix    # 2 torchaudio variants
 ├── README.md
 ├── FLOX.md
 ├── QUICKSTART.md
