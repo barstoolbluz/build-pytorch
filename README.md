@@ -20,8 +20,8 @@ This repository provides PyTorch builds across multiple branches, each targeting
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
 | **`main`** ⬅️ | 2.8.0 | 12.8 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
-| `cuda-12_9` | **2.9.1** | **12.9.1** | **58** | Full coverage + SM75/SM103 + Darwin MPS |
-| `cuda-13_0` | 2.10 | 13.0 | 60 | Full matrix SM75–SM121 + ARM + Darwin MPS |
+| `cuda-12_9` | **2.9.1** | **12.9.1** | **66** | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
+| `cuda-13_0` | 2.10 | 13.0 | 68 | Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -106,8 +106,8 @@ Different PyTorch + CUDA combinations live on dedicated branches:
 
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
-| `cuda-12_9` | 2.9.1 | 12.9.1 | SM61–SM120 + SM75/SM103, Darwin | 58 (full coverage) |
-| `cuda-13_0` | 2.10 | 13.0 | SM75–SM121 + ARM, Darwin | 60 |
+| `cuda-12_9` | 2.9.1 | 12.9.1 | SM61–SM120 + SM75/SM103 + AVX-only, Darwin | 66 (full coverage) |
+| `cuda-13_0` | 2.10 | 13.0 | SM75–SM121 + ARM + AVX-only, Darwin | 68 |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for latest features)
