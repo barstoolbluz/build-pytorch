@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `cuda-13_0` branch** — PyTorch 2.10 + CUDA 13.0 (SM110, SM121 for DGX Spark / DRIVE Thor)
+> **You are on the `cuda-13_0` branch** — PyTorch 2.10 + CUDA 13.0 (68 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -147,7 +147,7 @@ git checkout main && flox build pytorch-python313-cuda12_8-sm90-avx512
 - Driver: NVIDIA 550+
 - CUDA: Requires 13.0+ (nvcc 12.8 does not recognize sm_110)
 
-**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3** *(cuda-12_9 branch)*
+**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3** *(cuda-12_9+ branches)*
 - Datacenter: B300
 - Driver: NVIDIA 550+
 - CUDA: Requires 12.9+ (nvcc 12.8 does not recognize sm_103)
@@ -392,6 +392,18 @@ CPU-only builds use:
 | GPU (CUDA) | cuBLAS | NVIDIA's optimized GPU library |
 | CPU (x86-64) | OpenBLAS | Open-source, good performance |
 | CPU (alternative) | Intel MKL | Proprietary, slightly faster, available in Flox catalog as `mkl` |
+
+### Catalog Metadata Revision
+
+Every variant includes a `postInstall` block that writes a revision marker to the build output:
+
+```nix
+postInstall = (oldAttrs.postInstall or "") + ''
+  echo 1 > $out/.metadata-rev
+'';
+```
+
+Nix derivation hashes depend on build outputs, not `meta` attributes. Without this marker, metadata-only changes (descriptions, platforms) produce the same store path and the Flox catalog never re-indexes them. Bump the number when changing only metadata.
 
 ## Architecture
 
