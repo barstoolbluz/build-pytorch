@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `cuda-13_0` branch** — PyTorch 2.10 + CUDA 13.0 (68 variants)
+> **You are on the `pytorch-2.10` branch** — PyTorch 2.10 + CUDA 13.0 (68 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -20,8 +20,8 @@ This repository provides PyTorch builds across multiple branches, each targeting
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 62 | Stable baseline + Darwin MPS + torchvision/torchaudio |
-| `cuda-12_9` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **68** | **This branch** — Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
+| `pytorch-2.9` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
+| **`pytorch-2.10`** ⬅️ | **2.10** | **13.0** | **68** | **This branch** — Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -30,10 +30,10 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | Branch | PyTorch | CUDA | cuDNN | Python | Min Driver | Nixpkgs Pin |
 |--------|---------|------|-------|--------|------------|-------------|
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
-| `cuda-12_9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
-| **`cuda-13_0`** ⬅️ | **2.10** | **13.0** | **9.x** | **3.13** | **570+** | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
+| `pytorch-2.9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
+| **`pytorch-2.10`** ⬅️ | **2.10** | **13.0** | **9.x** | **3.13** | **570+** | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 
-## Build Matrix (this branch: cuda-13_0)
+## Build Matrix (this branch: pytorch-2.10)
 
 **This branch builds PyTorch 2.10 with CUDA 13.0** — 68 variants including new architectures requiring CUDA 13.0+, ARM CPU support, AVX-only variants for legacy CPUs, and 1 Darwin/macOS variant.
 
@@ -120,11 +120,11 @@ For most GPU architectures (SM61–SM120, CPU-only), use these branches:
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 62 (stable baseline) |
-| `cuda-12_9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 + AVX-only, Darwin | **66** (recommended) |
+| `pytorch-2.9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 + AVX-only, Darwin | **66** (recommended) |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for most use cases)
-git checkout cuda-12_9 && flox build pytorch-python313-cuda12_9-sm90-avx512
+git checkout pytorch-2.9 && flox build pytorch-python313-cuda12_9-sm90-avx512
 
 # PyTorch 2.8.0 + CUDA 12.8 (stable baseline)
 git checkout main && flox build pytorch-python313-cuda12_8-sm90-avx512
@@ -147,7 +147,7 @@ git checkout main && flox build pytorch-python313-cuda12_8-sm90-avx512
 - Driver: NVIDIA 550+
 - CUDA: Requires 13.0+ (nvcc 12.8 does not recognize sm_110)
 
-**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3** *(cuda-12_9+ branches)*
+**SM103 (Blackwell B300 Datacenter) - Compute Capability 10.3** *(pytorch-2.9+ branches)*
 - Datacenter: B300
 - Driver: NVIDIA 550+
 - CUDA: Requires 12.9+ (nvcc 12.8 does not recognize sm_103)
