@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `pytorch-2.10` branch** — PyTorch 2.10 + CUDA 13.0 (68 variants)
+> **You are on the `pytorch-2.10` branch** — PyTorch 2.10 + CUDA 13.0/13.1 (128 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -21,7 +21,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 62 | Stable baseline + Darwin MPS + torchvision/torchaudio |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
-| **`pytorch-2.10`** ⬅️ | **2.10** | **13.0** | **68** | **This branch** — Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
+| **`pytorch-2.10`** ⬅️ | **2.10** | **13.0 / 13.1** | **128** | **This branch** — Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS, dual CUDA |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -32,12 +32,16 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 | **`pytorch-2.10`** ⬅️ | **2.10** | **13.0** | **9.x** | **3.13** | **570+** | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
+| **`pytorch-2.10`** ⬅️ | **2.10** | **13.1** | **9.x** | **3.13** | **570+** | [`2017d6d`](https://github.com/NixOS/nixpkgs/tree/2017d6d515f8a7b289fe06d3a880a7ec588c3900) |
 
 ## Build Matrix (this branch: pytorch-2.10)
 
-**This branch builds PyTorch 2.10 with CUDA 13.0** — 68 variants including new architectures requiring CUDA 13.0+, ARM CPU support, AVX-only variants for legacy CPUs, and 1 Darwin/macOS variant.
+**This branch builds PyTorch 2.10 with CUDA 13.0 and 13.1** — 128 variants including new architectures requiring CUDA 13.0+, ARM CPU support, AVX-only variants for legacy CPUs, and 1 Darwin/macOS variant.
 
-### Complete Variant Matrix — 68 Variants
+- **CUDA 13.0 variants**: 60 GPU + 7 CPU + 1 Darwin = 68 total
+- **CUDA 13.1 variants**: 60 GPU (same matrix as 13.0)
+
+### Complete Variant Matrix — CUDA 13.0 (68 Variants)
 
 *Package pattern: `pytorch-python313-cuda13_0-{gpu}-{cpu}` | CPU-only: `pytorch-python313-cpu-{cpu}`*
 *Click package names to view build recipes.*
@@ -112,6 +116,17 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | **SM121 (DGX Spark)** | ARMv8.2 | [`sm121-armv8_2`](.flox/pkgs/pytorch-python313-cuda13_0-sm121-armv8_2.nix) | DGX Spark + Graviton2/older ARM |
 | | ARMv9 | [`sm121-armv9`](.flox/pkgs/pytorch-python313-cuda13_0-sm121-armv9.nix) | DGX Spark + Grace/Graviton3+ |
 | **Darwin MPS** | — | [`darwin-mps`](.flox/pkgs/pytorch-python313-darwin-mps.nix) | Apple Silicon (M1–M4) with Metal GPU |
+
+### CUDA 13.1 Variants — 60 GPU Variants
+
+*Same GPU/CPU matrix as CUDA 13.0, with package pattern: `pytorch-python313-cuda13_1-{gpu}-{cpu}`*
+
+CUDA 13.1 variants use nixpkgs pin [`2017d6d`](https://github.com/NixOS/nixpkgs/tree/2017d6d515f8a7b289fe06d3a880a7ec588c3900) with `cudaPackages_13_1`.
+
+```bash
+# Example: Build CUDA 13.1 variant
+flox build pytorch-python313-cuda13_1-sm90-avx512
+```
 
 ### Variants on Other Branches
 
@@ -359,11 +374,14 @@ flox build pytorch-python313-darwin-mps
 # Enter the build environment
 flox activate
 
-# Build a specific variant
+# Build a CUDA 13.0 variant
 flox build pytorch-python313-cuda13_0-sm90-avx512
 
-# The result will be in ./result-pytorch-python313-cuda13_0-sm90-avx512/
-ls -lh result-pytorch-python313-cuda13_0-sm90-avx512/lib/python3.13/site-packages/torch/
+# Build a CUDA 13.1 variant
+flox build pytorch-python313-cuda13_1-sm90-avx512
+
+# The result will be in ./result-pytorch-python313-cuda13_X-sm90-avx512/
+ls -lh result-pytorch-python313-cuda13_1-sm90-avx512/lib/python3.13/site-packages/torch/
 ```
 
 ## Build Configuration Details
@@ -412,7 +430,7 @@ build-pytorch/
 ├── .flox/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
-│   └── pkgs/                      # Nix expression builds (68 variants on this branch)
+│   └── pkgs/                      # Nix expression builds (128 variants on this branch)
 │       ├── pytorch-python313-cpu-*.nix              # CPU-only (5 x86 + 2 ARM)
 │       ├── pytorch-python313-darwin-mps.nix         # MPS variant (Apple Silicon)
 │       ├── pytorch-python313-cuda13_0-sm75-*.nix    # T4/RTX 20 Turing (5 x86 + 2 ARM)
@@ -424,7 +442,8 @@ build-pytorch/
 │       ├── pytorch-python313-cuda13_0-sm103-*.nix   # B300 (5 x86 + 2 ARM)
 │       ├── pytorch-python313-cuda13_0-sm110-*.nix   # DRIVE Thor (2 ARM only)
 │       ├── pytorch-python313-cuda13_0-sm120-*.nix   # RTX 5090 (5 x86 + 2 ARM)
-│       └── pytorch-python313-cuda13_0-sm121-*.nix   # DGX Spark (2 ARM only)
+│       ├── pytorch-python313-cuda13_0-sm121-*.nix   # DGX Spark (2 ARM only)
+│       └── pytorch-python313-cuda13_1-*.nix         # CUDA 13.1 variants (60 total)
 ├── README.md
 └── FLOX.md
 ```
