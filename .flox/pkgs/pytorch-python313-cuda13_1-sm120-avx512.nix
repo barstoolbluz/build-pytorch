@@ -4,8 +4,8 @@
 # NOTE: This attempts to upgrade PyTorch from 2.9.1 to 2.10.0 via overlay.
 # Submodule compatibility is not guaranteed - build may fail if submodules changed.
 #
-# MAGMA is enabled via a CUDA 13.1 compatibility patch.
-# Patch reference: https://github.com/icl-utk-edu/magma/issues/61
+# MAGMA: Uses nixpkgs CUDA 13.1 with built-in compatibility fix.
+# Reference: https://github.com/icl-utk-edu/magma/issues/61
 
 { pkgs ? import <nixpkgs> {} }:
 
@@ -23,22 +23,8 @@ let
       # Overlay 1: Use CUDA 13.1
       (final: prev: { cudaPackages = final.cudaPackages_13_1; })
 
-      # Overlay 2: Patch MAGMA for CUDA 13.1 compatibility
-      # This fixes: 'struct cudaDeviceProp' has no member named 'clockRate'
       # The patch uses cudaDeviceGetAttribute(cudaDevAttrClockRate) instead
-      (final: prev: {
-        magma = prev.magma.overrideAttrs (oldAttrs: {
-          patches = (oldAttrs.patches or []) ++ [
-            (final.fetchpatch {
-              name = "cuda-13.0-clockrate-fix.patch";
-              url = "https://github.com/icl-utk-edu/magma/commit/235aefb7b064954fce09d035c69907ba8a87cbcd.patch";
-              hash = "sha256-i9InbxD5HtfonB/GyF9nQhFmok3jZ73RxGcIciGBGvU=";
-            })
-          ];
-        });
-      })
-
-      # Overlay 3: Upgrade PyTorch to 2.10.0
+      # Overlay 2: Upgrade PyTorch to 2.10.0
       (final: prev: {
         python3Packages = prev.python3Packages.override {
           overrides = pfinal: pprev: {
@@ -129,7 +115,7 @@ in
       echo "CPU Features: AVX-512"
       echo "CUDA: 13.0 (pinned nixpkgs)"
       echo "PyTorch: 2.10.0 (overlay upgrade)"
-      echo "MAGMA: Enabled (with CUDA 13.1 patch)"
+      echo "MAGMA: Enabled (nixpkgs built-in fix)"
       echo "CCCL: Compatibility symlinks created"
       echo "========================================="
     '';
@@ -156,7 +142,7 @@ EOF
         - CPU: x86-64 with AVX-512 instruction set
         - CUDA: 13.0 with compute capability 12.0
         - PyTorch: 2.10.0 (upgraded via overlay)
-        - MAGMA: Enabled (patched for CUDA 13.1)
+        - MAGMA: Enabled (nixpkgs includes fix)
         - Python: 3.13
 
         Hardware requirements:
