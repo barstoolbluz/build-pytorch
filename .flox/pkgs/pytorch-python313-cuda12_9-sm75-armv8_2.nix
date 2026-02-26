@@ -28,7 +28,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -79,6 +79,9 @@ in
         Choose this if: You have T4/RTX 2080 Ti GPU on ARM server (Graviton2)
         and need GPU acceleration on ARM platform. For newer ARM servers
         (Graviton3+, Grace), use armv9 variant instead.
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "aarch64-linux" ];
     };

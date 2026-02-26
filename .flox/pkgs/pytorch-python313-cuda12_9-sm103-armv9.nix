@@ -28,7 +28,7 @@ let
   ];
 
 in
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   }).overrideAttrs (oldAttrs: {
@@ -71,6 +71,9 @@ in
         - GPU: B300 or other SM103 GPUs
         - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
         - Driver: NVIDIA 550+ required
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "aarch64-linux" ];
     };

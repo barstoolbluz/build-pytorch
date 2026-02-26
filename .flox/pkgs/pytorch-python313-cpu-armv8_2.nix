@@ -23,7 +23,7 @@ let
   # Use OpenBLAS for CPU linear algebra
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-armv8_2";
 
     # Limit build parallelism to prevent memory saturation
@@ -93,6 +93,9 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
         Choose this if: You need CPU-only PyTorch on ARM servers like
         AWS Graviton2, or general ARMv8.2 hardware. For newer ARM servers
         with ARMv9/SVE2 support (Graviton3+, Grace), use armv9 variant instead.
+
+        vLLM compatibility: Uses same nixpkgs pin (0182a36) as build-vllm/main.
+        CPU-only variant; no direct torch substitution into GPU vLLM builds.
       '';
       platforms = [ "aarch64-linux" ];
     };

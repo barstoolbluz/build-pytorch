@@ -31,7 +31,7 @@ let
 
 in
   # First, enable CUDA support via override
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     # Specify GPU targets using nixpkgs parameter
     gpuTargets = [ gpuArchSM ];
@@ -83,6 +83,9 @@ in
         Choose this if: You have H100/L40S datacenter GPUs with AVX-512 CPUs
         and need optimized kernels for Hopper architecture. For RTX 5090, use
         sm120 builds instead.
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "x86_64-linux" ];
     };

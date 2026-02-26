@@ -28,7 +28,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -81,6 +81,9 @@ in
         Choose this if: You have RTX 5090 GPU on modern ARM server with
         ARMv9/SVE2 support (Grace, Graviton3+). For older ARM servers
         (Graviton2), use armv8_2 variant instead.
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "aarch64-linux" ];
     };

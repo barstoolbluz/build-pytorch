@@ -33,7 +33,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -108,6 +108,9 @@ in
 
         Choose this if: You have a GTX 1070, 1080, or 1080 Ti and want CUDA
         acceleration with broad CPU compatibility using AVX.
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "x86_64-linux" ];
     };

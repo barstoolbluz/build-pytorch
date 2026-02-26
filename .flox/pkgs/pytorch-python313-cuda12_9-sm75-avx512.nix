@@ -31,7 +31,7 @@ let
 
 in
   # First, enable CUDA support via override
-  (nixpkgs_pinned.python3Packages.torch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     # Specify GPU targets using nixpkgs parameter
     gpuTargets = [ gpuArchSM ];
@@ -82,6 +82,9 @@ in
 
         Choose this if: You have T4/RTX 2080 Ti GPU with AVX-512 CPUs
         and need optimized kernels for Turing architecture.
+
+        vLLM compatibility: Pin-compatible with build-vllm/main (vLLM 0.15.1,
+        CUDA 12.9, nixpkgs 0182a36) for SM-specific torch substitution.
       '';
       platforms = [ "x86_64-linux" ];
     };

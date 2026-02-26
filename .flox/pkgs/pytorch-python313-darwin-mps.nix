@@ -17,7 +17,7 @@ let
     };
   };
 
-in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-darwin-mps";
 
   # Limit build parallelism to prevent memory saturation
@@ -68,6 +68,9 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
       - Platform: macOS 12.3+ on M1/M2/M3/M4
       - BLAS: vecLib (Apple Accelerate framework)
       - Python: 3.13
+
+      vLLM compatibility: Uses same nixpkgs pin (0182a36) as build-vllm/main.
+      Darwin/MPS variant; no direct torch substitution into Linux vLLM builds.
     '';
     platforms = [ "aarch64-darwin" ];
   };

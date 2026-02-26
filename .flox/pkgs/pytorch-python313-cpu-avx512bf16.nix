@@ -29,7 +29,7 @@ let
   # Note: Official PyTorch binaries bundle MKL, but OpenBLAS is open-source
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512bf16";
 
     # Limit build parallelism to prevent memory saturation
@@ -101,6 +101,9 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
         on modern CPUs supporting AVX-512 BF16 instructions. Provides hardware
         acceleration for BF16 operations compared to standard AVX-512 build.
         NOT for INT8 inference (use avx512vnni) or general FP32 (use avx512).
+
+        vLLM compatibility: Uses same nixpkgs pin (0182a36) as build-vllm/main.
+        CPU-only variant; no direct torch substitution into GPU vLLM builds.
       '';
       platforms = [ "x86_64-linux" ];
     };
