@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `pytorch-2.9-vllm` branch** — PyTorch 2.9.1 + CUDA 12.9 (66 variants, vLLM pin-aligned)
+> **You are on the `pytorch-2.9-vllm-0.15.1` branch** — PyTorch 2.9.1 + CUDA 12.9 (66 variants, vLLM pin-aligned)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -21,7 +21,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 62 | Stable baseline + Darwin MPS + torchvision/torchaudio |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
-| **`pytorch-2.9-vllm`** ⬅️ | **2.9.1** | **12.9** | **66** | **This branch** — vLLM pin-aligned (nixpkgs `0182a36`) |
+| **`pytorch-2.9-vllm-0.15.1`** ⬅️ | **2.9.1** | **12.9** | **66** | **This branch** — vLLM pin-aligned (nixpkgs `0182a36`) |
 | `pytorch-2.10` | 2.10 | 13.0 | 68 | Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
@@ -32,7 +32,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 |--------|---------|------|-------|--------|------------|-------------|
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`0182a36`](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
-| **`pytorch-2.9-vllm`** ⬅️ | **2.9.1** | **12.9** | **9.x** | **3.13** | **550+** | [**`0182a36`**](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
+| **`pytorch-2.9-vllm-0.15.1`** ⬅️ | **2.9.1** | **12.9** | **9.x** | **3.13** | **550+** | [**`0182a36`**](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | `pytorch-2.10` | 2.10 | 13.0 | TBD | 3.13 | 570+ | TBD |
 
 ## vLLM Compatibility
@@ -41,7 +41,7 @@ This branch is **pin-aligned** with [`build-vllm/main`](https://github.com/your-
 
 ### Shared Configuration
 
-| Property | `build-vllm/main` | `pytorch-2.9-vllm` |
+| Property | `build-vllm/main` | `pytorch-2.9-vllm-0.15.1` |
 |----------|-------------------|---------------------|
 | Nixpkgs pin | `0182a36` | `0182a36` |
 | CUDA toolkit | 12.9 (`cudaPackages_12_9`) | 12.9 (`cudaPackages_12_9`) |
@@ -75,7 +75,7 @@ flox build pytorch-python313-cuda12_9-sm90-avx512
 
 The from-source PyTorch build contains only the CUDA kernels for the target SM architecture, reducing binary size and improving load time compared to the generic wheel bundled with vLLM.
 
-## Build Matrix (this branch: pytorch-2.9-vllm)
+## Build Matrix (this branch: pytorch-2.9-vllm-0.15.1)
 
 **This branch builds PyTorch 2.9.1 with CUDA 12.9** — 66 variants covering all GPU architectures plus SM75 (Turing), SM103 (B300), AVX-only variants for legacy CPUs, and 1 Darwin/macOS variant.
 
@@ -158,7 +158,7 @@ Different PyTorch + CUDA combinations live on dedicated branches:
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 62 (stable baseline) |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 |
-| **`pytorch-2.9-vllm`** ⬅️ | 2.9.1 | 12.9 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (this branch — vLLM aligned) |
+| **`pytorch-2.9-vllm-0.15.1`** ⬅️ | 2.9.1 | 12.9 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (this branch — vLLM aligned) |
 | `pytorch-2.10` | 2.10 | 13.0 | SM75–SM121 + ARM + AVX-only, Darwin | 68 |
 
 ```bash
