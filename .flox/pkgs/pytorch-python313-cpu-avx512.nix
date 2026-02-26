@@ -6,7 +6,7 @@
 let
   # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
   }) {
     config = {
       allowUnfree = true;

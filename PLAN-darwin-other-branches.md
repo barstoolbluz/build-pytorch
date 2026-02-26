@@ -37,7 +37,7 @@ Nix appends version automatically (e.g., `pytorch-python313-darwin-mps-2.10.0`).
 
 ### Nixpkgs Pin
 ```
-https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz
+https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz
 ```
 
 ### Files to Create/Modify
@@ -63,7 +63,7 @@ https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e321
 
 let
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
   }) {
     config = { allowUnfree = true; };
   };
@@ -127,7 +127,7 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
 
 let
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
   }) {
     config = { allowUnfree = true; };
   };
@@ -186,7 +186,7 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
 
 ### Nixpkgs Pin
 ```
-https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz
+https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz
 ```
 
 ### Key Differences from cuda-12_9
@@ -218,7 +218,7 @@ https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e321
 
 let
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
   }) {
     config = { allowUnfree = true; allowBroken = true; };
     overlays = [
@@ -301,7 +301,7 @@ in
 
 let
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
   }) {
     config = { allowUnfree = true; allowBroken = true; };
     overlays = [

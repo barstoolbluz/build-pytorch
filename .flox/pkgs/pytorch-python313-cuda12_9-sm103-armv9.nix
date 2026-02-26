@@ -6,7 +6,7 @@
 let
   # Import nixpkgs at a specific revision with CUDA 12.9 (required for SM103)
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/0182a361324364ae3f436a63005877674cf45efb.tar.gz";
     # You can add the sha256 here once known for reproducibility
   }) {
     config = {

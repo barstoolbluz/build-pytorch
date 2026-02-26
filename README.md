@@ -30,7 +30,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | Branch | PyTorch | CUDA | cuDNN | Python | Min Driver | Nixpkgs Pin |
 |--------|---------|------|-------|--------|------------|-------------|
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
-| **`pytorch-2.9`** ⬅️ | **2.9.1** | **12.9.1** | **9.13.0** | **3.13** | **550+** | [**`6a030d5`**](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
+| **`pytorch-2.9`** ⬅️ | **2.9.1** | **12.9.1** | **9.13.0** | **3.13** | **550+** | [**`0182a36`**](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | `pytorch-2.10` | 2.10 | 13.0 | TBD | 3.13 | 570+ | TBD |
 
 ## Build Matrix (this branch: pytorch-2.9)
