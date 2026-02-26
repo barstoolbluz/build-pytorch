@@ -1,0 +1,88 @@
+# PyTorch optimized for NVIDIA Blackwell Datacenter (SM100: B100, B200) + ARMv9
+# Package name: pytorch-python312-cuda12_9-sm100-armv9
+
+{ pkgs ? import <nixpkgs> {} }:
+
+let
+  # Import nixpkgs at a specific revision with CUDA 12.9
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/46336d4d6980ae6f136b45c8507b17787eb186a0.tar.gz";
+  }) {
+    config = {
+      allowUnfree = true;
+      cudaSupport = true;
+    };
+    overlays = [
+      (final: prev: { cudaPackages = final.cudaPackages_12_9; })
+    ];
+  };
+  # GPU target: SM100 (Blackwell datacenter architecture - B100, B200)
+  gpuArchNum = "100";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
+  gpuArchSM = "10.0";  # For TORCH_CUDA_ARCH_LIST (with sm_ prefix)
+
+  # CPU optimization: ARMv9-A with SVE/SVE2
+  cpuFlags = [
+    "-march=armv9-a+sve+sve2"  # ARMv9 with Scalable Vector Extensions
+  ];
+
+in
+  # Two-stage override:
+  # 1. Enable CUDA and specify GPU targets
+  (nixpkgs_pinned.python312Packages.torch.override {
+    cudaSupport = true;
+    gpuTargets = [ gpuArchSM ];
+  # 2. Customize build (CPU flags, metadata, etc.)
+  }).overrideAttrs (oldAttrs: {
+    pname = "pytorch-python312-cuda12_9-sm100-armv9";
+    passthru = oldAttrs.passthru // {
+      gpuArch = gpuArchSM;
+      blasProvider = "cublas";
+      cpuISA = "armv9";
+    };
+
+    # Limit build parallelism to prevent memory saturation
+    ninjaFlags = [ "-j32" ];
+    requiredSystemFeatures = [ "big-parallel" ];
+
+    # Set CPU optimization flags
+    # GPU architecture is handled by nixpkgs via gpuTargets parameter
+    preConfigure = (oldAttrs.preConfigure or "") + ''
+      export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export MAX_JOBS=32
+
+      echo "========================================="
+      echo "PyTorch Build Configuration"
+      echo "========================================="
+      echo "GPU Target: ${gpuArchSM} (Blackwell Datacenter: B100, B200)"
+      echo "CPU Features: ARMv9 + SVE/SVE2"
+      echo "CUDA: 12.9 (cudaSupport=true, gpuTargets=[${gpuArchSM}])"
+      echo "CXXFLAGS: $CXXFLAGS"
+      echo "========================================="
+    '';
+
+    meta = oldAttrs.meta // {
+      description = "PyTorch for NVIDIA B100/B200 (SM100, Blackwell DC) + ARMv9 (SVE2)";
+      longDescription = ''
+        Custom PyTorch build with targeted optimizations:
+        - GPU: NVIDIA Blackwell datacenter architecture (SM100) - B100, B200
+        - CPU: ARMv9-A with SVE/SVE2 (Scalable Vector Extensions)
+        - CUDA: 12.9 with compute capability 10.0
+        - BLAS: cuBLAS for GPU operations
+        - Python: 3.12
+
+        Hardware requirements:
+        - GPU: B100, B200, or other SM100 GPUs
+        - CPU: NVIDIA Grace, ARM Neoverse V1/V2, Cortex-X2+, AWS Graviton3+
+        - Driver: NVIDIA 550+ required
+
+        Choose this if: You have B100 or B200 datacenter GPU on modern ARM server with
+        ARMv9/SVE2 support (Grace, Graviton3+). For older ARM servers
+        (Graviton2), use armv8_2 variant instead.
+
+        vLLM compatibility: Pin-compatible with build-vllm/vllm-0.14.0 (vLLM 0.14.0,
+        CUDA 12.9, nixpkgs 46336d4) for SM-specific torch substitution.
+      '';
+      platforms = [ "aarch64-linux" ];
+    };
+  })
