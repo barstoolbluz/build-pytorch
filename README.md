@@ -21,7 +21,8 @@ This repository provides PyTorch builds across multiple branches, each targeting
 |--------|---------|------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 62 | Stable baseline + Darwin MPS + torchvision/torchaudio |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
-| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | 66 | vLLM pin-aligned (nixpkgs `0182a36`), same matrix as pytorch-2.9 |
+| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | 66 | vLLM 0.15.1 pin-aligned (nixpkgs `0182a36`) |
+| `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | 73 | vLLM 0.14.0 pin-aligned (nixpkgs `46336d4`), Python 3.12 |
 | **`pytorch-2.10`** ⬅️ | **2.10** | **13.0 / 13.1** | **128** | **This branch** — Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS, dual CUDA |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
@@ -33,6 +34,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `pytorch-2.9` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | 9.x | 3.13 | 550+ | [`0182a36`](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
+| `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | 9.13.0 | 3.12 | 550+ | [`46336d4`](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
 | **`pytorch-2.10`** ⬅️ | **2.10** | **13.0** | **9.x** | **3.13** | **570+** | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 | **`pytorch-2.10`** ⬅️ | **2.10** | **13.1** | **9.x** | **3.13** | **570+** | [`2017d6d`](https://github.com/NixOS/nixpkgs/tree/2017d6d515f8a7b289fe06d3a880a7ec588c3900) |
 
@@ -138,7 +140,8 @@ For most GPU architectures (SM61–SM120, CPU-only), use these branches:
 |--------|---------|------|---------------|----------|
 | `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 62 (stable baseline) |
 | `pytorch-2.9` | **2.9.1** | **12.9.1** | SM61–SM120 + SM75/SM103 + AVX-only, Darwin | **66** (recommended) |
-| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | SM61–SM120 + SM75/SM103 + AVX-only, Darwin | 66 (vLLM aligned) |
+| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (vLLM 0.15.1 aligned) |
+| `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | SM61–SM120, SM70, SM75, SM103, CPU, Darwin | 73 (vLLM 0.14.0 aligned) |
 
 ```bash
 # PyTorch 2.9.1 + CUDA 12.9.1 (recommended for most use cases)
