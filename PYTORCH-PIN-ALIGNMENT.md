@@ -10,19 +10,19 @@ Add CUDA 12.9 PyTorch 2.10.0 variants to `build-pytorch` that use the **same nix
 |------|--------|-------------|---------|------|--------|----------------|
 | `build-vllm` | `main` | `0182a36` | 2.10.0 (wheel) | 12.9 | 3.12, 3.13 | Self-contained fetchTarball |
 | `build-pytorch` | `main` | Flox-managed | 2.8.0 | 12.8 | 3.13 | Flox function args |
-| `build-pytorch` | `pytorch-2.9` | `6a030d5` | 2.9.1 | 12.9 | 3.13 | Self-contained fetchTarball |
-| `build-pytorch` | `pytorch-2.10` | `6a030d5` / `2017d6d` | 2.10.0 | 13.0 / 13.1 | 3.13 | Self-contained fetchTarball + source override + magma/CCCL patches |
+| `build-pytorch` | `pytorch-2.9-python313` | `6a030d5` | 2.9.1 | 12.9 | 3.13 | Self-contained fetchTarball |
+| `build-pytorch` | `pytorch-2.10-python313` | `6a030d5` / `2017d6d` | 2.10.0 | 13.0 / 13.1 | 3.13 | Self-contained fetchTarball + source override + magma/CCCL patches |
 
-## Why Not Use the Existing `pytorch-2.10` Branch?
+## Why Not Use the Existing `pytorch-2.10-python313` Branch?
 
-The existing `pytorch-2.10` branch builds PyTorch 2.10.0 for CUDA **13.0/13.1** (128 variants). Those recipes are fundamentally different from what we need:
+The existing `pytorch-2.10-python313` branch builds PyTorch 2.10.0 for CUDA **13.0/13.1** (128 variants). Those recipes are fundamentally different from what we need:
 
 - They use a nixpkgs pin (`6a030d5`) that does **not** have PyTorch 2.10.0 natively — they override `torch.src` to fetch 2.10.0 from GitHub
 - They include complex overlays: magma CUDA 13 clockrate patch, CCCL compatibility symlinks, `FindCUDAToolkit.cmake` workaround
 - They set `allowBroken = true` and clear `patches = []`
 - They use a `pytorch210-` pname prefix
 
-By contrast, the vLLM nixpkgs pin (`0182a36`) **already ships PyTorch 2.10.0 natively** — no source override needed. The recipes will be as simple as the `pytorch-2.9` ones: just a pin swap.
+By contrast, the vLLM nixpkgs pin (`0182a36`) **already ships PyTorch 2.10.0 natively** — no source override needed. The recipes will be as simple as the `pytorch-2.9-python313` ones: just a pin swap.
 
 ## Target State
 
@@ -46,12 +46,12 @@ This is the same pin used by `build-vllm/main`, where PyTorch 2.10.0 is a pre-bu
 
 ## Changes Required
 
-### 1. Create a new branch from `pytorch-2.9`
+### 1. Create a new branch from `pytorch-2.9-python313`
 
-The `pytorch-2.9` branch is the right starting point — it already uses CUDA 12.9, the `cudaPackages_12_9` overlay, `cuda12_9` in filenames/variantNames, and the simple self-contained fetchTarball recipe pattern.
+The `pytorch-2.9-python313` branch is the right starting point — it already uses CUDA 12.9, the `cudaPackages_12_9` overlay, `cuda12_9` in filenames/variantNames, and the simple self-contained fetchTarball recipe pattern.
 
 ```bash
-git checkout pytorch-2.9
+git checkout pytorch-2.9-python313
 git checkout -b pytorch-2.10-cuda12_9
 ```
 
@@ -68,7 +68,7 @@ This single change upgrades the underlying PyTorch from 2.9.1 to 2.10.0 (since t
 
 ### 3. Switch from `python3Packages` to `python313Packages`
 
-The `pytorch-2.9` recipes use `nixpkgs_pinned.python3Packages.torch`. The vLLM Python 3.13 variants use `nixpkgs_pinned.python313Packages.vllm`, which internally depends on `python313Packages.torch`. For torch substitution to work, the PyTorch builds must use the same Python package set so the derivation paths match.
+The `pytorch-2.9-python313` recipes use `nixpkgs_pinned.python3Packages.torch`. The vLLM Python 3.13 variants use `nixpkgs_pinned.python313Packages.vllm`, which internally depends on `python313Packages.torch`. For torch substitution to work, the PyTorch builds must use the same Python package set so the derivation paths match.
 
 Global find-and-replace across all 66 `.nix` files:
 
@@ -122,7 +122,7 @@ Expected: `"2.10.0"` (or `2.10.0.postX`).
 
 ### 5. Update metadata
 
-The `pytorch-2.9` `.nix` files do **not** reference PyTorch version in their code — they only reference CUDA 12.9 in the `preConfigure` echo block and `meta.longDescription`. Since CUDA 12.9 is unchanged, these values are already correct.
+The `pytorch-2.9-python313` `.nix` files do **not** reference PyTorch version in their code — they only reference CUDA 12.9 in the `preConfigure` echo block and `meta.longDescription`. Since CUDA 12.9 is unchanged, these values are already correct.
 
 What does need updating:
 
@@ -171,7 +171,7 @@ flox build pytorch-python313-darwin-mps
 
 ## Summary of All Changes
 
-| What | From (`pytorch-2.9`) | To (`pytorch-2.10-cuda12_9`) |
+| What | From (`pytorch-2.9-python313`) | To (`pytorch-2.10-cuda12_9`) |
 |------|----------------------|------------------------------|
 | Nixpkgs pin | `6a030d5` | `0182a36` |
 | PyTorch version (from pin) | 2.9.1 | 2.10.0 |
@@ -183,7 +183,7 @@ flox build pytorch-python313-darwin-mps
 
 ## Files Affected
 
-All 66 `.nix` files in `.flox/pkgs/` on the `pytorch-2.9` branch need two global replacements:
+All 66 `.nix` files in `.flox/pkgs/` on the `pytorch-2.9-python313` branch need two global replacements:
 
 1. **Pin hash**: `0182a361324364ae3f436a63005877674cf45efb` → `0182a361324364ae3f436a63005877674cf45efb`
 2. **Python package set**: `python3Packages` → `python313Packages`
