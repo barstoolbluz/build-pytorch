@@ -23,6 +23,7 @@ This repository provides PyTorch builds across multiple branches, each targeting
 | **`pytorch-2.9`** ⬅️ | **2.9.1** | **12.9.1** | **66** | **This branch** — Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | 66 | vLLM 0.15.1 pin-aligned (nixpkgs `0182a36`) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | 73 | vLLM 0.14.0 pin-aligned (nixpkgs `46336d4`), Python 3.12 |
+| `pytorch-2.9-py311` | 2.9.1 | 12.9 | 73 | Python 3.11, pin-compatible with vLLM 0.14.0 (nixpkgs `46336d4`) |
 | `pytorch-2.10` | 2.10 | 13.0 | 68 | Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
@@ -35,6 +36,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | **`pytorch-2.9`** ⬅️ | **2.9.1** | **12.9.1** | **9.13.0** | **3.13** | **550+** | [**`0182a36`**](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | 9.x | 3.13 | 550+ | [`0182a36`](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | 9.13.0 | 3.12 | 550+ | [`46336d4`](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
+| `pytorch-2.9-py311` | 2.9.1 | 12.9 | 9.13.0 | 3.11 | 550+ | [`46336d4`](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
 | `pytorch-2.10` | 2.10 | 13.0 | TBD | 3.13 | 570+ | TBD |
 
 ## Build Matrix (this branch: pytorch-2.9)
@@ -122,6 +124,7 @@ Different PyTorch + CUDA combinations live on dedicated branches:
 | **`pytorch-2.9`** ⬅️ | 2.9.1 | 12.9.1 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (this branch) |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (vLLM 0.15.1 aligned) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 | SM61–SM120, SM70, SM75, SM103, CPU, Darwin | 73 (vLLM 0.14.0 aligned) |
+| `pytorch-2.9-py311` | 2.9.1 | 12.9 | SM61–SM120, SM70, SM75, SM103, CPU, Darwin | 73 (Python 3.11 general-purpose) |
 | `pytorch-2.10` | 2.10 | 13.0 | SM75–SM121 + ARM + AVX-only, Darwin | 68 |
 
 ```bash
