@@ -394,7 +394,7 @@ flox activate
 flox build pytorch-python312-cuda12_8-sm90-avx512
 
 # The result will be in ./result-pytorch-python312-cuda12_8-sm90-avx512/
-ls -lh result-pytorch-python312-cuda12_8-sm90-avx512/lib/python3.13/site-packages/torch/
+ls -lh result-pytorch-python312-cuda12_8-sm90-avx512/lib/python3.12/site-packages/torch/
 ```
 
 ## Build Configuration Details
@@ -583,7 +583,7 @@ in
         - CPU: x86-64 with AVX-512 instruction set
         - CUDA: 12.8 with compute capability 8.9
         - BLAS: cuBLAS for GPU operations
-        - Python: 3.13
+        - Python: 3.12
       '';
       platforms = [ "x86_64-linux" ];
     };
@@ -598,7 +598,7 @@ in
 
 ## Python Version Support
 
-Current variants use Python 3.13. To add Python 3.12 or 3.11 variants:
+Current variants use Python 3.12. To add Python 3.11 variants:
 
 1. Change package name: `python312Packages.pytorch-sm90-avx512`
 2. Ensure file name matches: `python312Packages.pytorch-sm90-avx512.nix`
