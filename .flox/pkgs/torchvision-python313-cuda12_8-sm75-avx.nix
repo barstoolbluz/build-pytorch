@@ -1,20 +1,19 @@
 # Torchvision for NVIDIA Turing (SM75: T4, RTX 2080 Ti, Quadro RTX 8000) + AVX
 # Package name: torchvision-python313-cuda12_8-sm75-avx
 
-{ python3Packages
-, lib
-, config
-, cudaPackages
-, addDriverRunpath
-}:
-
+{ pkgs ? import <nixpkgs> {} }:
 let
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) {
+    config = { allowUnfree = true; cudaSupport = true; };
+    overlays = [ (final: prev: { cudaPackages = final.cudaPackages_12_8; }) ];
+  };
+
   gpuArchSM = "7.5";
 
   # Import the matching PyTorch AVX-only build
-  customPytorch = import ./pytorch-python313-cuda12_8-sm75-avx.nix {
-    inherit python3Packages lib config cudaPackages addDriverRunpath;
-  };
+  customPytorch = import ./pytorch-python313-cuda12_8-sm75-avx.nix {};
 
   cpuFlags = [
     "-mavx"
@@ -25,7 +24,7 @@ let
   ];
 
 in
-  (python3Packages.torchvision.override {
+  (nixpkgs_pinned.python313Packages.torchvision.override {
     torch = customPytorch;
   }).overrideAttrs (oldAttrs: {
     pname = "torchvision-python313-cuda12_8-sm75-avx";
@@ -35,8 +34,8 @@ in
     };
 
     preConfigure = (oldAttrs.preConfigure or "") + ''
-      export CXXFLAGS="${lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
-      export CFLAGS="${lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
 
       # Override toolkit-wide arch list to target only our SM
       export TORCH_CUDA_ARCH_LIST="${gpuArchSM}"

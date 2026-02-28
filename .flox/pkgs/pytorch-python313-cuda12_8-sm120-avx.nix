@@ -1,14 +1,15 @@
 # PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX
 # Package name: pytorch-python313-cuda12_8-sm120-avx
 
-{ python3Packages
-, lib
-, config
-, cudaPackages
-, addDriverRunpath
-}:
-
+{ pkgs ? import <nixpkgs> {} }:
 let
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) {
+    config = { allowUnfree = true; cudaSupport = true; };
+    overlays = [ (final: prev: { cudaPackages = final.cudaPackages_12_8; }) ];
+  };
+
   # GPU target: SM120 (Blackwell architecture - RTX 5090)
   # PyTorch's CMake accepts numeric format (12.0) not sm_120
   gpuArchNum = "12.0";
@@ -25,7 +26,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (python3Packages.pytorch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -36,6 +37,10 @@ in
       blasProvider = "cublas";
       cpuISA = "avx";
     };
+
+    # Limit build parallelism to prevent memory saturation
+    ninjaFlags = [ "-j32" ];
+    requiredSystemFeatures = [ "big-parallel" ];
 
     # Prevent ATen from compiling AVX2/AVX512 dispatch kernels.
     # FindAVX.cmake probe-compiles with -mavx2 and succeeds (the compiler
@@ -53,8 +58,9 @@ in
     ];
 
     preConfigure = (oldAttrs.preConfigure or "") + ''
-      export CXXFLAGS="${lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
-      export CFLAGS="${lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export MAX_JOBS=32
 
       # FBGEMM hard-requires AVX2 with no fallback — disable entirely
       export USE_FBGEMM=0

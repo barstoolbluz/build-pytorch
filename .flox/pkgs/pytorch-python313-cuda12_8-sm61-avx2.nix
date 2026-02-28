@@ -1,14 +1,15 @@
 # PyTorch optimized for NVIDIA Pascal (SM61: GTX 1070, 1080, 1080 Ti) + AVX2
 # Package name: pytorch-python313-cuda12_8-sm61-avx2
 
-{ python3Packages
-, lib
-, config
-, cudaPackages
-, addDriverRunpath
-}:
-
+{ pkgs ? import <nixpkgs> {} }:
 let
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) {
+    config = { allowUnfree = true; cudaSupport = true; };
+    overlays = [ (final: prev: { cudaPackages = final.cudaPackages_12_8; }) ];
+  };
+
   # GPU target: SM61 (Pascal consumer architecture - GTX 1070, 1080, 1080 Ti)
   gpuArchNum = "61";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
   gpuArchSM = "6.1";  # For TORCH_CUDA_ARCH_LIST (dot notation required for older archs)
@@ -23,7 +24,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (python3Packages.pytorch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -40,8 +41,8 @@ in
     requiredSystemFeatures = [ "big-parallel" ];
 
     preConfigure = (oldAttrs.preConfigure or "") + ''
-      export CXXFLAGS="${lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
-      export CFLAGS="${lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
       export MAX_JOBS=32
 
       # cuDNN 9.11+ dropped SM < 7.5 support — disable for SM61

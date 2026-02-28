@@ -4,21 +4,21 @@
 # ARM datacenter build for Grace CPUs, AWS Graviton3+
 # Hardware: ARM Neoverse V1/V2, Cortex-X2+, Graviton3+
 
-{ python3Packages
-, lib
-, openblas
-}:
-
+{ pkgs ? import <nixpkgs> {} }:
 let
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) { config = { allowUnfree = true; }; };
+
   # CPU optimization: ARMv9-A with SVE/SVE2
   cpuFlags = [
     "-march=armv9-a+sve+sve2"  # ARMv9 with Scalable Vector Extensions
   ];
 
   # Use OpenBLAS for CPU linear algebra
-  blasBackend = openblas;
+  blasBackend = nixpkgs_pinned.openblas;
 
-in python3Packages.pytorch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-armv9";
 
   # Disable CUDA support for CPU-only build
@@ -28,12 +28,16 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     cpuISA = "armv9";
   };
 
+  # Limit build parallelism to prevent memory saturation
+  ninjaFlags = [ "-j32" ];
+  requiredSystemFeatures = [ "big-parallel" ];
+
   # Override build configuration - remove CUDA deps, ensure BLAS
-  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or ""))) oldAttrs.buildInputs ++ [
+  buildInputs = nixpkgs_pinned.lib.filter (p: !(nixpkgs_pinned.lib.hasPrefix "cuda" (p.pname or ""))) oldAttrs.buildInputs ++ [
     blasBackend
   ];
 
-  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath") oldAttrs.nativeBuildInputs;
+  nativeBuildInputs = nixpkgs_pinned.lib.filter (p: p.pname or "" != "addDriverRunpath") oldAttrs.nativeBuildInputs;
 
   # Set CPU optimization flags and disable CUDA
   preConfigure = (oldAttrs.preConfigure or "") + ''
@@ -48,8 +52,9 @@ in python3Packages.pytorch.overrideAttrs (oldAttrs: {
     export USE_MKLDNN_CBLAS=1
 
     # CPU optimizations via compiler flags
-    export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
-    export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+    export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+    export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
+    export MAX_JOBS=32
 
     # Optimize for host CPU
     export CMAKE_BUILD_TYPE=Release

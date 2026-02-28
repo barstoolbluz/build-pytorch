@@ -1,14 +1,15 @@
 # PyTorch optimized for NVIDIA Ampere Datacenter (SM80: A100, A30) + AVX-512 + VNNI
 # Package name: pytorch-python313-cuda12_8-sm80-avx512vnni
 
-{ python3Packages
-, lib
-, config
-, cudaPackages
-, addDriverRunpath
-}:
-
+{ pkgs ? import <nixpkgs> {} }:
 let
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
+  }) {
+    config = { allowUnfree = true; cudaSupport = true; };
+    overlays = [ (final: prev: { cudaPackages = final.cudaPackages_12_8; }) ];
+  };
+
   # GPU target: SM80 (Ampere datacenter architecture - A100, A30)
   gpuArchNum = "80";  # For CMAKE_CUDA_ARCHITECTURES (just the integer)
   gpuArchSM = "8.0";  # For TORCH_CUDA_ARCH_LIST (dot notation)
@@ -26,7 +27,7 @@ let
 in
   # Two-stage override:
   # 1. Enable CUDA and specify GPU targets
-  (python3Packages.pytorch.override {
+  (nixpkgs_pinned.python313Packages.torch.override {
     cudaSupport = true;
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
@@ -38,12 +39,17 @@ in
       cpuISA = "avx512vnni";
     };
 
+    # Limit build parallelism to prevent memory saturation
+    ninjaFlags = [ "-j32" ];
+    requiredSystemFeatures = [ "big-parallel" ];
+
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
     preConfigure = (oldAttrs.preConfigure or "") + ''
       # CPU optimizations via compiler flags
-      export CXXFLAGS="$CXXFLAGS ${lib.concatStringsSep " " cpuFlags}"
-      export CFLAGS="$CFLAGS ${lib.concatStringsSep " " cpuFlags}"
+      export CXXFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CXXFLAGS"
+      export CFLAGS="${nixpkgs_pinned.lib.concatStringsSep " " cpuFlags} $CFLAGS"
+      export MAX_JOBS=32
 
       echo "========================================="
       echo "PyTorch Build Configuration"
