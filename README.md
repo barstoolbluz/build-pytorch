@@ -1,6 +1,6 @@
 # PyTorch Custom Build Environment
 
-> **You are on the `main` branch** — PyTorch 2.8.0 + CUDA 12.8 (62 variants)
+> **You are on the `pytorch-2.8-python312` branch** — PyTorch 2.8.0 + CUDA 12.8 (62 variants)
 
 This Flox environment builds custom PyTorch variants with targeted optimizations for specific GPU architectures and CPU instruction sets.
 
@@ -26,7 +26,7 @@ Each branch targets a specific PyTorch + CUDA + Python combination and serves a 
 
 | Branch | PyTorch | CUDA | Python | Variants | Key Additions |
 |--------|---------|------|--------|----------|---------------|
-| **`main`** ⬅️ | 2.8.0 | 12.8 | 3.13 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
+| `main` | 2.8.0 | 12.8 | 3.13 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
 | `pytorch-2.9-python313` | **2.9.1** | **12.9.1** | **3.13** | **66** | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | 3.13 | 117 | vLLM 0.15.1 pin-certified (nixpkgs `0182a36`) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 3.12 | 131 | vLLM 0.14.0 pin-certified (nixpkgs `46336d4`) |
@@ -41,14 +41,14 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 | Branch | PyTorch | CUDA | cuDNN | Python | Min Driver | Nixpkgs Pin |
 |--------|---------|------|-------|--------|------------|-------------|
-| **`main`** ⬅️ | **2.8.0** | **12.8** | **9.x** | **3.13** | **550+** | [**`fe5e41d`**](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
+| `main` | **2.8.0** | **12.8** | **9.x** | **3.13** | **550+** | [**`fe5e41d`**](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`6a030d5`](https://github.com/NixOS/nixpkgs/tree/6a030d535719c5190187c4cec156f335e95e3211) |
 | `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | 9.x | 3.13 | 550+ | [`0182a36`](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 9.13.0 | 3.12 | 550+ | [`46336d4`](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
 | `pytorch-2.9-python311` | 2.9.1 | 12.9 / 12.8 | 9.13.0 | 3.11 | 550+ | [`46336d4`](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
 | `pytorch-2.10-python313` | 2.10 | 13.0 | TBD | 3.13 | 570+ | TBD |
 
-## Build Matrix (this branch: main)
+## Build Matrix (this branch: pytorch-2.8-python312)
 
 **This branch builds PyTorch 2.8.0 with CUDA 12.8** — 62 variants covering GPU architectures from SM61 (Pascal) through SM75 (Turing) to SM120 (Blackwell), plus 6 CPU-only variants, 1 Darwin/macOS variant, and companion torchvision/torchaudio builds.
 
@@ -56,64 +56,64 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 
 | GPU Architecture | CPU ISA | Package Name | Primary Use Case |
 |-----------------|---------|--------------|------------------|
-| **CPU-only** | AVX2 | `pytorch-python313-cpu-avx2` | Development, broad x86-64 compatibility |
-| | AVX-512 | `pytorch-python313-cpu-avx512` | General FP32 CPU training/inference |
-| | AVX-512 BF16 | `pytorch-python313-cpu-avx512bf16` | BF16 mixed-precision training |
-| | AVX-512 VNNI | `pytorch-python313-cpu-avx512vnni` | INT8 quantized inference |
-| | ARMv8.2 | `pytorch-python313-cpu-armv8_2` | ARM Graviton2, older ARM servers |
-| | ARMv9 | `pytorch-python313-cpu-armv9` | ARM Grace, Graviton3+, modern ARM |
-| **SM80 (Ampere DC)** | AVX | `pytorch-python313-cuda12_8-sm80-avx` | A100/A30 + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm80-avx2` | A100/A30 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm80-avx512` | A100/A30 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm80-avx512bf16` | A100/A30 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm80-avx512vnni` | A100/A30 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm80-armv8_2` | A100/A30 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm80-armv9` | A100/A30 + ARM Grace |
-| **SM86 (Ampere)** | AVX | `pytorch-python313-cuda12_8-sm86-avx` | RTX 3090/A40 + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm86-avx2` | RTX 3090/A40 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm86-avx512` | RTX 3090/A40 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm86-avx512bf16` | RTX 3090/A40 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm86-avx512vnni` | RTX 3090/A40 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm86-armv8_2` | RTX 3090/A40 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm86-armv9` | RTX 3090/A40 + ARM Grace |
-| **SM89 (Ada)** | AVX | `pytorch-python313-cuda12_8-sm89-avx` | RTX 4090/L40 + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm89-avx2` | RTX 4090/L40 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm89-avx512` | RTX 4090/L40 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm89-avx512bf16` | RTX 4090/L40 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm89-avx512vnni` | RTX 4090/L40 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm89-armv8_2` | RTX 4090/L40 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm89-armv9` | RTX 4090/L40 + ARM Grace |
-| **SM90 (Hopper)** | AVX | `pytorch-python313-cuda12_8-sm90-avx` | H100/L40S + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm90-avx2` | H100/L40S + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm90-avx512` | H100/L40S + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm90-avx512bf16` | H100/L40S + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm90-avx512vnni` | H100/L40S + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm90-armv8_2` | H100/L40S + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm90-armv9` | H100/L40S + ARM Grace |
-| **SM100 (Blackwell DC)** | AVX | `pytorch-python313-cuda12_8-sm100-avx` | B100/B200 + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm100-avx2` | B100/B200 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm100-avx512` | B100/B200 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm100-avx512bf16` | B100/B200 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm100-avx512vnni` | B100/B200 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm100-armv8_2` | B100/B200 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm100-armv9` | B100/B200 + ARM Grace |
-| **SM61 (Pascal)** | AVX | `pytorch-python313-cuda12_8-sm61-avx` | GTX 1070/1080 Ti + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm61-avx2` | GTX 1070/1080 Ti + modern CPUs |
-| **SM75 (Turing)** | AVX | `pytorch-python313-cuda12_8-sm75-avx` | T4/RTX 2080 Ti + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm75-avx2` | T4/RTX 2080 Ti + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm75-avx512` | T4/RTX 2080 Ti + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm75-avx512bf16` | T4/RTX 2080 Ti + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm75-avx512vnni` | T4/RTX 2080 Ti + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm75-armv8_2` | T4/RTX 2080 Ti + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm75-armv9` | T4/RTX 2080 Ti + ARM Grace |
-| **SM120 (Blackwell)** | AVX | `pytorch-python313-cuda12_8-sm120-avx` | RTX 5090 + legacy AVX CPUs |
-| | AVX2 | `pytorch-python313-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
-| | AVX-512 | `pytorch-python313-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
-| | AVX-512 BF16 | `pytorch-python313-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
-| | AVX-512 VNNI | `pytorch-python313-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
-| | ARMv8.2 | `pytorch-python313-cuda12_8-sm120-armv8_2` | RTX 5090 + ARM Graviton2 |
-| | ARMv9 | `pytorch-python313-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
-| **Darwin MPS** | — | `pytorch-python313-darwin-mps` | Apple Silicon (M1–M4) with Metal GPU |
+| **CPU-only** | AVX2 | `pytorch-python312-cpu-avx2` | Development, broad x86-64 compatibility |
+| | AVX-512 | `pytorch-python312-cpu-avx512` | General FP32 CPU training/inference |
+| | AVX-512 BF16 | `pytorch-python312-cpu-avx512bf16` | BF16 mixed-precision training |
+| | AVX-512 VNNI | `pytorch-python312-cpu-avx512vnni` | INT8 quantized inference |
+| | ARMv8.2 | `pytorch-python312-cpu-armv8_2` | ARM Graviton2, older ARM servers |
+| | ARMv9 | `pytorch-python312-cpu-armv9` | ARM Grace, Graviton3+, modern ARM |
+| **SM80 (Ampere DC)** | AVX | `pytorch-python312-cuda12_8-sm80-avx` | A100/A30 + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm80-avx2` | A100/A30 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm80-avx512` | A100/A30 + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm80-avx512bf16` | A100/A30 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm80-avx512vnni` | A100/A30 + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm80-armv8_2` | A100/A30 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm80-armv9` | A100/A30 + ARM Grace |
+| **SM86 (Ampere)** | AVX | `pytorch-python312-cuda12_8-sm86-avx` | RTX 3090/A40 + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm86-avx2` | RTX 3090/A40 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm86-avx512` | RTX 3090/A40 + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm86-avx512bf16` | RTX 3090/A40 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm86-avx512vnni` | RTX 3090/A40 + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm86-armv8_2` | RTX 3090/A40 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm86-armv9` | RTX 3090/A40 + ARM Grace |
+| **SM89 (Ada)** | AVX | `pytorch-python312-cuda12_8-sm89-avx` | RTX 4090/L40 + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm89-avx2` | RTX 4090/L40 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm89-avx512` | RTX 4090/L40 + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm89-avx512bf16` | RTX 4090/L40 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm89-avx512vnni` | RTX 4090/L40 + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm89-armv8_2` | RTX 4090/L40 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm89-armv9` | RTX 4090/L40 + ARM Grace |
+| **SM90 (Hopper)** | AVX | `pytorch-python312-cuda12_8-sm90-avx` | H100/L40S + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm90-avx2` | H100/L40S + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm90-avx512` | H100/L40S + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm90-avx512bf16` | H100/L40S + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm90-avx512vnni` | H100/L40S + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm90-armv8_2` | H100/L40S + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm90-armv9` | H100/L40S + ARM Grace |
+| **SM100 (Blackwell DC)** | AVX | `pytorch-python312-cuda12_8-sm100-avx` | B100/B200 + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm100-avx2` | B100/B200 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm100-avx512` | B100/B200 + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm100-avx512bf16` | B100/B200 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm100-avx512vnni` | B100/B200 + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm100-armv8_2` | B100/B200 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm100-armv9` | B100/B200 + ARM Grace |
+| **SM61 (Pascal)** | AVX | `pytorch-python312-cuda12_8-sm61-avx` | GTX 1070/1080 Ti + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm61-avx2` | GTX 1070/1080 Ti + modern CPUs |
+| **SM75 (Turing)** | AVX | `pytorch-python312-cuda12_8-sm75-avx` | T4/RTX 2080 Ti + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm75-avx2` | T4/RTX 2080 Ti + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm75-avx512` | T4/RTX 2080 Ti + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm75-avx512bf16` | T4/RTX 2080 Ti + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm75-avx512vnni` | T4/RTX 2080 Ti + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm75-armv8_2` | T4/RTX 2080 Ti + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm75-armv9` | T4/RTX 2080 Ti + ARM Grace |
+| **SM120 (Blackwell)** | AVX | `pytorch-python312-cuda12_8-sm120-avx` | RTX 5090 + legacy AVX CPUs |
+| | AVX2 | `pytorch-python312-cuda12_8-sm120-avx2` | RTX 5090 + broad CPU compatibility |
+| | AVX-512 | `pytorch-python312-cuda12_8-sm120-avx512` | RTX 5090 + general workloads |
+| | AVX-512 BF16 | `pytorch-python312-cuda12_8-sm120-avx512bf16` | RTX 5090 + BF16 training |
+| | AVX-512 VNNI | `pytorch-python312-cuda12_8-sm120-avx512vnni` | RTX 5090 + INT8 inference |
+| | ARMv8.2 | `pytorch-python312-cuda12_8-sm120-armv8_2` | RTX 5090 + ARM Graviton2 |
+| | ARMv9 | `pytorch-python312-cuda12_8-sm120-armv9` | RTX 5090 + ARM Grace |
+| **Darwin MPS** | — | `pytorch-python312-darwin-mps` | Apple Silicon (M1–M4) with Metal GPU |
 
 ### Variants on Other Branches
 
@@ -246,11 +246,11 @@ Choose the right CPU variant based on your hardware and workload:
 
 | Package | GPU | Platform | Requirements |
 |---------|-----|----------|--------------|
-| `pytorch-python313-darwin-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
+| `pytorch-python312-darwin-mps` | Metal Performance Shaders | aarch64-darwin | macOS 12.3+, M1/M2/M3/M4 |
 
 ```bash
 # Build on Apple Silicon Mac
-flox build pytorch-python313-darwin-mps
+flox build pytorch-python312-darwin-mps
 ```
 
 - **MPS (Metal Performance Shaders)**: GPU-accelerated builds for Apple Silicon Macs
@@ -262,19 +262,19 @@ AVX-only torchvision and torchaudio builds for SM61/SM75 GPUs paired with older 
 
 | Package | GPU | CPU ISA | Linked PyTorch |
 |---------|-----|---------|---------------|
-| `torchvision-python313-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
-| `torchvision-python313-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
-| `torchaudio-python313-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
-| `torchaudio-python313-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
+| `torchvision-python312-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
+| `torchvision-python312-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
+| `torchaudio-python312-cuda12_8-sm61-avx` | SM61 (Pascal) | AVX | `pytorch-...-sm61-avx` |
+| `torchaudio-python312-cuda12_8-sm75-avx` | SM75 (Turing) | AVX | `pytorch-...-sm75-avx` |
 
 Each companion recipe imports its matching PyTorch recipe via `import`, so building torchvision/torchaudio automatically uses the exact same PyTorch configuration. The PyTorch derivation is shared via the Nix store and not rebuilt if already cached.
 
 ```bash
 # Build torchvision for GTX 1080 Ti + Sandy Bridge CPU
-flox build torchvision-python313-cuda12_8-sm61-avx
+flox build torchvision-python312-cuda12_8-sm61-avx
 
 # Build torchaudio for T4 + Ivy Bridge CPU
-flox build torchaudio-python313-cuda12_8-sm75-avx
+flox build torchaudio-python312-cuda12_8-sm75-avx
 ```
 
 ## Variant Selection Guide
@@ -282,7 +282,7 @@ flox build torchaudio-python313-cuda12_8-sm75-avx
 ### Quick Decision Tree
 
 **0. Are you on macOS?**
-- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python313-darwin-mps`
+- Apple Silicon (M1/M2/M3/M4) → Use `pytorch-python312-darwin-mps`
 - Linux → Continue to step 1
 
 **1. Do you have an NVIDIA GPU?**
@@ -346,7 +346,7 @@ grep -E 'avx|sve' /proc/cpuinfo
 lscpu | grep avx512f  # ✓ Found AVX-512
 
 # Build variant
-flox build pytorch-python313-cuda12_8-sm86-avx512
+flox build pytorch-python312-cuda12_8-sm86-avx512
 ```
 
 **Scenario 2: H100 Datacenter + AMD EPYC Zen 4**
@@ -355,16 +355,16 @@ flox build pytorch-python313-cuda12_8-sm86-avx512
 lscpu | grep avx512_vnni  # ✓ Found for INT8 inference
 
 # For training
-flox build pytorch-python313-cuda12_8-sm90-avx512
+flox build pytorch-python312-cuda12_8-sm90-avx512
 
 # For INT8 inference
-flox build pytorch-python313-cuda12_8-sm90-avx512vnni
+flox build pytorch-python312-cuda12_8-sm90-avx512vnni
 ```
 
 **Scenario 3: Development Laptop (no GPU)**
 ```bash
 # Maximum compatibility
-flox build pytorch-python313-cpu-avx2
+flox build pytorch-python312-cpu-avx2
 ```
 
 **Scenario 4: AWS Graviton3 + H100**
@@ -373,12 +373,12 @@ flox build pytorch-python313-cpu-avx2
 lscpu | grep sve2  # ✓ Found (Graviton3 has SVE2)
 
 # Build variant
-flox build pytorch-python313-cuda12_8-sm90-armv9
+flox build pytorch-python312-cuda12_8-sm90-armv9
 ```
 
 **Scenario 5: MacBook Pro M3**
 ```bash
-flox build pytorch-python313-darwin-mps
+flox build pytorch-python312-darwin-mps
 ```
 
 ## Quick Start
@@ -388,10 +388,10 @@ flox build pytorch-python313-darwin-mps
 flox activate
 
 # Build a specific variant
-flox build pytorch-python313-cuda12_8-sm90-avx512
+flox build pytorch-python312-cuda12_8-sm90-avx512
 
-# The result will be in ./result-pytorch-python313-cuda12_8-sm90-avx512/
-ls -lh result-pytorch-python313-cuda12_8-sm90-avx512/lib/python3.13/site-packages/torch/
+# The result will be in ./result-pytorch-python312-cuda12_8-sm90-avx512/
+ls -lh result-pytorch-python312-cuda12_8-sm90-avx512/lib/python3.13/site-packages/torch/
 ```
 
 ## Build Configuration Details
@@ -441,18 +441,18 @@ build-pytorch/
 │   ├── env/
 │   │   └── manifest.toml          # Build environment definition
 │   └── pkgs/                      # Nix expression builds (62 variants on main)
-│       ├── pytorch-python313-cpu-*.nix            # 6 CPU-only variants (Linux)
-│       ├── pytorch-python313-darwin-mps.nix       # MPS variant (Apple Silicon)
-│       ├── pytorch-python313-cuda12_8-sm61-*.nix  # 2 SM61 variants (Pascal)
-│       ├── pytorch-python313-cuda12_8-sm75-*.nix  # 7 SM75 variants (Turing)
-│       ├── pytorch-python313-cuda12_8-sm80-*.nix  # 7 SM80 variants
-│       ├── pytorch-python313-cuda12_8-sm86-*.nix  # 7 SM86 variants
-│       ├── pytorch-python313-cuda12_8-sm89-*.nix  # 7 SM89 variants
-│       ├── pytorch-python313-cuda12_8-sm90-*.nix  # 7 SM90 variants
-│       ├── pytorch-python313-cuda12_8-sm100-*.nix # 7 SM100 variants
-│       ├── pytorch-python313-cuda12_8-sm120-*.nix # 7 SM120 variants
-│       ├── torchvision-python313-cuda12_8-*.nix   # 2 torchvision variants
-│       └── torchaudio-python313-cuda12_8-*.nix    # 2 torchaudio variants
+│       ├── pytorch-python312-cpu-*.nix            # 6 CPU-only variants (Linux)
+│       ├── pytorch-python312-darwin-mps.nix       # MPS variant (Apple Silicon)
+│       ├── pytorch-python312-cuda12_8-sm61-*.nix  # 2 SM61 variants (Pascal)
+│       ├── pytorch-python312-cuda12_8-sm75-*.nix  # 7 SM75 variants (Turing)
+│       ├── pytorch-python312-cuda12_8-sm80-*.nix  # 7 SM80 variants
+│       ├── pytorch-python312-cuda12_8-sm86-*.nix  # 7 SM86 variants
+│       ├── pytorch-python312-cuda12_8-sm89-*.nix  # 7 SM89 variants
+│       ├── pytorch-python312-cuda12_8-sm90-*.nix  # 7 SM90 variants
+│       ├── pytorch-python312-cuda12_8-sm100-*.nix # 7 SM100 variants
+│       ├── pytorch-python312-cuda12_8-sm120-*.nix # 7 SM120 variants
+│       ├── torchvision-python312-cuda12_8-*.nix   # 2 torchvision variants
+│       └── torchaudio-python312-cuda12_8-*.nix    # 2 torchaudio variants
 ├── README.md
 ├── FLOX.md
 ├── QUICKSTART.md
@@ -497,12 +497,12 @@ git remote add origin <your-repo-url>
 git push origin master
 
 # Publish to your Flox organization
-flox publish -o <your-org> pytorch-python313-cuda12_8-sm90-avx512
-flox publish -o <your-org> pytorch-python313-cuda12_8-sm86-avx2
-flox publish -o <your-org> pytorch-python313-cuda12_8-cpu-avx2
+flox publish -o <your-org> pytorch-python312-cuda12_8-sm90-avx512
+flox publish -o <your-org> pytorch-python312-cuda12_8-sm86-avx2
+flox publish -o <your-org> pytorch-python312-cuda12_8-cpu-avx2
 
 # Users install with:
-flox install <your-org>/pytorch-python313-cuda12_8-sm90-avx512
+flox install <your-org>/pytorch-python312-cuda12_8-sm90-avx512
 ```
 
 ## Build Times & Requirements
@@ -529,7 +529,7 @@ To add more variants (e.g., SM89 for RTX 4090):
 ### Example: Adding SM89 (RTX 4090) with AVX-512
 
 ```nix
-# .flox/pkgs/pytorch-python313-cuda12_8-sm89-avx512.nix
+# .flox/pkgs/pytorch-python312-cuda12_8-sm89-avx512.nix
 { python3Packages, lib, config, cudaPackages, addDriverRunpath }:
 
 let
@@ -554,7 +554,7 @@ in
     gpuTargets = [ gpuArchSM ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm89-avx512";
+    pname = "pytorch-python312-cuda12_8-sm89-avx512";
 
     # Set CPU optimization flags
     preConfigure = (oldAttrs.preConfigure or "") + ''
