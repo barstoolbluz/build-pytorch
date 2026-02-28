@@ -19,12 +19,12 @@ This repository provides PyTorch builds across multiple branches, each targeting
 
 | Branch | PyTorch | CUDA | Variants | Key Additions |
 |--------|---------|------|----------|---------------|
-| `main` | 2.8.0 | 12.8 | 62 | Stable baseline + Darwin MPS + torchvision/torchaudio |
-| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
+| `main` | 2.8.0 | 12.8 | 62 | Python 3.13, stable baseline + Darwin MPS + torchvision/torchaudio |
+| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 66 | Python 3.13, full coverage + SM75/SM103 + AVX-only + Darwin MPS |
 | **`pytorch-2.9-python311`** ⬅️ | **2.9.1** | **12.9 / 12.8** | **131** | **This branch** — Python 3.11, pin-compatible with vLLM 0.14.0 (nixpkgs `46336d4`) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 131 | Python 3.12, vLLM 0.14.0 pin-aligned (nixpkgs `46336d4`) |
-| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | 117 | vLLM 0.15.1 pin-aligned (nixpkgs `0182a36`) |
-| `pytorch-2.10-python313` | 2.10 | 13.0 | 68 | Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
+| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | 117 | Python 3.13, vLLM 0.15.1 pin-aligned (nixpkgs `0182a36`) |
+| `pytorch-2.10-python313` | 2.10 | 13.0 | 68 | Python 3.13, full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
@@ -189,12 +189,12 @@ Different PyTorch + CUDA combinations live on dedicated branches:
 
 | Branch | PyTorch | CUDA | Architectures | Variants |
 |--------|---------|------|---------------|----------|
-| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 62 (stable baseline) |
-| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 |
+| `main` | 2.8.0 | 12.8 | SM61–SM120, CPU, Darwin | 62 (Python 3.13, stable baseline) |
+| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | SM61–SM120, SM75, SM103, CPU, Darwin | 66 (Python 3.13) |
 | **`pytorch-2.9-python311`** ⬅️ | 2.9.1 | 12.9 / 12.8 | SM61–SM120, SM70, SM75, SM103 (12.9 only), CPU, Darwin | 131 (this branch — Python 3.11) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | SM61–SM120, SM70, SM75, SM103 (12.9 only), CPU, Darwin | 131 (Python 3.12, vLLM 0.14.0 aligned) |
-| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | SM61–SM120, SM75, SM103 (12.9 only), CPU, Darwin | 117 (vLLM 0.15.1 aligned) |
-| `pytorch-2.10-python313` | 2.10 | 13.0 | SM75–SM121 + ARM + AVX-only, Darwin | 68 |
+| `pytorch-2.9-vllm-0.15.1` | 2.9.1 | 12.9 / 12.8 | SM61–SM120, SM75, SM103 (12.9 only), CPU, Darwin | 117 (Python 3.13, vLLM 0.15.1 aligned) |
+| `pytorch-2.10-python313` | 2.10 | 13.0 | SM75–SM121 + ARM + AVX-only, Darwin | 68 (Python 3.13) |
 
 ```bash
 # PyTorch 2.8.0 + CUDA 12.8 (stable baseline)
