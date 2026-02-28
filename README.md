@@ -15,16 +15,25 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 
 ## Multi-Branch Strategy
 
-This repository provides PyTorch builds across multiple branches, each targeting a specific PyTorch + CUDA combination:
+Each branch targets a specific PyTorch + CUDA + Python combination and serves a distinct purpose:
 
-| Branch | PyTorch | CUDA | Variants | Key Additions |
-|--------|---------|------|----------|---------------|
-| `main` | 2.8.0 | 12.8 | 62 | Python 3.13, stable baseline + Darwin MPS + torchvision/torchaudio |
-| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 66 | Python 3.13, full coverage + SM75/SM103 + AVX-only + Darwin MPS |
-| **`pytorch-2.9-vllm-0.15.1`** ⬅️ | **2.9.1** | **12.9 / 12.8** | **117** | **This branch** — Python 3.13, vLLM 0.15.1 pin-aligned (nixpkgs `0182a36`) |
-| `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 131 | vLLM 0.14.0 pin-aligned (nixpkgs `46336d4`), Python 3.12 |
-| `pytorch-2.9-python311` | 2.9.1 | 12.9 / 12.8 | 131 | Python 3.11, pin-compatible with vLLM 0.14.0 (nixpkgs `46336d4`) |
-| `pytorch-2.10-python313` | 2.10 | 13.0 | 68 | Python 3.13, full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
+- **`main`** — Stable baseline. Conservative PyTorch + CUDA pairing for broad compatibility.
+- **`pytorch-2.9-python313`** — Recommended general-purpose branch. Latest stable PyTorch 2.9.1 with full GPU coverage (SM61–SM120, plus SM103/SM110/SM121 via multi-CUDA).
+- **`pytorch-2.9-vllm-0.15.1`** — General-purpose PyTorch 2.9.1 builds (Python 3.13) pinned to the same nixpkgs as vLLM 0.15.1. Certified for vLLM compatibility; works for any PyTorch workload.
+- **`pytorch-2.9-vllm-0.14.0`** — General-purpose PyTorch 2.9.1 builds (Python 3.12) pinned to the same nixpkgs as vLLM 0.14.0. Certified for vLLM compatibility; works for any PyTorch workload.
+- **`pytorch-2.9-python311`** — PyTorch 2.9.1 with Python 3.11, sharing the same nixpkgs pin as `pytorch-2.9-vllm-0.14.0`. For projects that require Python 3.11.
+- **`pytorch-2.10-python313`** — Bleeding-edge. PyTorch 2.10 with CUDA 13.x support (SM110 DRIVE Thor, SM121 DGX Spark).
+
+| Branch | PyTorch | CUDA | Python | Variants | Key Additions |
+|--------|---------|------|--------|----------|---------------|
+| `main` | 2.8.0 | 12.8 | 3.13 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
+| `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 3.13 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
+| **`pytorch-2.9-vllm-0.15.1`** ⬅️ | **2.9.1** | **12.9 / 12.8** | **3.13** | **117** | **This branch** — vLLM 0.15.1 pin-certified (nixpkgs `0182a36`) |
+| `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 3.12 | 131 | vLLM 0.14.0 pin-certified (nixpkgs `46336d4`) |
+| `pytorch-2.9-python311` | 2.9.1 | 12.9 / 12.8 | 3.11 | 131 | Also pin-compatible with vLLM 0.14.0 (nixpkgs `46336d4`) |
+| `pytorch-2.10-python313` | 2.10 | 13.0 | 3.13 | 68 | Full matrix SM75–SM121 + ARM + AVX-only + Darwin MPS |
+
+> **vLLM-pinned branches** use the exact nixpkgs revision that the corresponding vLLM release was built against, guaranteeing ABI compatibility. They are full-featured PyTorch builds suitable for any workload — training, inference, or development — not just vLLM.
 
 Different GPU architectures require different minimum CUDA versions — SM103 needs CUDA 12.9+, SM110/SM121 need CUDA 13.0+.
 
