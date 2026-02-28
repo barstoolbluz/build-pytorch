@@ -18,6 +18,7 @@ Modern PyTorch containers are often bloated with support for every possible GPU 
 Each branch targets a specific PyTorch + CUDA + Python combination and serves a distinct purpose:
 
 - **`main`** — Stable baseline. Conservative PyTorch + CUDA pairing for broad compatibility.
+- **`pytorch-2.8-python312`** — PyTorch 2.8.0 with Python 3.12, same nixpkgs pin as `main`. For projects that require Python 3.12.
 - **`pytorch-2.9-python313`** — Recommended general-purpose branch. Latest stable PyTorch 2.9.1 with full GPU coverage (SM61–SM120, plus SM103/SM110/SM121 via multi-CUDA).
 - **`pytorch-2.9-vllm-0.15.1`** — General-purpose PyTorch 2.9.1 builds (Python 3.13) pinned to the same nixpkgs as vLLM 0.15.1. Certified for vLLM compatibility; works for any PyTorch workload.
 - **`pytorch-2.9-vllm-0.14.0`** — General-purpose PyTorch 2.9.1 builds (Python 3.12) pinned to the same nixpkgs as vLLM 0.14.0. Certified for vLLM compatibility; works for any PyTorch workload.
@@ -27,6 +28,7 @@ Each branch targets a specific PyTorch + CUDA + Python combination and serves a 
 | Branch | PyTorch | CUDA | Python | Variants | Key Additions |
 |--------|---------|------|--------|----------|---------------|
 | `main` | 2.8.0 | 12.8 | 3.13 | 62 | Stable baseline + SM75 + Darwin MPS + torchvision/torchaudio |
+| `pytorch-2.8-python312` | 2.8.0 | 12.8 | 3.12 | 62 | Python 3.12 variant of main (nixpkgs `fe5e41d`) |
 | `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 3.13 | 66 | Full coverage + SM75/SM103 + AVX-only + Darwin MPS |
 | **`pytorch-2.9-python311`** ⬅️ | **2.9.1** | **12.9 / 12.8** | **3.11** | **131** | **This branch** — Also pin-compatible with vLLM 0.14.0 (nixpkgs `46336d4`) |
 | `pytorch-2.9-vllm-0.14.0` | 2.9.1 | 12.9 / 12.8 | 3.12 | 131 | vLLM 0.14.0 pin-certified (nixpkgs `46336d4`) |
@@ -42,6 +44,7 @@ Different GPU architectures require different minimum CUDA versions — SM103 ne
 | Branch | PyTorch | CUDA | cuDNN | Python | Min Driver | Nixpkgs Pin |
 |--------|---------|------|-------|--------|------------|-------------|
 | `main` | 2.8.0 | 12.8 | 9.x | 3.13 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
+| `pytorch-2.8-python312` | 2.8.0 | 12.8 | 9.x | 3.12 | 550+ | [`fe5e41d`](https://github.com/NixOS/nixpkgs/tree/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3) |
 | `pytorch-2.9-python313` | 2.9.1 | 12.9.1 | 9.13.0 | 3.13 | 550+ | [`0182a36`](https://github.com/NixOS/nixpkgs/tree/0182a361324364ae3f436a63005877674cf45efb) |
 | **`pytorch-2.9-python311`** ⬅️ | **2.9.1** | **12.9** | **9.13.0** | **3.11** | **550+** | [**`46336d4`**](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
 | | | **12.8** | **9.13.0** | **3.11** | **550+** | [**`46336d4`**](https://github.com/NixOS/nixpkgs/tree/46336d4d6980ae6f136b45c8507b17787eb186a0) |
